@@ -1,0 +1,349 @@
+/* ═══════════════════════════════════════ */
+/* SHARE CARD STYLES                      */
+/* ═══════════════════════════════════════ */
+
+/* Ratio control */
+.ratio-feed { aspect-ratio: 4/5; }
+.ratio-story { aspect-ratio: 9/16; }
+
+.card-wrap {
+  width: 100%;
+  max-width: 340px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+.card-wrap:hover { transform: translateY(-4px); }
+
+/* ─── A: 클래식 다크 ─── */
+.card-a {
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(155deg, #1E1A16 0%, #2C2520 40%, #3D342C 100%);
+  color: #F5F0E8;
+}
+.card-a::before {
+  content: '';
+  position: absolute;
+  top: -30%; right: -20%;
+  width: 60%; height: 60%;
+  background: radial-gradient(circle, rgba(196,168,130,0.15), transparent 65%);
+  border-radius: 50%;
+}
+.card-a::after {
+  content: '';
+  position: absolute;
+  bottom: -20%; left: -15%;
+  width: 50%; height: 50%;
+  background: radial-gradient(circle, rgba(139,115,85,0.08), transparent 65%);
+  border-radius: 50%;
+}
+.card-a .card-inner {
+  position: relative; z-index: 1;
+  padding: 32px 28px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  height: 100%;
+}
+.card-a .cq-mark {
+  font-family: var(--sf);
+  font-size: 48px; opacity: 0.12; line-height: 1; margin-bottom: 8px;
+}
+.card-a .cq-text {
+  font-family: var(--sf);
+  font-size: 18px; line-height: 1.85; font-weight: 300;
+  letter-spacing: -0.2px; white-space: pre-line;
+  flex: 1; display: flex; align-items: center;
+}
+.card-a .cq-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-top: auto; padding-top: 24px;
+}
+.card-a .cq-book { font-size: 11.5px; opacity: 0.5; line-height: 1.5; }
+.card-a .cq-logo {
+  font-family: var(--sf); font-size: 12px; opacity: 0.3;
+  border-bottom: 1px solid rgba(245,240,232,0.2);
+  padding-bottom: 1px; letter-spacing: -0.3px;
+}
+
+/* ─── B: 종이 라이트 ─── */
+.card-b {
+  border-radius: 16px;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  background: #FDFAF5; color: #2A231D;
+  border: 1px solid #E3DAD0;
+  box-shadow: 0 2px 20px rgba(42,35,29,0.06);
+}
+.card-b::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.6' numOctaves='4' type='fractalNoise'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.card-b .card-inner {
+  position: relative; z-index: 1;
+  padding: 32px 28px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  height: 100%;
+}
+.card-b .cq-line {
+  width: 24px; height: 2px;
+  background: #8B7355; opacity: 0.4; margin-bottom: 20px;
+}
+.card-b .cq-text {
+  font-family: var(--sf);
+  font-size: 17px; line-height: 1.9; font-weight: 400;
+  letter-spacing: -0.2px; white-space: pre-line;
+  color: #3D342C;
+  flex: 1; display: flex; align-items: center;
+}
+.card-b .cq-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding-top: 24px; border-top: 1px solid #EDE7DC; margin-top: auto;
+}
+.card-b .cq-book { font-size: 11.5px; color: #9E9488; line-height: 1.5; }
+.card-b .cq-logo {
+  font-family: var(--sf); font-size: 12px; color: #B8A68E;
+  letter-spacing: -0.3px; border-bottom: 1px solid #E3DAD0; padding-bottom: 1px;
+}
+
+/* ─── C: 세로선 미니멀 ─── */
+.card-c {
+  border-radius: 16px;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  background: #2A231D; color: #F5F0E8;
+}
+.card-c .card-inner {
+  padding: 32px 28px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  height: 100%;
+}
+.card-c .cq-main {
+  display: flex; gap: 16px; flex: 1; align-items: center;
+}
+.card-c .cq-vline {
+  width: 1.5px; align-self: stretch;
+  background: linear-gradient(to bottom, transparent, #8B7355, transparent);
+  opacity: 0.5; flex-shrink: 0; min-height: 60px;
+}
+.card-c .cq-text {
+  font-family: var(--sf);
+  font-size: 17px; line-height: 1.85; font-weight: 300;
+  letter-spacing: -0.2px; white-space: pre-line;
+}
+.card-c .cq-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding-top: 24px; margin-top: auto;
+}
+.card-c .cq-book { font-size: 11px; opacity: 0.4; line-height: 1.5; }
+.card-c .cq-user { font-size: 10px; opacity: 0.3; margin-top: 4px; }
+.card-c .cq-logo {
+  font-family: var(--sf); font-size: 12px; opacity: 0.25;
+  letter-spacing: -0.3px;
+  border-bottom: 1px solid rgba(245,240,232,0.15); padding-bottom: 1px;
+}
+
+/* ─── D: 색감 카드 ─── */
+.card-d {
+  border-radius: 16px;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+}
+.card-d .card-inner {
+  padding: 32px 28px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  height: 100%; position: relative; z-index: 1;
+}
+.card-d .cq-text {
+  font-family: var(--sf);
+  font-size: 17px; line-height: 1.85; font-weight: 400;
+  letter-spacing: -0.2px; white-space: pre-line;
+  flex: 1; display: flex; align-items: center;
+}
+.card-d .cq-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding-top: 20px; margin-top: auto;
+}
+.card-d .cq-book { font-size: 11px; opacity: 0.6; line-height: 1.5; }
+.card-d .cq-logo {
+  font-family: var(--sf); font-size: 12px; opacity: 0.35;
+  letter-spacing: -0.3px;
+  border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 1px;
+}
+
+/* ─── E: 타이포 센터 ─── */
+.card-e {
+  border-radius: 16px;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  background: #1A1714; color: #F5F0E8;
+}
+.card-e::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(139,115,85,0.12), transparent 70%);
+}
+.card-e .card-inner {
+  padding: 36px 28px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  height: 100%; position: relative; z-index: 1;
+  text-align: center;
+}
+.card-e .cq-text {
+  font-family: var(--sf);
+  font-size: 18px; line-height: 2; font-weight: 200;
+  letter-spacing: 0.5px; white-space: pre-line;
+  flex: 1; display: flex; align-items: center; justify-content: center;
+}
+.card-e .cq-divider {
+  width: 32px; height: 1px;
+  background: #8B7355; opacity: 0.4; margin: 16px auto;
+}
+.card-e .cq-bottom { text-align: center; }
+.card-e .cq-book {
+  font-size: 11px; opacity: 0.4; line-height: 1.5; margin-bottom: 12px;
+}
+.card-e .cq-logo {
+  font-family: var(--sf); font-size: 11px; opacity: 0.2; letter-spacing: 2px;
+}
+
+/* ─── F: 필름 프레임 ─── */
+.card-f {
+  border-radius: 4px;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  background: #F8F5F0; color: #2A231D;
+  box-shadow: 0 2px 20px rgba(42,35,29,0.1);
+}
+.card-f .film-border {
+  padding: 12px 12px 16px; height: 100%;
+  display: flex; flex-direction: column;
+}
+.card-f .film-inner {
+  flex: 1; background: #2A231D; border-radius: 2px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 28px 24px; color: #F5F0E8;
+}
+.card-f .cq-text {
+  font-family: var(--sf);
+  font-size: 16px; line-height: 1.85; font-weight: 300;
+  letter-spacing: -0.1px; white-space: pre-line;
+  flex: 1; display: flex; align-items: center;
+}
+.card-f .cq-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding-top: 16px;
+}
+.card-f .cq-book { font-size: 10.5px; opacity: 0.4; line-height: 1.5; }
+.card-f .film-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 4px 0; font-size: 9px; color: #B8A68E; letter-spacing: 0.5px;
+}
+.card-f .cq-logo {
+  font-family: var(--sf); font-size: 11px; color: #8B7355; letter-spacing: -0.3px;
+}
+
+/* ─── Share Cards Page ─── */
+.sc-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+.sc-page-title {
+  font-family: var(--sf);
+  font-size: 22px; font-weight: 600;
+  text-align: center; margin-bottom: 4px; letter-spacing: -0.5px;
+}
+.sc-page-sub {
+  font-size: 13px; color: #9E9488;
+  text-align: center; margin-bottom: 28px;
+}
+
+.sc-controls {
+  display: flex; justify-content: center;
+  gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
+}
+.sc-ctrl-group {
+  display: flex; gap: 0;
+  background: #F5F0E8; border-radius: 10px;
+  padding: 3px; border: 1px solid #E3DAD0;
+}
+.sc-ctrl-btn {
+  padding: 7px 14px; font-size: 12px; font-family: var(--sn);
+  border: none; background: transparent; color: #9E9488;
+  cursor: pointer; border-radius: 8px; transition: all 0.2s;
+  letter-spacing: -0.2px; font-weight: 500;
+}
+.sc-ctrl-btn.on {
+  background: #FDFAF5; color: #2A231D;
+  box-shadow: 0 1px 4px rgba(42,35,29,0.08);
+}
+
+.sc-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px; margin-bottom: 32px;
+}
+.sc-card-col {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+}
+.sc-card-label {
+  font-size: 12px; font-weight: 600;
+  color: #6B6058; letter-spacing: -0.2px;
+}
+.sc-card-label-sub {
+  font-size: 11px; color: #9E9488; font-weight: 400;
+}
+
+.sc-quote-nav {
+  display: flex; justify-content: center;
+  gap: 8px; margin-top: 20px;
+}
+.sc-quote-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #E3DAD0; cursor: pointer; transition: all 0.2s;
+}
+.sc-quote-dot.on {
+  background: #8B7355; width: 20px; border-radius: 3px;
+}
+
+/* ─── Share Modal Card Styles Picker ─── */
+.sm-styles {
+  display: flex; gap: 8px; padding: 0 0 16px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.sm-styles::-webkit-scrollbar { display: none; }
+.sm-style-btn {
+  flex-shrink: 0; padding: 6px 14px;
+  border-radius: 20px; border: 1.5px solid var(--bdL);
+  background: var(--bgC); font-size: 11.5px;
+  color: var(--t2); cursor: pointer;
+  font-family: var(--sn); transition: all 0.2s;
+  white-space: nowrap;
+}
+.sm-style-btn.on {
+  border-color: var(--ac); background: rgba(139,115,85,0.08);
+  color: var(--ac); font-weight: 600;
+}
+.sm-ratio-toggle {
+  display: flex; gap: 0; margin-bottom: 14px;
+  background: var(--bgW); border-radius: 8px; padding: 2px;
+}
+.sm-ratio-btn {
+  flex: 1; padding: 6px; font-size: 11px;
+  font-family: var(--sn); border: none; background: transparent;
+  color: var(--t3); cursor: pointer; border-radius: 6px; transition: all 0.2s;
+}
+.sm-ratio-btn.on {
+  background: var(--bgC); color: var(--t1);
+  box-shadow: 0 1px 3px rgba(42,35,29,0.06);
+}
+.sm-card-preview {
+  display: flex; justify-content: center;
+  margin-bottom: 16px;
+}
