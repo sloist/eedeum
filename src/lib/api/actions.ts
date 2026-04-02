@@ -88,7 +88,10 @@ export async function addEcho(lineId: string, userId: string, text: string, isSa
   }
 
   const echoInsert: any = { underline_id: lineId, user_id: userId, text, is_same_line: isSameLine };
-  if (filter.suspicious) echoInsert.hidden = true;
+  if (filter.suspicious) {
+    echoInsert.hidden = true;
+    echoInsert.filter_reason = filter.reason;
+  }
   const { data, error } = await supabase
     .from("echoes")
     .insert(echoInsert)
@@ -283,8 +286,11 @@ export async function createLine(userId: string, bookId: string, quote: string, 
 
   const insertData: any = { user_id: userId, book_id: bookId, quote, page, feeling: feeling || null, title: title || null };
   if (feelingPrivate !== undefined) insertData.feeling_private = feelingPrivate;
-  // suspicious content → 자동 숨김 (운영 확인 후 복구)
-  if (filter.suspicious) insertData.hidden = true;
+  // suspicious content → 자동 숨김 + 사유 기록
+  if (filter.suspicious) {
+    insertData.hidden = true;
+    insertData.filter_reason = filter.reason;
+  }
   const { data, error } = await supabase
     .from("underlines")
     .insert(insertData)
