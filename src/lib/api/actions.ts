@@ -257,7 +257,7 @@ export async function reportContent(reporterId: string, targetType: string, targ
   return !error;
 }
 
-export async function createLine(userId: string, bookId: string, quote: string, page: number, feeling?: string, title?: string): Promise<any | { error: string }> {
+export async function createLine(userId: string, bookId: string, quote: string, page: number, feeling?: string, title?: string, feelingPrivate?: boolean): Promise<any | { error: string }> {
   // Check daily limit: max 3 lines per day (global)
   const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
   const { count } = await supabase
@@ -270,9 +270,11 @@ export async function createLine(userId: string, bookId: string, quote: string, 
     return { error: "하루에 남길 수 있는 기록은 3개까지입니다" };
   }
 
+  const insertData: any = { user_id: userId, book_id: bookId, quote, page, feeling: feeling || null, title: title || null };
+  if (feelingPrivate !== undefined) insertData.feeling_private = feelingPrivate;
   const { data, error } = await supabase
     .from("underlines")
-    .insert({ user_id: userId, book_id: bookId, quote, page, feeling: feeling || null, title: title || null })
+    .insert(insertData)
     .select()
     .single();
 

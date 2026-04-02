@@ -220,6 +220,7 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
     bookTitle: book?.title ?? "",
     bookAuthor: book?.author ?? "",
     coverColor: book?.cover_color ?? "#8B7355",
+    feelingPrivate: line.feeling_private ?? false,
     likes: likeCount ?? 0,
     createdAt: line.created_at,
     echoes: (echoes ?? []).map(e => ({

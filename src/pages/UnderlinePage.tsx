@@ -244,7 +244,12 @@ export function UnderlinePage() {
           </div>
         </div>
 
-        {data.feeling && <p className="pfeel">{data.feeling}</p>}
+        {data.feeling && (!data.feelingPrivate || isPostAuthor) && (
+          <p className="pfeel">
+            {data.feeling}
+            {data.feelingPrivate && <span className="pfeel-private-tag">나만 보기</span>}
+          </p>
+        )}
 
         <LineActions
           saved={saved}
