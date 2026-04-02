@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Icons } from "../components/Icons";
 import { searchBooksAndLines, type DbBook } from "../lib/api";
 import { searchBooks, type BookSearchResult } from "../lib/bookSearch";
 

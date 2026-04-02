@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
 import { fetchWeaveDetail, fetchWeaveBlocks, deleteWeave, fetchUserWeaves } from "../lib/api";
@@ -46,16 +46,6 @@ export function WeaveReaderPage() {
   // Pages: cover + each block + footer
   const totalPages = blocks.length + 2; // cover + blocks + footer
   const progress = totalPages > 1 ? (currentPage / (totalPages - 1)) * 100 : 0;
-
-  const goToPage = useCallback((page: number) => {
-    if (!scrollRef.current) return;
-    const clamped = Math.max(0, Math.min(page, totalPages - 1));
-    setCurrentPage(clamped);
-    const target = scrollRef.current.children[clamped] as HTMLElement;
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
-    }
-  }, [totalPages]);
 
   // Observe which page is visible
   useEffect(() => {

@@ -4,7 +4,6 @@ import { PostCard } from "../components/PostCard";
 import { LoadingBar } from "../components/LoadingBar";
 import type { Post, Book } from "../data";
 import { fetchFeedPosts, fetchLineAsFeedPost, type FeedPost } from "../lib/api";
-import { useAuth } from "../lib/AuthContext";
 
 interface HomePageProps {
   onShare: (post: Post) => void;
@@ -29,7 +28,6 @@ function feedPostToPost(fp: FeedPost): Post {
 
 export function HomePage({ onShare, toast, feedKey, newPostId, onNewPostHandled, requireAuth }: HomePageProps) {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
