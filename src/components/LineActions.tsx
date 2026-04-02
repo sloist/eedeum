@@ -3,10 +3,12 @@ import { Icons } from "./Icons";
 
 type Props = {
   saved: boolean;
+  isLoggedIn: boolean;
   isPostAuthor: boolean;
   onSave: () => void;
   onShare: () => void;
   onDeleteLine: () => void;
+  onAuthRequired?: () => void;
   onReport?: (reason: string) => void;
   onHidePerson?: () => void;
   onHideBook?: () => void;
@@ -15,7 +17,7 @@ type Props = {
   onEdit?: () => void;
 };
 
-export function LineActions({ saved, isPostAuthor, onSave, onShare, onDeleteLine, onReport, onHidePerson, onHideBook, onNotInterested, onSetPrivate, onEdit }: Props) {
+export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, onDeleteLine, onAuthRequired, onReport, onHidePerson, onHideBook, onNotInterested, onSetPrivate, onEdit }: Props) {
   const [showMoreActions, setShowMoreActions] = useState(false);
   const [showReportReasons, setShowReportReasons] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -43,7 +45,10 @@ export function LineActions({ saved, isPostAuthor, onSave, onShare, onDeleteLine
       </button>
       <span className="asp" />
       <div className="pacts-more-wrap" ref={menuRef}>
-        <button className="abtn" onClick={() => { setShowMoreActions(!showMoreActions); setShowReportReasons(false); }} aria-label="더보기">
+        <button className="abtn" onClick={() => {
+          if (!isLoggedIn) { onAuthRequired?.(); return; }
+          setShowMoreActions(!showMoreActions); setShowReportReasons(false);
+        }} aria-label="더보기">
           <Icons.More />
         </button>
         {showMoreActions && (

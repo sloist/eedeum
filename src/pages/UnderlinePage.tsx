@@ -253,10 +253,12 @@ export function UnderlinePage() {
 
         <LineActions
           saved={saved}
+          isLoggedIn={!!user}
           isPostAuthor={isPostAuthor}
           onSave={handleSave}
           onShare={() => setShowShare(true)}
           onDeleteLine={() => setConfirmDelete({ type: "line" })}
+          onAuthRequired={requireAuth}
           onReport={handleReportLine}
           onHidePerson={isPostAuthor ? undefined : handleHidePerson}
           onHideBook={isPostAuthor ? undefined : handleHideBook}
