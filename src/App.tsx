@@ -47,13 +47,13 @@ interface HeaderConfig {
   title?: string;
   back?: boolean;
   center?: string;
-  right?: "search" | "bell-menu" | "none";
+  right?: "search" | "search-notes" | "bell-menu" | "none";
   compact?: boolean;
 }
 
 const HEADER_CONFIG: Record<string, HeaderConfig> = {
   "/":              { logo: true, right: "search" },
-  "/weaves":        { title: "노트", right: "none" },
+  "/weaves":        { title: "노트", right: "search-notes" },
   "/settings":      { back: true, center: "더보기", right: "none" },
   "/notifications": { back: true, center: "알림", right: "none" },
   "/settings/about": { back: true, center: "소개", right: "none" },
@@ -95,7 +95,14 @@ function AppHeader() {
       {/* Right section */}
       {config.right === "search" && (
         <div className="hdr">
-          <button className="hd-bell-btn" onClick={() => navigate("/search")} aria-label="검색">
+          <button className="hd-bell-btn" onClick={() => navigate("/search")} aria-label="찾기">
+            <Icons.Search />
+          </button>
+        </div>
+      )}
+      {config.right === "search-notes" && (
+        <div className="hdr">
+          <button className="hd-bell-btn" onClick={() => navigate("/search?scope=notes")} aria-label="노트 찾기">
             <Icons.Search />
           </button>
         </div>

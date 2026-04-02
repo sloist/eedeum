@@ -2082,6 +2082,8 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1)}
 .search-input::placeholder{color:var(--t3)}
 .search-close{background:none;border:none;cursor:pointer;font-size:22px;color:var(--t3);padding:4px 8px;line-height:1;transition:color .15s}
 .search-close:hover{color:var(--t1)}
+.search-row-note{display:flex;align-items:center;gap:8px}
+.search-note-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 .search-results{padding:0}
 .search-hint{padding:40px 24px;text-align:center}
 .search-hint-text{font-size:13px;color:var(--t3);line-height:1.6}
