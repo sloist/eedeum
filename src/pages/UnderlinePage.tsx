@@ -259,10 +259,12 @@ export function UnderlinePage() {
           onShare={() => setShowShare(true)}
           onDeleteLine={() => setConfirmDelete({ type: "line" })}
           onAuthRequired={requireAuth}
-          onReport={handleReportLine}
+          onReport={isPostAuthor ? undefined : handleReportLine}
           onHidePerson={isPostAuthor ? undefined : handleHidePerson}
           onHideBook={isPostAuthor ? undefined : handleHideBook}
           onNotInterested={isPostAuthor ? undefined : handleNotInterested}
+          onSetPrivate={isPostAuthor ? () => toast("나만 보기로 변경했습니다") : undefined}
+          onEdit={isPostAuthor ? () => navigate(`/write`, { state: { editId: data.id, editQuote: data.quote, editFeeling: data.feeling, editBookTitle: data.bookTitle, editBookAuthor: data.bookAuthor, editPage: data.page } }) : undefined}
         />
 
         <EchoList
