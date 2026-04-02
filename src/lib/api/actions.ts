@@ -1,6 +1,7 @@
 import { supabase } from "../supabase";
 import { checkRateLimit } from "./helpers";
 import { invalidateCache } from "../cache";
+import { checkContent, checkLineContent } from "../contentFilter";
 
 async function createNotification(userId: string, type: string, actorId: string, underlineId?: string, echoId?: string) {
   if (userId === actorId) return; // Don't notify yourself
@@ -70,6 +71,10 @@ export async function toggleSave(userId: string, lineId: string): Promise<boolea
 }
 
 export async function addEcho(lineId: string, userId: string, text: string, isSameLine: boolean): Promise<any | { error: string } | null> {
+  // Content filter
+  const filter = checkContent(text);
+  if (filter.blocked) return { error: filter.reason! };
+
   // Check: 1 comment per line per user (replies are separate)
   const { count } = await supabase
     .from("echoes")
@@ -82,9 +87,11 @@ export async function addEcho(lineId: string, userId: string, text: string, isSa
     return { error: "하나의 한줄에는 댓글 하나만 남길 수 있습니다" };
   }
 
+  const echoInsert: any = { underline_id: lineId, user_id: userId, text, is_same_line: isSameLine };
+  if (filter.suspicious) echoInsert.hidden = true;
   const { data, error } = await supabase
     .from("echoes")
-    .insert({ underline_id: lineId, user_id: userId, text, is_same_line: isSameLine })
+    .insert(echoInsert)
     .select(`*, users(*)`)
     .single();
 
@@ -258,6 +265,10 @@ export async function reportContent(reporterId: string, targetType: string, targ
 }
 
 export async function createLine(userId: string, bookId: string, quote: string, page: number, feeling?: string, title?: string, feelingPrivate?: boolean): Promise<any | { error: string }> {
+  // Content filter — 명백한 욕설은 즉시 차단
+  const filter = checkLineContent(quote, feeling);
+  if (filter.blocked) return { error: filter.reason! };
+
   // Check daily limit: max 3 lines per day (global)
   const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
   const { count } = await supabase
@@ -272,6 +283,8 @@ export async function createLine(userId: string, bookId: string, quote: string, 
 
   const insertData: any = { user_id: userId, book_id: bookId, quote, page, feeling: feeling || null, title: title || null };
   if (feelingPrivate !== undefined) insertData.feeling_private = feelingPrivate;
+  // suspicious content → 자동 숨김 (운영 확인 후 복구)
+  if (filter.suspicious) insertData.hidden = true;
   const { data, error } = await supabase
     .from("underlines")
     .insert(insertData)

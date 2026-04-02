@@ -97,6 +97,7 @@ export function SettingsPage({ requireAuth }: SettingsPageProps) {
         <div className="settings-group-label">안내</div>
         <div className="settings-list">
           <button className="settings-item" onClick={() => navigate("/settings/about")}><span>소개</span><Icons.Back /></button>
+          <button className="settings-item" onClick={() => navigate("/settings/community")}><span>커뮤니티 가이드</span><Icons.Back /></button>
           <button className="settings-item" onClick={() => navigate("/settings/help")}><span>도움말</span><Icons.Back /></button>
           <button className="settings-item" onClick={() => navigate("/settings/privacy")}><span>개인정보처리방침</span><Icons.Back /></button>
           <button className="settings-item" onClick={() => navigate("/settings/terms")}><span>이용약관</span><Icons.Back /></button>

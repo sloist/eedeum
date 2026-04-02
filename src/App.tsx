@@ -35,6 +35,7 @@ const HelpPage = lazy(() => import("./pages/settings/HelpPage").then(m => ({ def
 const PrivacyPage = lazy(() => import("./pages/settings/PrivacyPage").then(m => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import("./pages/settings/TermsPage").then(m => ({ default: m.TermsPage })));
 const DeleteAccountPage = lazy(() => import("./pages/settings/DeleteAccountPage").then(m => ({ default: m.DeleteAccountPage })));
+const CommunityGuidePage = lazy(() => import("./pages/settings/CommunityGuidePage").then(m => ({ default: m.CommunityGuidePage })));
 const WritePage = lazy(() => import("./pages/WritePage").then(m => ({ default: m.WritePage })));
 
 /* ------------------------------------------------------------------ */
@@ -63,6 +64,7 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
   "/settings/account": { back: true, center: "계정 정보", right: "none" },
   "/settings/notifications": { back: true, center: "알림 설정", right: "none" },
   "/settings/delete-account": { back: true, center: "계정 삭제", right: "none" },
+  "/settings/community": { back: true, center: "커뮤니티 가이드", right: "none" },
 };
 
 function AppHeader() {
@@ -171,6 +173,7 @@ function AppLayout() {
             <Route path="/settings/privacy" element={<PrivacyPage />} />
             <Route path="/settings/terms" element={<TermsPage />} />
             <Route path="/settings/delete-account" element={<DeleteAccountPage />} />
+            <Route path="/settings/community" element={<CommunityGuidePage />} />
           </Routes>
           </Suspense>
         </div>
