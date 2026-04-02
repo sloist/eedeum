@@ -1,52 +1,86 @@
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../lib/AuthContext";
+import { supabase } from "../lib/supabase";
 import { Icons } from "./Icons";
 
 interface LeftSidebarProps {
-  hasNewEcho: boolean;
-  onCapture: () => void;
+  onAuthRequired: () => void;
 }
 
-export function LeftSidebar({ hasNewEcho, onCapture }: LeftSidebarProps) {
+export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
+  const { user, loading: authLoading } = useAuth();
+  const [showMore, setShowMore] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
 
   const isActive = (p: string) => {
     if (p === "/") return path === "/";
     return path.startsWith(p);
   };
 
-  const navItems = [
-    { path: "/", icon: <Icons.Home />, label: "홈" },
-    { path: "/discover", icon: <Icons.Compass />, label: "탐색" },
-    { path: "/moum", icon: <Icons.Drawer />, label: "모음", dot: hasNewEcho },
-    { path: "/shelf", icon: <Icons.User />, label: "서재" },
-  ];
+  useEffect(() => {
+    if (!showMore) return;
+    const handle = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setShowMore(false);
+    };
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [showMore]);
+
+  const go = (p: string) => { setShowMore(false); navigate(p); };
 
   return (
     <aside className="left-sidebar">
       <div className="ls-logo" onClick={() => navigate("/")}>
-        밑줄<span className="logo-line" />
+        이듬
       </div>
 
-      <nav className="ls-nav">
-        {navItems.map((item) => (
-          <button
-            key={item.path}
-            className={`ls-nav-item ${isActive(item.path) ? "on" : ""}`}
-            onClick={() => navigate(item.path)}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-            {item.dot && <span className="ls-dot" />}
-          </button>
-        ))}
+      {/* Main: 한줄 / 기록 / 노트 / 서재 */}
+      <nav className="ls-main">
+        <button className={`ls-nav-item ${isActive("/") ? "on" : ""}`} onClick={() => navigate("/")}>
+          <Icons.Discover /><span>한줄</span>
+        </button>
+        <button className={`ls-nav-item ${isActive("/my") ? "on" : ""} ${!user ? "ls-muted" : ""}`} onClick={() => user ? navigate("/my") : onAuthRequired()}>
+          <Icons.Record /><span>기록</span>
+        </button>
+        <button className={`ls-nav-item ${isActive("/weaves") ? "on" : ""}`} onClick={() => navigate("/weaves")}>
+          <Icons.Note /><span>노트</span>
+        </button>
+        <button className={`ls-nav-item ${isActive("/shelf") ? "on" : ""} ${!user ? "ls-muted" : ""}`} onClick={() => user ? navigate("/shelf") : onAuthRequired()}>
+          <Icons.Shelf /><span>서재</span>
+        </button>
       </nav>
 
-      <button className="ls-capture-btn" onClick={onCapture}>
-        <Icons.Camera />
-        <span>밑줄 긋기</span>
-      </button>
+
+      {/* More — settings/info/account */}
+      <div className="ls-more-wrap" ref={moreRef}>
+        {showMore && (
+          <div className="ls-popover">
+            <button className="ls-pop-item" onClick={() => go("/settings")}>설정</button>
+            <div className="ls-pop-divider" />
+            <button className="ls-pop-item" onClick={() => go("/settings/about")}>소개</button>
+            <button className="ls-pop-item" onClick={() => go("/settings/help")}>도움말</button>
+            <button className="ls-pop-item" onClick={() => go("/settings/privacy")}>개인정보처리방침</button>
+            <button className="ls-pop-item" onClick={() => go("/settings/terms")}>이용약관</button>
+            <div className="ls-pop-divider" />
+            {authLoading ? null : user ? (
+              <button className="ls-pop-item" onClick={() => {
+                if (window.confirm("로그아웃 하시겠습니까?")) {
+                  setShowMore(false); supabase.auth.signOut().then(() => navigate("/"));
+                }
+              }}>로그아웃</button>
+            ) : (
+              <button className="ls-pop-item" onClick={() => { setShowMore(false); onAuthRequired(); }}>로그인</button>
+            )}
+          </div>
+        )}
+        <button className="ls-nav-item ls-more-btn" onClick={() => setShowMore(!showMore)}>
+          <Icons.More /><span>더보기</span>
+        </button>
+      </div>
     </aside>
   );
 }

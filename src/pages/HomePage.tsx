@@ -1,88 +1,121 @@
-import { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { PostCard } from "../components/PostCard";
-import { POSTS, ALL_BOOKS, TOPICS, USERS, type Post, type Book } from "../data";
+import { LoadingBar } from "../components/LoadingBar";
+import type { Post, Book } from "../data";
+import { fetchFeedPosts, fetchLineAsFeedPost, type FeedPost } from "../lib/api";
+import { useAuth } from "../lib/AuthContext";
 
 interface HomePageProps {
   onShare: (post: Post) => void;
   toast: (msg: string) => void;
+  feedKey?: number;
+  newPostId?: string | null;
+  onNewPostHandled?: () => void;
+  requireAuth?: () => void;
 }
 
-export function HomePage({ onShare, toast }: HomePageProps) {
-  const [subTab, setSubTab] = useState("following");
-  const [topicFilter, setTopicFilter] = useState<string | null>(null);
-  const navigate = useNavigate();
+function feedPostToPost(fp: FeedPost): Post {
+  return {
+    id: fp.id, userId: fp.userId, userName: fp.userName, userAvatar: fp.userAvatar,
+    userHandle: fp.userHandle, book: fp.book, bookId: fp.bookId, quote: fp.quote,
+    feeling: fp.feeling, coverColor: fp.coverColor, timestamp: fp.timestamp,
+    likes: fp.likes, topic: fp.topic,
+    echoes: fp.echoes.map(e => ({ userId: e.userId, userName: e.userName, text: e.text, isSameLine: e.isSameLine })),
+    otherLines: fp.otherLines.map(o => ({ userId: o.userId, userName: o.userName, quote: o.quote, page: o.page })),
+    sameLineCount: fp.sameLineCount,
+  };
+}
 
-  const filteredPosts = topicFilter ? POSTS.filter(p => p.topic === topicFilter) : POSTS;
+export function HomePage({ onShare, toast, feedKey, newPostId, onNewPostHandled, requireAuth }: HomePageProps) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadFeed = useCallback(async () => {
+    const feedData = await fetchFeedPosts();
+    setPosts(feedData.map(feedPostToPost));
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    loadFeed().then(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
+  }, [feedKey, loadFeed]);
+
+  useEffect(() => {
+    if (!newPostId) return;
+    (async () => {
+      const fp = await fetchLineAsFeedPost(newPostId);
+      if (fp) setPosts(prev => [feedPostToPost(fp), ...prev.filter(p => p.id !== newPostId)]);
+      onNewPostHandled?.();
+    })();
+  }, [newPostId, onNewPostHandled]);
+
 
   const onUser = (uid: string) => navigate(`/user/${uid}`);
   const onBook = (book: Book) => navigate(`/book/${encodeURIComponent(book.title)}`, { state: { author: book.author } });
+  const onDetail = (postId: string) => navigate(`/line/${postId}`);
+
+  // Build mixed flow with book clusters
+  const buildFlow = () => {
+    const bookGroups: Record<string, Post[]> = {};
+    posts.forEach(p => {
+      const key = p.book.title;
+      if (!bookGroups[key]) bookGroups[key] = [];
+      bookGroups[key].push(p);
+    });
+    const clusterQueue = Object.entries(bookGroups)
+      .filter(([, ps]) => ps.length >= 2)
+      .map(([, ps]) => ps);
+
+    const flow: React.ReactNode[] = [];
+    let clusterIdx = 0;
+
+    posts.forEach((p, i) => {
+      flow.push(
+        <PostCard key={p.id} post={p} idx={i} onUser={onUser} onBook={onBook} onShare={onShare} onDetail={onDetail} toast={toast} requireAuth={requireAuth} />
+      );
+      if ((i + 1) % 4 === 0 && clusterIdx < clusterQueue.length) {
+        const group = clusterQueue[clusterIdx];
+        const book = group[0].book;
+        clusterIdx++;
+        flow.push(
+          <div key={`fbc-${book.title}`} className="fbc" onClick={() => onBook(book)}>
+            <div className="fbc-label">이 책의 다른 한줄</div>
+            <div className="fbc-lines">
+              {group.slice(0, 3).map((gp, gi) => (
+                <div key={gi} className="fbc-line">{gp.quote}</div>
+              ))}
+            </div>
+            <div className="fbc-src">
+              {book.title} · {book.author}
+              {group.length > 3 && ` · 외 ${group.length - 3}개`}
+            </div>
+          </div>
+        );
+      }
+    });
+    return flow;
+  };
+
+  if (loading) return <LoadingBar />;
 
   return (
-    <>
-      <div className="stabs">
-        {([["팔로잉", "following"], ["발견", "discover_tab"], ["지금", "now"]] as const).map(([l, k]) => (
-          <button key={k} className={`stab ${subTab === k ? "on" : ""}`} onClick={() => setSubTab(k)}>{l}</button>
-        ))}
-      </div>
-
-      {subTab === "following" && (
-        <>
-          <div className="sh">
-            <span className="sl">지금 많이 밑줄 긋는 책</span>
-            <button className="sm" onClick={() => navigate("/discover")}>더보기</button>
-          </div>
-          <div className="hscr">
-            {ALL_BOOKS.slice(0, 6).map((b, i) => (
-              <div key={i} className="tchip" onClick={() => onBook(b)}>
-                <div className="tbar" style={{ background: b.color }} />
-                <div className="ttl">{b.title}</div>
-                <div className="tau">{b.author}</div>
-                <div className="tst">{(b.lines ?? 0).toLocaleString()}개의 밑줄</div>
-              </div>
-            ))}
-          </div>
-          {POSTS.map((p, i) => <PostCard key={p.id} post={p} idx={i} onUser={onUser} onBook={onBook} onShare={onShare} toast={toast} />)}
-        </>
+    <div className="content-fade-in">
+      {/* Feed stream */}
+      {posts.length === 0 ? (
+        <div className="empty-cta">
+          <div className="empty-cta-text">아직 기록된 문장이 없습니다</div>
+        </div>
+      ) : (
+        <div className="feed-stream">
+          {buildFlow()}
+        </div>
       )}
-
-      {subTab === "discover_tab" && (
-        <>
-          <div className="sh"><span className="sl">주제로 찾기</span></div>
-          <div className="tpscr">
-            {TOPICS.map((t, i) => (
-              <div key={i} className={`tpill ${topicFilter === t.label ? "on" : ""}`} onClick={() => setTopicFilter(topicFilter === t.label ? null : t.label)}>
-                <span className="tpem">{t.emoji}</span><span className="tplb">{t.label}</span>
-              </div>
-            ))}
-          </div>
-          {topicFilter && <div className="sh"><span className="sl">'{topicFilter}' 관련 밑줄</span><span className="sm">{filteredPosts.length}개</span></div>}
-          {filteredPosts.map((p, i) => <PostCard key={p.id} post={p} idx={i} onUser={onUser} onBook={onBook} onShare={onShare} toast={toast} />)}
-        </>
-      )}
-
-      {subTab === "now" && (
-        <>
-          <div className="sh"><span className="sl">지금 이 순간</span></div>
-          {POSTS.slice(0, 5).map((p, i) => (
-            <div key={i} className="livepost" style={{ animationDelay: `${i * 0.1}s` }}>
-              <div className="livebadge">방금</div>
-              <div className="ptop">
-                <div className="pava" style={{ background: p.coverColor }} onClick={() => onUser(p.userId)}>{USERS[p.userId].avatar}</div>
-                <div className="pmeta">
-                  <span className="pname" onClick={() => onUser(p.userId)}>{USERS[p.userId].name}</span>
-                  <div className="pbref">밑줄을 그었습니다</div>
-                </div>
-              </div>
-              <div className="qwrap" style={{ background: p.coverColor + "30" }}>
-                <span className="qg">"</span>
-                <p className="qtxt">{p.quote}</p>
-                <div className="qsrc"><span>{p.book.title}</span><span className="qdot" /><span>{p.book.author}</span></div>
-              </div>
-            </div>
-          ))}
-        </>
-      )}
-    </>
+    </div>
   );
 }

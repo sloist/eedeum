@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { ShareCard, COLOR_THEMES, STYLE_LABELS, type CardStyle, type CardRatio } from "./ShareCard";
-import { USERS, type Post } from "../data";
+import { useState, useRef } from "react";
+import html2canvas from "html2canvas";
+import { ShareCard, STYLE_LABELS, type CardStyle, type CardRatio, type CardFont } from "./ShareCard";
+import type { Post } from "../data";
 
 interface ShareModalProps {
   post: Post;
@@ -8,88 +9,111 @@ interface ShareModalProps {
   toast: (msg: string) => void;
 }
 
-const STYLES: CardStyle[] = ["A", "B", "C", "D", "E", "F"];
+const STYLES: CardStyle[] = ["paper", "ink", "poster", "forest", "midnight", "warmth"];
+const FONTS: { key: CardFont; label: string }[] = [
+  { key: "serif", label: "세리프" },
+  { key: "sans", label: "고딕" },
+  { key: "handwrite", label: "손글씨" },
+];
 
 export function ShareModal({ post, onClose, toast }: ShareModalProps) {
-  const [copied, setCopied] = useState(false);
-  const [style, setStyle] = useState<CardStyle>("A");
+  const [style, setStyle] = useState<CardStyle>("paper");
   const [ratio, setRatio] = useState<CardRatio>("feed");
-  const [colorIdx, setColorIdx] = useState(0);
+  const [font, setFont] = useState<CardFont>("serif");
+  const [saving, setSaving] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  const user = USERS[post.userId];
   const cardData = {
     quote: post.quote,
     book: post.book.title,
     author: post.book.author,
-    user: user?.name ?? "나",
+    user: post.userName ?? "나",
+  };
+
+  const handleSaveImage = async () => {
+    if (!cardRef.current || saving) return;
+    setSaving(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        backgroundColor: null,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+      });
+      const blob = await new Promise<Blob | null>(resolve =>
+        canvas.toBlob(b => resolve(b), "image/png")
+      );
+      if (blob && navigator.share && navigator.canShare?.({ files: [new File([blob], "share.png", { type: "image/png" })] })) {
+        const file = new File([blob], `이듬_${post.book.title.slice(0, 10)}.png`, { type: "image/png" });
+        await navigator.share({ files: [file] });
+        toast("공유 완료");
+      } else {
+        const link = document.createElement("a");
+        link.download = `이듬_${post.book.title.slice(0, 10)}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        toast("이미지가 저장되었습니다");
+      }
+    } catch (e) {
+      if ((e as Error)?.name !== "AbortError") toast("잠시 후 다시 시도해보세요");
+    }
+    setSaving(false);
+  };
+
+  const handleCopyText = async () => {
+    const text = `"${post.quote}"\n— ${post.book.title}, ${post.book.author}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("문장이 복사되었습니다");
+    } catch {
+      toast("잠시 후 다시 시도해보세요");
+    }
   };
 
   return (
     <div className="ov" onClick={onClose}>
       <div className="sht" onClick={e => e.stopPropagation()} style={{ maxHeight: "90vh" }}>
         <div className="shndl" />
-        <div className="shtl">공유하기</div>
 
         {/* Style picker */}
         <div className="sm-styles">
           {STYLES.map(s => (
-            <button
-              key={s}
-              className={`sm-style-btn ${style === s ? "on" : ""}`}
-              onClick={() => setStyle(s)}
-            >
+            <button key={s} className={`sm-style-btn ${style === s ? "on" : ""}`} onClick={() => setStyle(s)}>
               {STYLE_LABELS[s]}
             </button>
           ))}
         </div>
 
-        {/* Ratio toggle */}
-        <div className="sm-ratio-toggle">
-          <button className={`sm-ratio-btn ${ratio === "feed" ? "on" : ""}`} onClick={() => setRatio("feed")}>피드 4:5</button>
-          <button className={`sm-ratio-btn ${ratio === "story" ? "on" : ""}`} onClick={() => setRatio("story")}>스토리 9:16</button>
+        {/* Ratio */}
+        <div className="sm-styles">
+          <button className={`sm-style-btn ${ratio === "square" ? "on" : ""}`} onClick={() => setRatio("square")}>1:1</button>
+          <button className={`sm-style-btn ${ratio === "feed" ? "on" : ""}`} onClick={() => setRatio("feed")}>4:5</button>
+          <button className={`sm-style-btn ${ratio === "story" ? "on" : ""}`} onClick={() => setRatio("story")}>9:16</button>
         </div>
 
-        {/* Color theme (only for style D) */}
-        {style === "D" && (
-          <div className="sm-styles" style={{ marginBottom: 14 }}>
-            {COLOR_THEMES.map((c, i) => (
-              <button
-                key={i}
-                className={`sm-style-btn ${colorIdx === i ? "on" : ""}`}
-                onClick={() => setColorIdx(i)}
-              >
-                {c.name}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Font picker */}
+        <div className="sm-styles" style={{ marginBottom: 12 }}>
+          {FONTS.map(f => (
+            <button key={f.key} className={`sm-style-btn ${font === f.key ? "on" : ""}`} onClick={() => setFont(f.key)}>
+              {f.label}
+            </button>
+          ))}
+        </div>
 
         {/* Card preview */}
-        <div className="sm-card-preview">
-          <ShareCard data={cardData} style={style} ratio={ratio} colorIdx={colorIdx} />
+        <div className="sm-card-preview" ref={cardRef}>
+          <ShareCard data={cardData} style={style} ratio={ratio} font={font} />
         </div>
 
-        {/* Share buttons */}
-        <div className="shrmod">
-          <div className="shrico">
-            <button className="shrbtn" onClick={() => toast("인스타 스토리로 공유")}>
-              <div className="ic" style={{ background: "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)" }}>📸</div>
-              <span>스토리</span>
-            </button>
-            <button className="shrbtn" onClick={() => toast("인스타 피드로 공유")}>
-              <div className="ic" style={{ background: "linear-gradient(45deg,#405DE6,#5851DB,#833AB4)" }}>📷</div>
-              <span>피드</span>
-            </button>
-            <button className="shrbtn" onClick={() => toast("카카오톡으로 공유")}>
-              <div className="ic" style={{ background: "#FEE500" }}>💬</div>
-              <span>카카오톡</span>
-            </button>
-            <button className="shrbtn" onClick={() => { setCopied(true); toast("링크 복사됨"); }}>
-              <div className="ic" style={{ background: "var(--bgW)" }}>🔗</div>
-              <span>링크 복사</span>
-            </button>
-          </div>
-          {copied && <div className="cpied">✓ 복사되었습니다</div>}
+        {/* Actions */}
+        <div className="share-save-buttons">
+          <button className="share-save-btn share-save-btn-primary" onClick={handleSaveImage} disabled={saving}>
+            {saving ? "저장 중..." : "이미지 저장"}
+          </button>
+          <button className="share-save-btn" onClick={handleCopyText}>
+            문장 복사
+          </button>
         </div>
       </div>
     </div>
