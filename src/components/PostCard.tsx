@@ -12,23 +12,70 @@ interface PostCardProps {
   onHideBook?: (bookId: string) => void;
   onNotInterested?: (postId: string) => void;
   onDelete?: (postId: string) => void;
+  onUndoHide?: (postId: string, type: string, targetId: string) => void;
   followingIds?: Set<string>;
 }
 
-export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onHideBook, onNotInterested, onDelete, requireAuth, followingIds }: PostCardProps) {
+export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onHideBook, onNotInterested, onDelete, onUndoHide, requireAuth, followingIds }: PostCardProps) {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+  const [hideStep, setHideStep] = useState<"reason" | null>(null);
+  const [pendingHide, setPendingHide] = useState<{ label: string; type: string; targetId: string; action?: (id: string) => void } | null>(null);
+  const [hidden, setHidden] = useState<{ reason: string; type: string; targetId: string } | null>(null);
+  const [hideReason, setHideReason] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!showMenu) return;
     const handle = (e: Event) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false);
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+        setHideStep(null);
+      }
     };
     document.addEventListener("mousedown", handle);
     document.addEventListener("touchstart", handle);
     return () => { document.removeEventListener("mousedown", handle); document.removeEventListener("touchstart", handle); };
   }, [showMenu]);
+
+  const startHide = (e: React.MouseEvent, label: string, type: string, targetId: string, action?: (id: string) => void) => {
+    e.stopPropagation();
+    setPendingHide({ label, type, targetId, action });
+    setHideStep("reason");
+  };
+
+  const confirmHide = (e: React.MouseEvent, reason: string) => {
+    e.stopPropagation();
+    if (!pendingHide) return;
+    setShowMenu(false);
+    setHideStep(null);
+    setHideReason(reason);
+    setHidden({ reason: pendingHide.label, type: pendingHide.type, targetId: pendingHide.targetId });
+    pendingHide.action?.(pendingHide.targetId);
+    setPendingHide(null);
+  };
+
+  if (hidden) {
+    return (
+      <div className="feed-item feed-item-hidden">
+        <div className="feed-hidden-left">
+          <span className="feed-hidden-msg">{hidden.reason}</span>
+          {hideReason && <span className="feed-hidden-reason">{hideReason}</span>}
+        </div>
+        <button
+          className="feed-hidden-undo"
+          onClick={(e) => {
+            e.stopPropagation();
+            onUndoHide?.(post.id, hidden.type, hidden.targetId);
+            setHidden(null);
+            setHideReason("");
+          }}
+        >
+          되돌리기
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="feed-item" data-post-id={post.id} onClick={() => onDetail(post.shortId, post.userHandle ?? "")}>
@@ -55,6 +102,7 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
                 e.stopPropagation();
                 if (!isLoggedIn) { requireAuth?.(); return; }
                 setShowMenu(!showMenu);
+                setHideStep(null);
               }}
               aria-label="더보기"
             >
@@ -71,15 +119,25 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
                       삭제
                     </button>
                   </>
+                ) : hideStep === "reason" ? (
+                  <>
+                    <button className="feed-more-back" onClick={(e) => { e.stopPropagation(); setHideStep(null); }}>
+                      ← 이유 선택
+                    </button>
+                    <button onClick={(e) => confirmHide(e, "내 취향이 아니에요")}>내 취향이 아니에요</button>
+                    <button onClick={(e) => confirmHide(e, "이미 읽은 책이에요")}>이미 읽은 책이에요</button>
+                    <button onClick={(e) => confirmHide(e, "비슷한 글이 많아요")}>비슷한 글이 많아요</button>
+                    <button onClick={(e) => confirmHide(e, "")}>이유 없음</button>
+                  </>
                 ) : (
                   <>
-                    <button onClick={(e) => { e.stopPropagation(); onHidePerson?.(post.userId); setShowMenu(false); }}>
+                    <button onClick={(e) => startHide(e, "이 작가의 한줄을 숨겼습니다", "user", post.userId, onHidePerson)}>
                       이 작가 안 보기
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); onNotInterested?.(post.id); setShowMenu(false); }}>
+                    <button onClick={(e) => startHide(e, "이 게시글을 숨겼습니다", "underline", post.id, onNotInterested)}>
                       관심 없음
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); onHideBook?.(post.bookId || ""); setShowMenu(false); }}>
+                    <button onClick={(e) => startHide(e, "이 책의 한줄을 숨겼습니다", "book", post.bookId || "", onHideBook)}>
                       이 책 안 보기
                     </button>
                   </>

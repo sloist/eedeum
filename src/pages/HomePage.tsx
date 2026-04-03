@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { PostCard } from "../components/PostCard";
 import { LoadingBar } from "../components/LoadingBar";
 import type { Post, Book } from "../data";
-import { fetchFeedPosts, fetchLineAsFeedPost, fetchUserBlocks, blockUser, blockBook, blockUnderline, deleteUnderline, fetchFollowingIds, type FeedPost } from "../lib/api";
+import { fetchFeedPosts, fetchLineAsFeedPost, fetchUserBlocks, blockUser, blockBook, blockUnderline, unblock, deleteUnderline, fetchFollowingIds, type FeedPost } from "../lib/api";
 import { useAuth } from "../lib/AuthContext";
 import { trackEvent } from "../lib/tracking";
 
@@ -130,27 +130,19 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
 
   const handleHidePerson = async (userId: string) => {
     if (!user) return;
-    const ok = await blockUser(user.id, userId);
-    if (ok) {
-      setPosts(prev => prev.filter(p => p.userId !== userId));
-      toast("이 작가의 한줄이 더 이상 표시되지 않습니다");
-    }
+    await blockUser(user.id, userId);
   };
   const handleHideBook = async (bookId: string) => {
     if (!user) return;
-    const ok = await blockBook(user.id, bookId);
-    if (ok) {
-      setPosts(prev => prev.filter(p => p.bookId !== bookId));
-      toast("이 책의 한줄이 더 이상 표시되지 않습니다");
-    }
+    await blockBook(user.id, bookId);
   };
   const handleNotInterested = async (postId: string) => {
     if (!user) return;
-    const ok = await blockUnderline(user.id, postId);
-    if (ok) {
-      setPosts(prev => prev.filter(p => p.id !== postId));
-      toast("관심 없음으로 표시했습니다");
-    }
+    await blockUnderline(user.id, postId);
+  };
+  const handleUndoHide = async (_postId: string, type: string, targetId: string) => {
+    if (!user) return;
+    await unblock(user.id, type, targetId);
   };
 
   const buildFlow = () => {
@@ -158,7 +150,7 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
     const shownClusterBooks = new Set<string>();
     posts.forEach((p, i) => {
       flow.push(
-        <PostCard key={p.id} post={p} onDetail={onDetail} requireAuth={requireAuth} isLoggedIn={!!user} isMine={user?.id === p.userId} onHidePerson={handleHidePerson} onHideBook={handleHideBook} onNotInterested={handleNotInterested} onDelete={handleDelete} followingIds={followingIds} />
+        <PostCard key={p.id} post={p} onDetail={onDetail} requireAuth={requireAuth} isLoggedIn={!!user} isMine={user?.id === p.userId} onHidePerson={handleHidePerson} onHideBook={handleHideBook} onNotInterested={handleNotInterested} onDelete={handleDelete} onUndoHide={handleUndoHide} followingIds={followingIds} />
       );
       const next = posts[i + 1];
       if (next && next.book.title === p.book.title && !shownClusterBooks.has(p.book.title)) {

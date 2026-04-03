@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "./Icons";
 import { useEffect, useState, useRef } from "react";
-import { fetchBooks, fetchPublicWeaves } from "../lib/api";
+import { fetchBooks, fetchPublicWeaves, fetchDailyQuote } from "../lib/api";
 
 export function RightSidebar() {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ export function RightSidebar() {
   const [noteResults, setNoteResults] = useState<{ id: string; shortId: string; userHandle: string; title: string; userName: string }[]>([]);
   const [searchFocused, setSearchFocused] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const [dailyQuote, setDailyQuote] = useState<{ quote: string; bookTitle: string; bookAuthor: string } | null>(null);
 
   // 탭 변경 시 검색 초기화
   useEffect(() => {
@@ -20,6 +21,11 @@ export function RightSidebar() {
     setSearchResults([]);
     setNoteResults([]);
   }, [isWeaves]);
+
+  // 오늘의 문장
+  useEffect(() => {
+    fetchDailyQuote().then(q => setDailyQuote(q));
+  }, []);
 
   // 책/문장 검색 (한줄 탭 등)
   useEffect(() => {
@@ -121,6 +127,13 @@ export function RightSidebar() {
           </div>
         )}
       </div>
+
+      {dailyQuote && (
+        <div className="rs-daily">
+          <div className="rs-daily-quote">{dailyQuote.quote.length > 60 ? dailyQuote.quote.slice(0, 60) + "…" : dailyQuote.quote}</div>
+          <div className="rs-daily-src">{dailyQuote.bookTitle} · {dailyQuote.bookAuthor}</div>
+        </div>
+      )}
 
       <div className="rs-footer">
         <div className="rs-copyright">

@@ -249,6 +249,18 @@ export function WritePage() {
 
       {/* Writing space */}
       <div className="write-body">
+        {/* 제목 — 외부 썸네일 한 줄 */}
+        <div className="write-title-wrap">
+          <input
+            className="write-title"
+            placeholder="제목"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            maxLength={50}
+            autoFocus={!imageUrl}
+          />
+        </div>
+
         {/* 주인공: 문장 */}
         <div className="write-stage">
           <textarea
@@ -257,7 +269,6 @@ export function WritePage() {
             value={quote}
             onChange={e => { if (e.target.value.split("\n").length <= 15) setQuote(e.target.value); }}
             rows={6}
-            autoFocus={!imageUrl}
           />
           <label className="write-camera-icon">
             <Icons.Camera />
@@ -281,13 +292,6 @@ export function WritePage() {
 
         {/* 나의 감상 — 다른 온도 */}
         <div className="write-feeling-wrap">
-          <input
-            className="write-title"
-            placeholder="제목"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            maxLength={50}
-          />
           <textarea
             className="write-feeling"
             placeholder="떠오른 생각이 있다면"

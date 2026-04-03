@@ -15,6 +15,7 @@ import {
   fetchPrivateMemos,
   fetchUserBlocks,
   fetchUserDbProfile,
+  fetchUserRank,
   unblock,
 } from "../lib/api";
 
@@ -35,6 +36,8 @@ export function ShelfPage() {
   const [showBlocks, setShowBlocks] = useState(false);
   const [dbFeaturedLineId, setDbFeaturedLineId] = useState<string | null>(null);
   const [dbFeaturedWeaveId, setDbFeaturedWeaveId] = useState<string | null>(null);
+  const [rank, setRank] = useState<{ tier: string; percentile: number } | null>(null);
+  const [showRankInfo, setShowRankInfo] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -79,6 +82,9 @@ export function ShelfPage() {
       }
 
       setLoading(false);
+      // Rank 별도 로드
+      const rankData = await fetchUserRank(user!.id);
+      if (mounted) setRank(rankData);
     }
     load();
     return () => { mounted = false; };
@@ -132,6 +138,12 @@ export function ShelfPage() {
           }
         />
       </div>
+
+      {rank && (
+        <div className="shelf-rank-row" onClick={() => setShowRankInfo(true)}>
+          <span className="shelf-rank-tier">{rank.tier}</span>
+        </div>
+      )}
 
       {/* ─── 1. 읽고 있는 책 ─── */}
       {shelf.length > 0 && (
@@ -271,6 +283,39 @@ export function ShelfPage() {
           </div>
         );
       })()}
+
+      {showRankInfo && (
+        <div className="ov" onClick={() => setShowRankInfo(false)}>
+          <div className="sht" onClick={e => e.stopPropagation()} style={{ maxWidth: 400 }}>
+            <div className="shndl" />
+            <div style={{ fontFamily: "var(--sn)", fontSize: 15, fontWeight: 600, marginBottom: 16, color: "var(--t1)" }}>
+              등급 안내
+            </div>
+            <div style={{ fontFamily: "var(--sn)", fontSize: 13, color: "var(--t2)", lineHeight: 1.8 }}>
+              <div style={{ marginBottom: 16 }}>
+                이듬에서의 활동을 바탕으로 등급이 부여됩니다.
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ padding: "10px 14px", borderRadius: 8, background: "var(--bgW)" }}>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>깊이 남기는</div>
+                  <div style={{ fontSize: 12, color: "var(--t3)" }}>상위 5% · 꾸준히 한줄과 노트를 남기는 사람</div>
+                </div>
+                <div style={{ padding: "10px 14px", borderRadius: 8, background: "var(--bgW)" }}>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>꾸준히 쌓는</div>
+                  <div style={{ fontSize: 12, color: "var(--t3)" }}>상위 20% · 기록의 습관이 잡힌 사람</div>
+                </div>
+                <div style={{ padding: "10px 14px", borderRadius: 8, background: "var(--bgW)" }}>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>기록하는</div>
+                  <div style={{ fontSize: 12, color: "var(--t3)" }}>이듬에서 기록을 시작한 사람</div>
+                </div>
+              </div>
+              <div style={{ marginTop: 16, fontSize: 11, color: "var(--t3)", opacity: 0.7 }}>
+                기준: 한줄 기록 수 + 노트 수
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

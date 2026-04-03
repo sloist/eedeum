@@ -285,6 +285,10 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   .rs-user-name{font-size:14px;font-weight:600;color:var(--t1);letter-spacing:-.2px}
   .rs-user-handle{font-size:12px;color:var(--t3)}
 
+  .rs-daily{margin-top:24px;padding:0}
+  .rs-daily-quote{font-family:var(--sf);font-size:13px;line-height:1.8;color:var(--t2);letter-spacing:-.1px;opacity:.7}
+  .rs-daily-src{font-size:11px;color:var(--t3);opacity:.5;margin-top:6px}
+
   .rs-footer{
     margin-top:auto;padding-top:24px;
     font-size:11px;color:var(--t3);
@@ -357,10 +361,10 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   margin-top:20px;
 }
 .feed-src{
-  font-size:11px;color:var(--t3);opacity:.45;letter-spacing:.05px;
+  font-size:11px;color:var(--t3);opacity:.6;letter-spacing:.05px;
 }
 .feed-author{
-  font-size:11px;color:var(--t3);opacity:.35;
+  font-size:11px;color:var(--t3);opacity:.5;
 }
 .feed-meta-right{display:flex;align-items:center;gap:6px}
 .feed-more-wrap{position:relative}
@@ -381,6 +385,13 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .feed-mine-badge{display:inline-block;font-size:10px;color:var(--ac);background:rgba(123,101,72,0.06);padding:2px 8px;border-radius:3px;margin-bottom:8px;font-family:var(--sn);letter-spacing:-.1px}
 .feed-repost-badge{display:inline-block;font-size:10px;color:var(--t3);padding:2px 0;margin-bottom:6px;font-family:var(--sn);letter-spacing:-.1px;cursor:pointer}
 .feed-repost-badge:hover{color:var(--t2)}
+.feed-item-hidden{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;opacity:.6}
+.feed-hidden-left{display:flex;flex-direction:column;gap:2px}
+.feed-hidden-msg{font-family:var(--sn);font-size:13px;color:var(--t3)}
+.feed-hidden-reason{font-family:var(--sn);font-size:11px;color:var(--t3);opacity:.6}
+.feed-hidden-undo{background:none;border:1px solid var(--bdL);border-radius:6px;padding:6px 14px;font-family:var(--sn);font-size:12px;color:var(--t2);cursor:pointer;transition:all .15s;flex-shrink:0}
+.feed-hidden-undo:hover{border-color:var(--ac);color:var(--ac)}
+.feed-more-back{font-size:12px!important;color:var(--t3)!important;opacity:.7}
 
 /* Legacy .post support */
 .post{padding:16px 24px 14px;margin-bottom:0;position:relative}
@@ -908,6 +919,9 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .shelf-show-more:hover{color:var(--ac)}
 /* ─── Shelf surface — 한 사람의 독서 표면 ─── */
 .shelf-profile-area{padding-top:8px}
+.shelf-rank-row{padding:0 20px 12px;cursor:pointer}
+.shelf-rank-tier{font-family:var(--sn);font-size:11px;color:var(--t3);opacity:.6;letter-spacing:-.1px;border-bottom:1px dashed var(--bdL);padding-bottom:1px}
+.shelf-rank-tier:hover{opacity:.8}
 .shelf-surface-summary{display:flex;align-items:center;gap:6px;padding:0 20px 20px;font-size:12px;color:var(--t3);flex-wrap:wrap}
 .shelf-section{padding-bottom:12px}
 .shelf-section-label{font-size:10px;font-weight:400;color:var(--t3);letter-spacing:.4px;padding:28px 20px 10px;text-transform:uppercase;opacity:.5}
@@ -1365,17 +1379,19 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 /* ── 주인공: 문장 영역 ── */
 .write-stage{position:relative;padding:12px 32px 0;min-height:44vh;display:flex;flex-direction:column}
 .write-quote{width:100%;border:none;background:none;font-family:var(--sf);font-size:18px;line-height:2;color:var(--tq);padding:0;outline:none;resize:none;letter-spacing:-.15px;flex:1;min-height:200px}
-.write-quote::placeholder{color:var(--t3);font-family:var(--sf);font-size:17px;opacity:.35;letter-spacing:-.2px}
+.write-quote::placeholder{color:var(--t3);font-family:var(--sf);font-size:17px;opacity:.5;letter-spacing:-.2px}
 .write-camera-icon{position:absolute;bottom:8px;right:32px;cursor:pointer;color:var(--t3);opacity:.3;transition:opacity .15s}
 .write-camera-icon:hover{opacity:.6}
 .write-camera-icon svg{width:18px;height:18px}
 
+.write-title-wrap{padding:0 32px;margin-bottom:0}
+.write-title{width:100%;border:none;background:none;font-family:var(--sn);font-size:14px;font-weight:500;color:var(--t1);padding:0 0 12px;outline:none;letter-spacing:-.2px;border-bottom:0.5px solid var(--bdL)}
+.write-title::placeholder{color:var(--t3);font-weight:400;opacity:.55}
+
 /* ── 나의 감상: 다른 온도 ── */
 .write-feeling-wrap{position:relative;padding:0 32px;margin-top:4px;border-top:0.5px solid var(--bdL);padding-top:24px}
-.write-title{width:100%;border:none;background:none;font-family:var(--sn);font-size:14px;font-weight:500;color:var(--t1);padding:0 0 8px;outline:none;letter-spacing:-.2px}
-.write-title::placeholder{color:var(--t3);font-weight:400;opacity:.4}
 .write-feeling{width:100%;border:none;background:none;font-family:var(--sn);font-size:14px;line-height:1.75;color:var(--t2);padding:0;outline:none;resize:none;min-height:40px}
-.write-feeling::placeholder{color:var(--t3);opacity:.35}
+.write-feeling::placeholder{color:var(--t3);opacity:.5}
 .write-feeling-private{position:absolute;top:24px;right:32px;padding:4px 10px;border-radius:4px;border:1px solid var(--bdL);background:transparent;font-size:11px;color:var(--t3);font-family:var(--sn);cursor:pointer;transition:all .15s}
 .write-feeling-private.on{border-color:var(--ac);color:var(--ac);background:rgba(123,101,72,0.05)}
 .pfeel-private-tag{display:inline-block;margin-left:8px;padding:2px 6px;border-radius:3px;font-size:10px;color:var(--ac);background:rgba(123,101,72,0.06);vertical-align:middle}
@@ -1387,7 +1403,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .write-source-label{font-size:10px;color:var(--t3);margin-bottom:10px;letter-spacing:.4px;text-transform:uppercase}
 .write-input{width:100%;padding:10px 0;border:none;border-bottom:0.5px solid var(--bdL);border-radius:0;font-size:13px;font-family:var(--sn);background:transparent;color:var(--t1);outline:none;transition:border-color .2s}
 .write-input:focus{border-color:var(--acS)}
-.write-input::placeholder{color:var(--t3);opacity:.5}
+.write-input::placeholder{color:var(--t3);opacity:.55}
 .write-book-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--bg);border:1px solid var(--bd);border-radius:8px;box-shadow:var(--shM);z-index:20;max-height:240px;overflow-y:auto;margin-top:4px}
 .write-book-row{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:background .15s}
 .write-book-row:hover{background:var(--bgW)}
