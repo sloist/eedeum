@@ -403,6 +403,28 @@ export function WeaveEditorPage() {
 
   const usedLineIds = new Set(blocks.filter(b => b.underline).map(b => b.underline!.id));
 
+  // 블록별 페이지 번호 (리더 로직과 동일)
+  const blockPageMap = (() => {
+    const isShort = (b: WeaveBlock) => b.type === "underline" && (b.underline?.quote.length ?? 0) < 60;
+    const map = new Map<number, number>();
+    let pg = 2; // 1 = 표지
+    let i = 0;
+    while (i < blocks.length) {
+      const curr = blocks[i];
+      const next = blocks[i + 1];
+      if (curr.type === "underline" && next?.type === "note") {
+        map.set(i, pg); map.set(i + 1, pg); pg++; i += 2;
+      } else if (isShort(curr) && next && isShort(next)) {
+        const third = blocks[i + 2];
+        if (third && isShort(third)) { map.set(i, pg); map.set(i + 1, pg); map.set(i + 2, pg); pg++; i += 3; }
+        else { map.set(i, pg); map.set(i + 1, pg); pg++; i += 2; }
+      } else {
+        map.set(i, pg); pg++; i += 1;
+      }
+    }
+    return map;
+  })();
+
   // ─── Login Required ───
   if (!user) {
     return (
@@ -554,10 +576,16 @@ export function WeaveEditorPage() {
         />
 
         {blocks.map((block, index) => {
-          // divider 기준 페이지 번호 계산
-          const pageNum = blocks.slice(0, index).filter(b => b.type === "divider").length + 2;
+          const currPage = blockPageMap.get(index) ?? 0;
+          const prevPage = index > 0 ? (blockPageMap.get(index - 1) ?? 0) : currPage;
+          const showPageBreak = index > 0 && currPage !== prevPage;
           return (
           <div key={block.id}>
+            {showPageBreak && (
+              <div className="we-page-break">
+                <span>{currPage}페이지</span>
+              </div>
+            )}
             <div
               className={`weave-block ${dragIndex === index ? "dragging" : ""}${overIndex === index && dragIndex !== null && dragIndex !== index ? " drag-over" : ""}`}
               onTouchStart={e => handleTouchStart(index, e)}
@@ -616,7 +644,6 @@ export function WeaveEditorPage() {
 
               {block.type === "divider" && (
                 <div className="weave-block-divider">
-                  <span className="weave-page-label">{pageNum}페이지</span>
                   <input
                     value={block.content ?? ""}
                     onChange={e => handleDividerChange(block.id, e.target.value)}
