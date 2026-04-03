@@ -53,7 +53,7 @@ interface HeaderConfig {
 
 const HEADER_CONFIG: Record<string, HeaderConfig> = {
   "/":              { logo: true, right: "search" },
-  "/weaves":        { title: "노트", right: "search-notes" },
+  "/notes":         { title: "노트", right: "search-notes" },
   "/settings":      { back: true, center: "더보기", right: "none" },
   "/notifications": { back: true, center: "알림", right: "none" },
   "/settings/about": { back: true, center: "소개", right: "none" },
@@ -135,7 +135,7 @@ function AppLayout() {
   // 라우팅 기준: backgroundLocation이 있으면 그걸로 (피드 유지), 없으면 실제 location
   const routeLocation = backgroundLocation || location;
 
-  const isWideContent = ["/shelf", "/settings", "/discover", "/weave/", "/my"].some(
+  const isWideContent = ["/shelf", "/settings", "/discover", "/notes/", "/write"].some(
     (p) => routeLocation.pathname.startsWith(p),
   );
 
@@ -166,7 +166,7 @@ function AppLayout() {
   // 서브페이지 진입 시 top으로 (backgroundLocation이 있으면 스크롤 안 건드림)
   useEffect(() => {
     if (backgroundLocation) return; // 오버레이 열릴 때 스크롤 유지
-    const keepScroll = ["/", "/my", "/weaves", "/shelf"];
+    const keepScroll = ["/", "/write", "/notes", "/shelf"];
     if (!keepScroll.includes(location.pathname)) {
       window.scrollTo(0, 0);
     }
@@ -187,16 +187,15 @@ function AppLayout() {
           <Routes location={routeLocation}>
             <Route path="/" element={<HomePage onShare={openShare} toast={toast} feedKey={feedKey} newPostId={newPostId} onNewPostHandled={onNewPostHandled} requireAuth={requireAuth} />} />
             <Route path="/line/:id" element={<UnderlinePage />} />
-            <Route path="/my" element={<WritePage />} />
             <Route path="/write" element={<WritePage />} />
-            <Route path="/weaves" element={<WeaveListPage />} />
+            <Route path="/notes" element={<WeaveListPage />} />
             <Route path="/notifications" element={<NotificationsListPage />} />
             <Route path="/shelf" element={<ShelfPage />} />
             <Route path="/user/:userId" element={<UserPage />} />
             <Route path="/book/:title" element={<BookPage />} />
-            <Route path="/weave/new" element={<WeaveEditorPage />} />
-            <Route path="/weave/:id" element={<WeaveReaderPage />} />
-            <Route path="/weave/:id/edit" element={<WeaveEditorPage />} />
+            <Route path="/notes/new" element={<WeaveEditorPage />} />
+            <Route path="/notes/:id" element={<WeaveReaderPage />} />
+            <Route path="/notes/:id/edit" element={<WeaveEditorPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/share-cards" element={<ShareCardsPage />} />
             <Route path="/settings" element={<SettingsPage requireAuth={requireAuth} />} />

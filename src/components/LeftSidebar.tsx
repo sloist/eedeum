@@ -90,10 +90,10 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
           <button className={`ls-nav-item ${isActive("/") ? "on" : ""}`} onClick={() => navigate("/")}>
             <Icons.Discover /><span>한줄</span>
           </button>
-          <button className={`ls-nav-item ${isActive("/my") ? "on" : ""} ${!user ? "ls-muted" : ""}`} onClick={() => user ? navigate("/my") : onAuthRequired()}>
+          <button className={`ls-nav-item ${isActive("/write") ? "on" : ""} ${!user ? "ls-muted" : ""}`} onClick={() => user ? navigate("/write") : onAuthRequired()}>
             <Icons.Record /><span>기록</span>
           </button>
-          <button className={`ls-nav-item ${isActive("/weaves") ? "on" : ""}`} onClick={() => navigate("/weaves")}>
+          <button className={`ls-nav-item ${isActive("/notes") ? "on" : ""}`} onClick={() => navigate("/notes")}>
             <Icons.Note /><span>노트</span>
           </button>
           <button className={`ls-nav-item ${isActive("/shelf") ? "on" : ""} ${!user ? "ls-muted" : ""}`} onClick={() => user ? navigate("/shelf") : onAuthRequired()}>

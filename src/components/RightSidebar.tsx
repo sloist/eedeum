@@ -6,7 +6,7 @@ import { fetchBooks, fetchPublicWeaves } from "../lib/api";
 export function RightSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const isWeaves = location.pathname.startsWith("/weaves") || location.pathname.startsWith("/weave/");
+  const isWeaves = location.pathname.startsWith("/notes") || location.pathname.startsWith("/notes/");
 
   const [searchQ, setSearchQ] = useState("");
   const [searchResults, setSearchResults] = useState<{ title: string; author: string }[]>([]);
@@ -109,7 +109,7 @@ export function RightSidebar() {
                 key={n.id}
                 className="rs-search-item"
                 onClick={() => {
-                  navigate(`/weave/${n.id}`);
+                  navigate(`/notes/${n.id}`);
                   setSearchQ("");
                   setSearchFocused(false);
                 }}

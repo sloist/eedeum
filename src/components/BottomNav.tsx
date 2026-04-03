@@ -7,7 +7,7 @@ const scrollPositions: Record<string, number> = {};
 // 현재 경로가 어떤 탭 루트에 속하는지
 function getTabRoot(path: string): string | null {
   if (path === "/" || path.startsWith("/line/") || path.startsWith("/book/") || path.startsWith("/user/")) return "/";
-  if (path.startsWith("/weaves") || path.startsWith("/weave/")) return "/weaves";
+  if (path.startsWith("/notes") || path.startsWith("/notes/")) return "/notes";
   return null;
 }
 
@@ -18,13 +18,13 @@ export function BottomNav() {
 
   const isActive = (p: string) => {
     if (p === "/") return path === "/" || path.startsWith("/line/") || path.startsWith("/book/") || path.startsWith("/user/");
-    if (p === "/weaves") return path.startsWith("/weaves") || path.startsWith("/weave/");
+    if (p === "/notes") return path.startsWith("/notes") || path.startsWith("/notes/");
     if (p === "/shelf") return path.startsWith("/shelf") || path === "/notifications" || path.startsWith("/settings");
-    if (p === "/my") return path === "/my" || path === "/write";
+    if (p === "/write") return path === "/write" || path === "/write";
     return path.startsWith(p);
   };
 
-  const remembersScroll = (p: string) => p === "/" || p === "/weaves";
+  const remembersScroll = (p: string) => p === "/" || p === "/notes";
 
   const go = (p: string) => {
     const currentActive = isActive(p);
@@ -61,10 +61,10 @@ export function BottomNav() {
       <button className={`nbtn ${isActive("/") ? "on" : ""}`} onClick={() => go("/")}>
         <Icons.Discover /><span>한줄</span>
       </button>
-      <button className={`nbtn ${isActive("/my") ? "on" : ""}`} onClick={() => go("/my")}>
+      <button className={`nbtn ${isActive("/write") ? "on" : ""}`} onClick={() => go("/write")}>
         <Icons.Record /><span>기록</span>
       </button>
-      <button className={`nbtn ${isActive("/weaves") ? "on" : ""}`} onClick={() => go("/weaves")}>
+      <button className={`nbtn ${isActive("/notes") ? "on" : ""}`} onClick={() => go("/notes")}>
         <Icons.Note /><span>노트</span>
       </button>
       <button className={`nbtn ${isActive("/shelf") ? "on" : ""}`} onClick={() => go("/shelf")}>

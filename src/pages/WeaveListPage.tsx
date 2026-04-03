@@ -41,7 +41,7 @@ export function WeaveListPage() {
           <div className="weave-empty-text">문장을 엮어 하나의 흐름으로</div>
           <div className="weave-empty-sub">기록이 쌓이면 노트로 나만의 흐름을 만들 수 있어요</div>
           {user && (
-            <button className="weave-new-btn" onClick={() => navigate("/weave/new")}>
+            <button className="weave-new-btn" onClick={() => navigate("/notes/new")}>
               새 노트 만들기
             </button>
           )}
@@ -50,7 +50,7 @@ export function WeaveListPage() {
         <>
           {user && (
             <div className="weave-top-cta">
-              <button className="weave-new-btn-inline" onClick={() => navigate("/weave/new")}>
+              <button className="weave-new-btn-inline" onClick={() => navigate("/notes/new")}>
                 + 새 노트
               </button>
             </div>
@@ -62,7 +62,7 @@ export function WeaveListPage() {
                   <article
                     key={w.id}
                     className="weave-booklet"
-                      onClick={() => navigate(`/weave/${w.id}`)}
+                      onClick={() => navigate(`/notes/${w.id}`)}
                   >
                     {preview ? (
                       <div className="weave-booklet-excerpt">

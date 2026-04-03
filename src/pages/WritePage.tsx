@@ -181,7 +181,7 @@ export function WritePage() {
         <button className="write-cancel" onClick={() => {
           const hasContent = quote.trim() || feeling.trim() || title.trim();
           if (hasContent && !window.confirm("작성 중인 내용이 사라집니다. 나가시겠습니까?")) return;
-          if (location.pathname === "/my") navigate("/");
+          if (location.pathname === "/write") navigate("/");
           else navigate(-1);
         }}>취소</button>
         <button

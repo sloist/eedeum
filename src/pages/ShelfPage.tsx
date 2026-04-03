@@ -120,7 +120,7 @@ export function ShelfPage() {
           featuredQuoteId={featuredLine?.id}
           onQuoteClick={(id) => navigate(`/line/${id}`)}
           featuredWeave={featuredWeave ? { id: featuredWeave.id, title: featuredWeave.title, coverColor: featuredWeave.coverColor } : null}
-          onWeaveClick={(id) => navigate(`/weave/${id}`)}
+          onWeaveClick={(id) => navigate(`/notes/${id}`)}
           rightActions={
             <>
               <button className="hd-bell-btn" onClick={() => navigate("/notifications")} aria-label="알림"><Icons.Bell /></button>
@@ -151,7 +151,7 @@ export function ShelfPage() {
           <div className="shelf-section-label">노트</div>
           <div className="weave-grid" style={{ padding: "0 20px 8px" }}>
             {weaves.map(w => (
-              <article key={w.id} className="weave-booklet" onClick={() => navigate(`/weave/${w.id}`)}>
+              <article key={w.id} className="weave-booklet" onClick={() => navigate(`/notes/${w.id}`)}>
                 <div className="weave-booklet-cover" style={{ background: w.coverColor }}>
                   <h3 className="weave-booklet-title">{w.title}</h3>
                 </div>

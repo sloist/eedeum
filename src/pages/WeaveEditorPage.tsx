@@ -132,7 +132,7 @@ export function WeaveEditorPage() {
           source: "record",
         });
       }
-      navigate(`/weave/${newId}/edit`, { replace: true });
+      navigate(`/notes/${newId}/edit`, { replace: true });
     }
   };
 
@@ -461,7 +461,7 @@ export function WeaveEditorPage() {
     <div className="weave-editor">
       <div className="weave-editor-header">
         <button
-          onClick={() => navigate(`/weave/${weaveId}`)}
+          onClick={() => navigate(`/notes/${weaveId}`)}
           className="weave-back-btn"
         >
           ←
@@ -475,7 +475,7 @@ export function WeaveEditorPage() {
         />
         <button
           className="weave-save-btn"
-          onClick={() => navigate(`/weave/${weaveId}`)}
+          onClick={() => navigate(`/notes/${weaveId}`)}
           disabled={saving}
         >
           미리보기

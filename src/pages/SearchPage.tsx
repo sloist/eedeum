@@ -158,7 +158,7 @@ export function SearchPage() {
               <>
                 <div className="sh"><span className="sl">노트</span></div>
                 {noteResults.map((n) => (
-                  <div key={n.id} className="search-row" onClick={() => navigate(`/weave/${n.id}`)}>
+                  <div key={n.id} className="search-row" onClick={() => navigate(`/notes/${n.id}`)}>
                     <div className="search-row-note">
                       <span className="search-note-dot" style={{ background: n.coverColor }} />
                       <span className="search-row-title">{n.title}</span>

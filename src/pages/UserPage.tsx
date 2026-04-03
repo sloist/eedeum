@@ -110,7 +110,7 @@ export function UserPage() {
           <div className="sh"><span className="sl">{profile.name}의 노트</span></div>
           <div className="user-weaves">
             {weaves.slice(0, 3).map(w => (
-              <div key={w.id} className="user-weave-item" onClick={() => navigate(`/weave/${w.id}`)}>
+              <div key={w.id} className="user-weave-item" onClick={() => navigate(`/notes/${w.id}`)}>
                 <div className="user-weave-spine" style={{ background: w.coverColor }} />
                 <div className="user-weave-title">{w.title}</div>
                 <div className="user-weave-count">{w.blockCount}개 조각</div>

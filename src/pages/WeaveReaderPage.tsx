@@ -93,7 +93,7 @@ export function WeaveReaderPage() {
     if (!id) return;
     if (!window.confirm("이 노트를 삭제하시겠습니까?")) return;
     await deleteWeave(id);
-    navigate("/weaves", { replace: true });
+    navigate("/notes", { replace: true });
   };
 
   // 페이지 전환 — fade out → change → fade in
@@ -183,7 +183,7 @@ export function WeaveReaderPage() {
             <div className="wr-end-more">
               <div className="wr-end-more-label">{weave.userName}의 다른 노트</div>
               {otherWeaves.map(w => (
-                <div key={w.id} className="wr-end-weave" onClick={() => navigate(`/weave/${w.id}`)}>
+                <div key={w.id} className="wr-end-weave" onClick={() => navigate(`/notes/${w.id}`)}>
                   <div className="wr-end-weave-spine" style={{ background: w.coverColor }} />
                   <div className="wr-end-weave-title">{w.title}</div>
                 </div>
@@ -246,7 +246,7 @@ export function WeaveReaderPage() {
             <button className="wr-menu-trigger" onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}>···</button>
             {showMenu && (
               <div className="wr-menu-dropdown">
-                <button className="wr-menu-item" onClick={() => { setShowMenu(false); navigate(`/weave/${id}/edit`); }}>편집하기</button>
+                <button className="wr-menu-item" onClick={() => { setShowMenu(false); navigate(`/notes/${id}/edit`); }}>편집하기</button>
                 <button className="wr-menu-item danger" onClick={() => { setShowMenu(false); handleDelete(); }}>삭제하기</button>
               </div>
             )}
