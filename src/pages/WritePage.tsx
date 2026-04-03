@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
+import { useModal } from "../lib/ModalContext";
 import { Toast } from "../components/Toast";
 import { findOrCreateBook, createLine, fetchBooks } from "../lib/api";
 import { searchBooks } from "../lib/bookSearch";
@@ -12,8 +13,9 @@ export function WritePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
+  const { requireAuth } = useModal();
 
-  // Image from MyRecordsPage
+  // Image from camera/gallery
   const imageUrl = (location.state as any)?.imageUrl as string | undefined;
 
   const [title, setTitle] = useState("");
@@ -151,7 +153,7 @@ export function WritePage() {
       toast(result.error);
     } else if (result) {
       toast("기록이 남았습니다");
-      setTimeout(() => navigate("/my", { replace: true }), 300);
+      setTimeout(() => navigate("/", { replace: true }), 300);
     } else {
       toast("잠시 후 다시 시도해보세요");
     }
@@ -162,8 +164,9 @@ export function WritePage() {
   if (!user) {
     return (
       <div className="shelf-login-prompt">
-        <div className="shelf-login-msg">로그인하면 남길 수 있어요</div>
-        <button className="shelf-login-btn" onClick={() => navigate(-1)}>돌아가기</button>
+        <div className="shelf-login-lead">기록</div>
+        <div className="shelf-login-msg">멈춘 문장을 여기에 남겨두세요</div>
+        <button className="shelf-login-btn" onClick={() => requireAuth()}>로그인하고 기록하기</button>
       </div>
     );
   }
@@ -174,7 +177,12 @@ export function WritePage() {
     <div className="write-page">
       {/* Header */}
       <div className="write-header">
-        <button className="write-cancel" onClick={() => navigate(-1)}>취소</button>
+        <button className="write-cancel" onClick={() => {
+          const hasContent = quote.trim() || feeling.trim() || title.trim();
+          if (hasContent && !window.confirm("작성 중인 내용이 사라집니다. 나가시겠습니까?")) return;
+          if (location.pathname === "/my") navigate("/");
+          else navigate(-1);
+        }}>취소</button>
         <button
           className={`write-submit ${quote.trim() && hasSource ? "write-submit-active" : ""}`}
           onClick={handleSubmit}
