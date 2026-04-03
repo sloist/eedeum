@@ -312,6 +312,81 @@ export async function createLine(userId: string, bookId: string, quote: string, 
   return data;
 }
 
+// ─── 리포스트 ───
+
+export async function repostLine(
+  userId: string,
+  originalLineId: string,
+  feeling?: string
+): Promise<any | { error: string }> {
+  // 원본 한줄 조회
+  const { data: original, error: fetchErr } = await supabase
+    .from("underlines")
+    .select("book_id, quote, page, user_id")
+    .eq("id", originalLineId)
+    .single();
+
+  if (fetchErr || !original) return { error: "원본 한줄을 찾을 수 없습니다" };
+  if (original.user_id === userId) return { error: "내 한줄은 리포스트할 수 없습니다" };
+
+  // 이미 리포스트했는지 확인
+  const { count } = await supabase
+    .from("underlines")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("repost_id", originalLineId);
+
+  if ((count ?? 0) > 0) return { error: "이미 리포스트한 한줄입니다" };
+
+  // 하루 제한 체크 (일반 한줄과 합산)
+  const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
+  const { count: dailyCount } = await supabase
+    .from("underlines")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .gte("created_at", oneDayAgo);
+
+  if ((dailyCount ?? 0) >= 3) {
+    return { error: "하루에 남길 수 있는 기록은 3개까지입니다" };
+  }
+
+  // 감상 필터
+  if (feeling) {
+    const filter = checkLineContent("", feeling);
+    if (filter.blocked) return { error: filter.reason! };
+  }
+
+  const { data, error } = await supabase
+    .from("underlines")
+    .insert({
+      user_id: userId,
+      book_id: original.book_id,
+      quote: original.quote,
+      page: original.page,
+      feeling: feeling || null,
+      repost_id: originalLineId,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("repostLine error:", error);
+    return { error: "리포스트에 실패했습니다" };
+  }
+
+  // 원본 작성자에게 알림
+  await createNotification(original.user_id, "repost", userId, originalLineId);
+
+  // 서재에 자동 추가
+  await supabase.from("user_books").upsert(
+    { user_id: userId, book_id: original.book_id, status: "reading" },
+    { onConflict: "user_id,book_id" }
+  );
+
+  invalidateCache("feed");
+  return data;
+}
+
 // ─── 나만 보기 (비공개) ───
 
 export async function setLinePrivate(lineId: string, isPrivate: boolean): Promise<boolean> {

@@ -35,7 +35,8 @@ export async function fetchFeedPosts(): Promise<FeedPost[]> {
       books(*),
       echoes(*, users(*)),
       likes(count),
-      saves(count)
+      saves(count),
+      repost:underlines!repost_id(id, user_id, users!underlines_user_id_fkey(name, handle))
     `)
     .neq("user_id", EDITOR_USER_ID)
     .neq("hidden", true)
@@ -183,7 +184,7 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
   const col = UUID_RE.test(lineId) ? "id" : "short_id";
   const { data: line } = await supabase
     .from("underlines")
-    .select(`*, users!underlines_user_id_fkey(*), books(*)`)
+    .select(`*, users!underlines_user_id_fkey(*), books(*), repost:underlines!repost_id(id, user_id, users!underlines_user_id_fkey(name, handle))`)
     .eq(col, lineId)
     .single();
 
@@ -191,6 +192,7 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
 
   const user = line.users as DbUser;
   const book = line.books as DbBook;
+  const repostData = line.repost as any;
 
   const realId = line.id;
 
@@ -234,6 +236,11 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
     isPrivate: line.is_private ?? false,
     likes: likeCount ?? 0,
     createdAt: line.created_at,
+    repostOf: repostData?.users ? {
+      id: repostData.id,
+      userName: repostData.users.name ?? "?",
+      userHandle: repostData.users.handle ?? "",
+    } : null,
     echoes: (echoes ?? []).map(e => ({
       id: e.id,
       userId: e.user_id,

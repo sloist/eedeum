@@ -43,6 +43,12 @@ export interface DbUnderline {
   echoes?: DbEcho[];
   likes?: { count: number }[];
   saves?: { count: number }[];
+  repost_id?: string | null;
+  repost?: {
+    id: string;
+    user_id: string;
+    users?: DbUser;
+  } | null;
 }
 
 export interface FeedPost {
@@ -63,4 +69,9 @@ export interface FeedPost {
   echoes: { userId: string; userName: string; text: string; isSameLine: boolean }[];
   otherLines: { userId: string; userName: string; quote: string; page: number }[];
   sameLineCount: number;
+  repostOf?: {
+    id: string;
+    userName: string;
+    userHandle: string;
+  } | null;
 }

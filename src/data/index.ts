@@ -56,6 +56,11 @@ export interface Post {
   echoes: Echo[];
   otherLines: OtherLine[];
   sameLineCount?: number;
+  repostOf?: {
+    id: string;
+    userName: string;
+    userHandle: string;
+  } | null;
 }
 
 export interface OwnedBook {

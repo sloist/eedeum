@@ -4,7 +4,7 @@ import { Icons } from "../components/Icons";
 import { LoadingBar } from "../components/LoadingBar";
 import { Toast } from "../components/Toast";
 import { useAuth } from "../lib/AuthContext";
-import { fetchLineDetail, fetchSameQuoteLines, toggleSave, addEcho, deleteEcho, deleteUnderline, pinEcho, addReply, fetchPrivateMemosForLine, addPrivateMemo, deletePrivateMemo, reportContent, setLinePrivate, blockUser, blockBook, blockUnderline } from "../lib/api";
+import { fetchLineDetail, fetchSameQuoteLines, toggleSave, addEcho, deleteEcho, deleteUnderline, pinEcho, addReply, fetchPrivateMemosForLine, addPrivateMemo, deletePrivateMemo, reportContent, setLinePrivate, blockUser, blockBook, blockUnderline, repostLine } from "../lib/api";
 import { ShareModal } from "../components/ShareModal";
 import { useModal } from "../lib/ModalContext";
 import { trackEvent } from "../lib/tracking";
@@ -13,6 +13,7 @@ import { EchoInput, ReplyInput } from "../components/EchoInput";
 import { LineActions } from "../components/LineActions";
 import { OtherLines } from "../components/OtherLines";
 import { AddToNoteSheet } from "../components/AddToNoteSheet";
+import { RepostSheet } from "../components/RepostSheet";
 
 export function UnderlinePage() {
   const { handle, id } = useParams<{ handle: string; id: string }>();
@@ -41,6 +42,8 @@ export function UnderlinePage() {
   const [replyText, setReplyText] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [showAddToNote, setShowAddToNote] = useState(false);
+  const [showRepost, setShowRepost] = useState(false);
+  const [reposting, setReposting] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -292,6 +295,12 @@ export function UnderlinePage() {
           </span>
         </div>
 
+        {data.repostOf && (
+          <div className="feed-repost-badge" style={{ marginBottom: 12, fontSize: 12 }} onClick={() => navigate(`/@${data.repostOf.userHandle}`)}>
+            ↻ {data.repostOf.userName}님의 한줄
+          </div>
+        )}
+
         <div className="qwrap">
           <p className="qtxt">{data.quote}</p>
           <div className="qsrc">
@@ -323,6 +332,7 @@ export function UnderlinePage() {
           isPrivate={isPrivate}
           onEdit={isPostAuthor ? () => navigate(`/write`, { state: { editId: data.id, editQuote: data.quote, editFeeling: data.feeling, editBookTitle: data.bookTitle, editBookAuthor: data.bookAuthor, editPage: data.page } }) : undefined}
           onAddToNote={() => setShowAddToNote(true)}
+          onRepost={() => setShowRepost(true)}
         />
 
         <EchoList
@@ -397,6 +407,28 @@ export function UnderlinePage() {
           onSuccess={(title) => {
             setShowAddToNote(false);
             toast(title ? `"${title}" 노트에 담았습니다` : "노트에 담기에 실패했습니다");
+          }}
+        />
+      )}
+
+      {showRepost && user && data && (
+        <RepostSheet
+          quote={data.quote}
+          bookTitle={data.bookTitle}
+          bookAuthor={data.bookAuthor}
+          originalUserName={data.userName}
+          onClose={() => setShowRepost(false)}
+          submitting={reposting}
+          onSubmit={async (feeling) => {
+            setReposting(true);
+            const result = await repostLine(user.id, data.id, feeling);
+            setReposting(false);
+            if (result && "error" in result) {
+              toast(result.error);
+            } else {
+              setShowRepost(false);
+              toast("내 한줄로 공유했습니다");
+            }
           }}
         />
       )}

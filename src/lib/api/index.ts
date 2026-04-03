@@ -61,6 +61,7 @@ export {
   checkIsFollowing,
   batchCheckLikedSaved,
   createLine,
+  repostLine,
   deleteEcho,
   deleteUnderline,
   pinEcho,

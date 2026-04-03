@@ -379,6 +379,8 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .feed-more-menu button:hover{background:var(--bgW)}
 .feed-more-menu button.danger{color:#c44}
 .feed-mine-badge{display:inline-block;font-size:10px;color:var(--ac);background:rgba(123,101,72,0.06);padding:2px 8px;border-radius:3px;margin-bottom:8px;font-family:var(--sn);letter-spacing:-.1px}
+.feed-repost-badge{display:inline-block;font-size:10px;color:var(--t3);padding:2px 0;margin-bottom:6px;font-family:var(--sn);letter-spacing:-.1px;cursor:pointer}
+.feed-repost-badge:hover{color:var(--t2)}
 
 /* Legacy .post support */
 .post{padding:16px 24px 14px;margin-bottom:0;position:relative}

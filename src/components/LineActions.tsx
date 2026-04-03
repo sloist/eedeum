@@ -17,9 +17,10 @@ type Props = {
   isPrivate?: boolean;
   onEdit?: () => void;
   onAddToNote?: () => void;
+  onRepost?: () => void;
 };
 
-export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, onDeleteLine, onAuthRequired, onReport, onHidePerson, onHideBook, onNotInterested, onSetPrivate, onEdit, isPrivate, onAddToNote }: Props) {
+export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, onDeleteLine, onAuthRequired, onReport, onHidePerson, onHideBook, onNotInterested, onSetPrivate, onEdit, isPrivate, onAddToNote, onRepost }: Props) {
   const [showMoreActions, setShowMoreActions] = useState(false);
   const [showReportReasons, setShowReportReasons] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -43,12 +44,20 @@ export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, 
       <button className={`abtn ${saved ? "on" : ""}`} onClick={onSave} aria-label="담기">
         {Icons.Bmark(saved)}
       </button>
-      {onAddToNote && (
+      {isPostAuthor && onAddToNote && (
         <button className="abtn" onClick={() => {
           if (!isLoggedIn) { onAuthRequired?.(); return; }
           onAddToNote();
         }} aria-label="노트에 담기">
           <Icons.NoteAdd />
+        </button>
+      )}
+      {!isPostAuthor && onRepost && (
+        <button className="abtn" onClick={() => {
+          if (!isLoggedIn) { onAuthRequired?.(); return; }
+          onRepost();
+        }} aria-label="리포스트">
+          <Icons.Repost />
         </button>
       )}
       <button className="abtn" onClick={onShare} aria-label="카드 만들기">

@@ -32,7 +32,12 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
 
   return (
     <div className="feed-item" data-post-id={post.id} onClick={() => onDetail(post.shortId, post.userHandle ?? "")}>
-      {isMine && <span className="feed-mine-badge">내 기록</span>}
+      {isMine && !post.repostOf && <span className="feed-mine-badge">내 기록</span>}
+      {post.repostOf && (
+        <span className="feed-repost-badge" onClick={(e) => { e.stopPropagation(); navigate(`/@${post.repostOf!.userHandle}`); }}>
+          ↻ {post.repostOf.userName}님의 한줄
+        </span>
+      )}
       <span className="feed-quote">{post.quote}</span>
 
       {post.feeling && (

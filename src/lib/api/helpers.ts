@@ -69,5 +69,10 @@ export function mapLineToFeedPost(
     echoes: echoList,
     otherLines,
     sameLineCount,
+    repostOf: u.repost?.users ? {
+      id: u.repost_id!,
+      userName: u.repost.users.name ?? "?",
+      userHandle: u.repost.users.handle ?? "",
+    } : null,
   };
 }
