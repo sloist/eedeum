@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
 import { supabase } from "../lib/supabase";
@@ -14,9 +15,9 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
   const path = location.pathname;
   const { user, loading: authLoading } = useAuth();
   const [showMore, setShowMore] = useState(false);
-  const moreRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const [popPos, setPopPos] = useState<{ bottom: number; left: number } | null>(null);
+  const popRef = useRef<HTMLDivElement>(null);
+  const [popPos, setPopPos] = useState({ bottom: 0, left: 0 });
 
   const isActive = (p: string) => {
     if (p === "/") return path === "/";
@@ -30,7 +31,9 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
       setPopPos({ bottom: window.innerHeight - rect.top + 8, left: rect.left });
     }
     const handle = (e: Event) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setShowMore(false);
+      if (popRef.current?.contains(e.target as Node)) return;
+      if (btnRef.current?.contains(e.target as Node)) return;
+      setShowMore(false);
     };
     document.addEventListener("mousedown", handle);
     document.addEventListener("touchstart", handle);
@@ -39,60 +42,76 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
 
   const go = (p: string) => { setShowMore(false); navigate(p); };
 
+  const popover = showMore ? createPortal(
+    <div
+      ref={popRef}
+      style={{
+        position: "fixed",
+        bottom: popPos.bottom,
+        left: popPos.left,
+        width: 200,
+        background: "var(--bgC)",
+        borderRadius: 10,
+        border: "0.5px solid var(--bdL)",
+        boxShadow: "0 8px 32px rgba(31,26,21,0.12), 0 2px 6px rgba(31,26,21,0.06)",
+        padding: "6px 0",
+        zIndex: 9999,
+        animation: "rise .15s ease",
+      }}
+    >
+      <button className="ls-pop-item" onClick={() => go("/settings")}>설정</button>
+      <div className="ls-pop-divider" />
+      <button className="ls-pop-item" onClick={() => go("/settings/about")}>소개</button>
+      <button className="ls-pop-item" onClick={() => go("/settings/help")}>도움말</button>
+      <button className="ls-pop-item" onClick={() => go("/settings/privacy")}>개인정보처리방침</button>
+      <button className="ls-pop-item" onClick={() => go("/settings/terms")}>이용약관</button>
+      <div className="ls-pop-divider" />
+      {authLoading ? null : user ? (
+        <button className="ls-pop-item" onClick={() => {
+          if (window.confirm("로그아웃 하시겠습니까?")) {
+            setShowMore(false); supabase.auth.signOut().then(() => navigate("/"));
+          }
+        }}>로그아웃</button>
+      ) : (
+        <button className="ls-pop-item" onClick={() => { setShowMore(false); onAuthRequired(); }}>로그인</button>
+      )}
+    </div>,
+    document.body
+  ) : null;
+
   return (
-    <aside className="left-sidebar">
-      <div className="ls-logo" onClick={() => navigate("/")}>
-        이듬
-      </div>
+    <>
+      <aside className="left-sidebar">
+        <div className="ls-logo" onClick={() => navigate("/")}>
+          이듬
+        </div>
 
-      {/* Main: 한줄 / 기록 / 노트 / 서재 */}
-      <nav className="ls-main">
-        <button className={`ls-nav-item ${isActive("/") ? "on" : ""}`} onClick={() => navigate("/")}>
-          <Icons.Discover /><span>한줄</span>
-        </button>
-        <button className={`ls-nav-item ${isActive("/my") ? "on" : ""} ${!user ? "ls-muted" : ""}`} onClick={() => user ? navigate("/my") : onAuthRequired()}>
-          <Icons.Record /><span>기록</span>
-        </button>
-        <button className={`ls-nav-item ${isActive("/weaves") ? "on" : ""}`} onClick={() => navigate("/weaves")}>
-          <Icons.Note /><span>노트</span>
-        </button>
-        <button className={`ls-nav-item ${isActive("/shelf") ? "on" : ""} ${!user ? "ls-muted" : ""}`} onClick={() => user ? navigate("/shelf") : onAuthRequired()}>
-          <Icons.Shelf /><span>서재</span>
-        </button>
-      </nav>
+        <nav className="ls-main">
+          <button className={`ls-nav-item ${isActive("/") ? "on" : ""}`} onClick={() => navigate("/")}>
+            <Icons.Discover /><span>한줄</span>
+          </button>
+          <button className={`ls-nav-item ${isActive("/my") ? "on" : ""} ${!user ? "ls-muted" : ""}`} onClick={() => user ? navigate("/my") : onAuthRequired()}>
+            <Icons.Record /><span>기록</span>
+          </button>
+          <button className={`ls-nav-item ${isActive("/weaves") ? "on" : ""}`} onClick={() => navigate("/weaves")}>
+            <Icons.Note /><span>노트</span>
+          </button>
+          <button className={`ls-nav-item ${isActive("/shelf") ? "on" : ""} ${!user ? "ls-muted" : ""}`} onClick={() => user ? navigate("/shelf") : onAuthRequired()}>
+            <Icons.Shelf /><span>서재</span>
+          </button>
+        </nav>
 
-
-      {/* 검색 — 중간 너비에서 우측 사이드바 없을 때 사용 */}
-      <button className="ls-nav-item ls-search-btn" onClick={() => navigate("/search")}>
-        <Icons.Search /><span>검색</span>
-      </button>
-
-      {/* More — settings/info/account */}
-      <div className="ls-more-wrap" ref={moreRef}>
-        {showMore && popPos && (
-          <div className="ls-popover" style={{ position: "fixed", bottom: popPos.bottom, left: popPos.left, width: 200, background: "var(--bgC)", borderRadius: 8, border: "0.5px solid var(--bdL)", boxShadow: "0 8px 32px rgba(31,26,21,0.1)", zIndex: 9999 }}>
-            <button className="ls-pop-item" onClick={() => go("/settings")}>설정</button>
-            <div className="ls-pop-divider" />
-            <button className="ls-pop-item" onClick={() => go("/settings/about")}>소개</button>
-            <button className="ls-pop-item" onClick={() => go("/settings/help")}>도움말</button>
-            <button className="ls-pop-item" onClick={() => go("/settings/privacy")}>개인정보처리방침</button>
-            <button className="ls-pop-item" onClick={() => go("/settings/terms")}>이용약관</button>
-            <div className="ls-pop-divider" />
-            {authLoading ? null : user ? (
-              <button className="ls-pop-item" onClick={() => {
-                if (window.confirm("로그아웃 하시겠습니까?")) {
-                  setShowMore(false); supabase.auth.signOut().then(() => navigate("/"));
-                }
-              }}>로그아웃</button>
-            ) : (
-              <button className="ls-pop-item" onClick={() => { setShowMore(false); onAuthRequired(); }}>로그인</button>
-            )}
-          </div>
-        )}
-        <button ref={btnRef} className="ls-nav-item ls-more-btn" onClick={() => setShowMore(!showMore)}>
-          <Icons.More /><span>더보기</span>
+        <button className="ls-nav-item ls-search-btn" onClick={() => navigate("/search")}>
+          <Icons.Search /><span>검색</span>
         </button>
-      </div>
-    </aside>
+
+        <div className="ls-more-wrap">
+          <button ref={btnRef} className="ls-nav-item ls-more-btn" onClick={() => setShowMore(!showMore)}>
+            <Icons.More /><span>더보기</span>
+          </button>
+        </div>
+      </aside>
+      {popover}
+    </>
   );
 }
