@@ -277,32 +277,32 @@ export function ShelfPage() {
 
       {showRankInfo && (
         <div className="ov" onClick={() => setShowRankInfo(false)}>
-          <div className="sht" onClick={e => e.stopPropagation()} style={{ maxWidth: 400 }}>
+          <div className="sht" onClick={e => e.stopPropagation()} style={{ maxWidth: 380 }}>
             <div className="shndl" />
-            <div style={{ fontFamily: "var(--sn)", fontSize: 15, fontWeight: 600, marginBottom: 16, color: "var(--t1)" }}>
-              등급 안내
+            <div style={{ fontFamily: "var(--sf)", fontSize: 14, fontWeight: 500, color: "var(--t2)", marginBottom: 20, letterSpacing: "-.2px" }}>
+              내 기록의 흐름
             </div>
-            <div style={{ fontFamily: "var(--sn)", fontSize: 13, color: "var(--t2)", lineHeight: 1.8 }}>
-              <div style={{ marginBottom: 16 }}>
-                이듬에서의 활동을 바탕으로 등급이 부여됩니다.
+            <div style={{ fontFamily: "var(--sn)", fontSize: 13, color: "var(--t2)", lineHeight: 2 }}>
+              <div style={{ paddingBottom: 14, borderBottom: "0.5px solid var(--bdL)" }}>
+                <span style={{ fontWeight: 600 }}>깊이 남기는</span>
+                <br />
+                <span style={{ fontSize: 12, color: "var(--t3)" }}>한줄과 노트를 꾸준히 남긴 사람</span>
+                <span style={{ fontSize: 10, color: "var(--t3)", opacity: 0.4, marginLeft: 8 }}>상위 5%</span>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div style={{ padding: "10px 14px", borderRadius: 8, background: "var(--bgW)" }}>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>깊이 남기는</div>
-                  <div style={{ fontSize: 12, color: "var(--t3)" }}>상위 5% · 꾸준히 한줄과 노트를 남기는 사람</div>
-                </div>
-                <div style={{ padding: "10px 14px", borderRadius: 8, background: "var(--bgW)" }}>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>꾸준히 쌓는</div>
-                  <div style={{ fontSize: 12, color: "var(--t3)" }}>상위 20% · 기록의 습관이 잡힌 사람</div>
-                </div>
-                <div style={{ padding: "10px 14px", borderRadius: 8, background: "var(--bgW)" }}>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>기록하는</div>
-                  <div style={{ fontSize: 12, color: "var(--t3)" }}>이듬에서 기록을 시작한 사람</div>
-                </div>
+              <div style={{ paddingTop: 14, paddingBottom: 14, borderBottom: "0.5px solid var(--bdL)" }}>
+                <span style={{ fontWeight: 600 }}>꾸준히 쌓는</span>
+                <br />
+                <span style={{ fontSize: 12, color: "var(--t3)" }}>기록의 흐름을 이어가는 사람</span>
+                <span style={{ fontSize: 10, color: "var(--t3)", opacity: 0.4, marginLeft: 8 }}>상위 20%</span>
               </div>
-              <div style={{ marginTop: 16, fontSize: 11, color: "var(--t3)", opacity: 0.7 }}>
-                기준: 한줄 기록 수 + 노트 수
+              <div style={{ paddingTop: 14 }}>
+                <span style={{ fontWeight: 600 }}>기록하는</span>
+                <br />
+                <span style={{ fontSize: 12, color: "var(--t3)" }}>이듬에서 문장을 남기기 시작한 사람</span>
               </div>
+            </div>
+            <div style={{ marginTop: 20, fontSize: 10, color: "var(--t3)", opacity: 0.35 }}>
+              한줄 기록 수와 노트 수를 기준으로 합니다
             </div>
           </div>
         </div>
