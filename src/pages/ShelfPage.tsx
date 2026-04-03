@@ -149,7 +149,7 @@ export function ShelfPage() {
       {/* ─── 1. 읽고 있는 책 ─── */}
       {shelf.length > 0 && (
         <div className="shelf-section">
-          <div className="shelf-section-label">읽고 있는 책</div>
+          <div className="shelf-section-label">머무는 책</div>
           <div className="sgrid">
             {shelf.map((b, i) => (
               <div key={i} className="sbook" style={{ background: b.color }} onClick={() => navigate(`/book/${encodeURIComponent(b.title)}?mine=1`, { state: { author: b.author } })}>
@@ -186,7 +186,7 @@ export function ShelfPage() {
       {/* ─── 3. 내 글 — 문장이 먼저 보이게 ─── */}
       {userLines.length > 0 && (
         <div className="shelf-section">
-          <div className="shelf-section-label">기록</div>
+          <div className="shelf-section-label">남긴 문장</div>
           <div className="shelf-lines">
             {userLines.slice(0, showMore ? userLines.length : 5).map(l => (
               <div key={l.id} className="shelf-line-card" onClick={() => navigate(`/@${profile.handle}/lines/${l.shortId}`)}>

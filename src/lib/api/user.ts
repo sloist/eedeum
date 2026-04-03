@@ -117,6 +117,35 @@ export async function fetchUserLines(userId: string): Promise<FeedPost[]> {
   return (data ?? []).map(u => mapLineToFeedPost(u as DbUnderline));
 }
 
+/** 다시 만난 문장 — 30일 이상 된 내 기록 중 랜덤 1개 */
+export async function fetchRediscovery(userId: string): Promise<{ quote: string; bookTitle: string; bookAuthor: string; feeling: string | null; createdAt: string; shortId: string; handle: string } | null> {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
+  const { data } = await supabase
+    .from("underlines")
+    .select("*, books(*), users!underlines_user_id_fkey(*)")
+    .eq("user_id", userId)
+    .eq("is_draft", false)
+    .lt("created_at", thirtyDaysAgo)
+    .order("created_at", { ascending: true });
+
+  if (!data || data.length === 0) return null;
+  // 날짜 기반 결정적 랜덤 (하루 한 번 바뀜)
+  const today = new Date().toISOString().slice(0, 10);
+  const hash = today.split("").reduce((s, c) => s + c.charCodeAt(0), 0);
+  const pick = data[hash % data.length];
+  const book = pick.books as any;
+  const user = pick.users as any;
+  return {
+    quote: pick.quote,
+    bookTitle: book?.title ?? "",
+    bookAuthor: book?.author ?? "",
+    feeling: pick.feeling,
+    createdAt: pick.created_at,
+    shortId: pick.short_id,
+    handle: user?.handle ?? "",
+  };
+}
+
 export async function fetchUserDbProfile(userId: string): Promise<DbUser | null> {
   const { data } = await supabase
     .from("users")

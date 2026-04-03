@@ -24,7 +24,7 @@ export function EchoInput({ isLoggedIn, onAddEcho, onToast, onAuthRequired }: Pr
         <div className="einput-group">
           <input
             className="einput"
-            placeholder="이 문장 앞에서 떠오른 생각을 남겨보세요"
+            placeholder="이 문장에 시선을 남겨보세요"
             value={echoText}
             onChange={e => setEchoText(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter" && !e.nativeEvent.isComposing) handleSubmit(); }}
@@ -37,7 +37,7 @@ export function EchoInput({ isLoggedIn, onAddEcho, onToast, onAuthRequired }: Pr
           </button>
         </div>
       ) : (
-        <input className="einput einput-locked" placeholder="이 문장 앞에서 떠오른 생각을 남겨보세요" readOnly onClick={() => onAuthRequired ? onAuthRequired() : onToast("로그인하면 남길 수 있어요")} />
+        <input className="einput einput-locked" placeholder="이 문장에 시선을 남겨보세요" readOnly onClick={() => onAuthRequired ? onAuthRequired() : onToast("로그인하면 남길 수 있어요")} />
       )}
     </div>
   );

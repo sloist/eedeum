@@ -38,6 +38,7 @@ export {
   fetchNotifications,
   markNotificationsRead,
   fetchUserRank,
+  fetchRediscovery,
 } from "./user";
 
 // Book

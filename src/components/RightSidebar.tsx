@@ -1,14 +1,17 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "./Icons";
 import { useEffect, useState, useRef } from "react";
-import { fetchBooks, fetchPublicWeaves, fetchDailyQuote } from "../lib/api";
+import { fetchBooks, fetchPublicWeaves, fetchDailyQuote, fetchRediscovery } from "../lib/api";
+import { useAuth } from "../lib/AuthContext";
 
 export function RightSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const isWeaves = location.pathname.startsWith("/notes") || location.pathname.startsWith("/notes/");
 
   const [searchQ, setSearchQ] = useState("");
+  const [rediscovery, setRediscovery] = useState<{ quote: string; bookTitle: string; bookAuthor: string; shortId: string; handle: string; createdAt: string } | null>(null);
   const [searchResults, setSearchResults] = useState<{ title: string; author: string }[]>([]);
   const [noteResults, setNoteResults] = useState<{ id: string; shortId: string; userHandle: string; title: string; userName: string }[]>([]);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -26,6 +29,12 @@ export function RightSidebar() {
   useEffect(() => {
     fetchDailyQuote().then(q => setDailyQuote(q));
   }, []);
+
+  // 다시 만난 문장
+  useEffect(() => {
+    if (!user) return;
+    fetchRediscovery(user.id).then(r => setRediscovery(r));
+  }, [user]);
 
   // 책/문장 검색 (한줄 탭 등)
   useEffect(() => {
@@ -132,6 +141,14 @@ export function RightSidebar() {
         <div className="rs-daily">
           <div className="rs-daily-quote">{dailyQuote.quote.length > 60 ? dailyQuote.quote.slice(0, 60) + "…" : dailyQuote.quote}</div>
           <div className="rs-daily-src">{dailyQuote.bookTitle} · {dailyQuote.bookAuthor}</div>
+        </div>
+      )}
+
+      {rediscovery && (
+        <div className="rs-rediscovery" onClick={() => navigate(`/@${rediscovery.handle}/lines/${rediscovery.shortId}`)}>
+          <div className="rs-rediscovery-label">다시 만난 문장</div>
+          <div className="rs-rediscovery-quote">{rediscovery.quote.length > 50 ? rediscovery.quote.slice(0, 50) + "…" : rediscovery.quote}</div>
+          <div className="rs-rediscovery-src">{rediscovery.bookTitle} · {rediscovery.bookAuthor}</div>
         </div>
       )}
 
