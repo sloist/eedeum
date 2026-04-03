@@ -42,7 +42,7 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
       <div className="feed-meta">
         <span className="feed-src">{post.book.title} · {post.book.author}</span>
         <div className="feed-meta-right">
-          <span className="feed-author">{post.userName}{followingIds?.has(post.userId) && !isMine && <span className="feed-following">구독</span>}</span>
+          <span className={`feed-author${followingIds?.has(post.userId) && !isMine ? " feed-author-following" : ""}`}>{post.userName}</span>
           <div className="feed-more-wrap" ref={menuRef}>
             <button
               className="feed-more-btn"
