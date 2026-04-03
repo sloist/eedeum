@@ -253,6 +253,9 @@ export function WeaveReaderPage() {
             — {quote.underline!.bookTitle}, {quote.underline!.bookAuthor}
             {quote.underline!.page > 0 && ` · p.${quote.underline!.page}`}
           </div>
+          {quote.underline!.feeling && (
+            <div className="wr-line-feeling">{quote.underline!.feeling}</div>
+          )}
           <div className="wr-combined-memo">{memo.content}</div>
         </div>
       );
@@ -268,6 +271,9 @@ export function WeaveReaderPage() {
               <div className="wr-line-source">
                 — {b.underline!.bookTitle}, {b.underline!.bookAuthor}
               </div>
+              {b.underline!.feeling && (
+                <div className="wr-line-feeling">{b.underline!.feeling}</div>
+              )}
             </div>
           ))}
         </div>
@@ -286,6 +292,9 @@ export function WeaveReaderPage() {
             — {block.underline.bookTitle}, {block.underline.bookAuthor}
             {block.underline.page > 0 && ` · p.${block.underline.page}`}
           </div>
+          {block.underline.feeling && (
+            <div className="wr-line-feeling">{block.underline.feeling}</div>
+          )}
         </div>
       );
     }

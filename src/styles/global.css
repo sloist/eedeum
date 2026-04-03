@@ -1119,7 +1119,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .weave-editor-header{
   display:flex;align-items:center;gap:8px;
   padding:12px 20px;position:sticky;top:0;
-  background:rgba(255,255,255,0.95);backdrop-filter:blur(24px);
+  background:rgba(251,251,249,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   z-index:10;border-bottom:0.5px solid rgba(229,229,229,0.5);
 }
 .weave-title-input{
@@ -1309,6 +1309,10 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .wr-line-source{
   font-size:11px;color:var(--t3);
   margin-top:8px;letter-spacing:.1px;
+}
+.wr-line-feeling{
+  font-family:var(--sn);font-size:14px;line-height:1.7;
+  color:var(--t2);margin-top:16px;opacity:.7;
 }
 .wr-note{
   padding:0;font-size:14px;
