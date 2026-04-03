@@ -47,17 +47,29 @@ export function WeaveReaderPage() {
   const [otherWeaves, setOtherWeaves] = useState<{ id: string; shortId: string; title: string; coverColor: string; blockCount: number; userHandle: string }[]>([]);
   const [fadeState, setFadeState] = useState<"in" | "out">("in");
 
-  // 인접한 quote+note를 한 페이지로 묶기
+  // 블록을 페이지로 묶기 — 밀도 조절
   const pages = (() => {
     const result: { blocks: typeof blocks }[] = [];
+    const isShortQuote = (b: typeof blocks[0]) =>
+      b.type === "underline" && (b.underline?.quote.length ?? 0) < 60;
     let i = 0;
     while (i < blocks.length) {
       const curr = blocks[i];
       const next = blocks[i + 1];
-      // 문장 바로 다음에 메모가 오면 한 페이지로 합침
+      // 문장 + 바로 다음 메모 → 합침
       if (curr.type === "underline" && next?.type === "note") {
         result.push({ blocks: [curr, next] });
         i += 2;
+      // 연속 짧은 문장 → 2~3개 묶기
+      } else if (isShortQuote(curr) && next && isShortQuote(next)) {
+        const third = blocks[i + 2];
+        if (third && isShortQuote(third)) {
+          result.push({ blocks: [curr, next, third] });
+          i += 3;
+        } else {
+          result.push({ blocks: [curr, next] });
+          i += 2;
+        }
       } else {
         result.push({ blocks: [curr] });
         i += 1;
@@ -227,14 +239,13 @@ export function WeaveReaderPage() {
     const pageBlocks = page.blocks;
 
     // 문장+메모 합친 페이지
-    if (pageBlocks.length === 2) {
+    if (pageBlocks.length === 2 && pageBlocks[0].type === "underline" && pageBlocks[1].type === "note") {
       const quote = pageBlocks[0];
       const memo = pageBlocks[1];
-      const isShort = (quote.underline?.quote.length ?? 0) < 30;
       return (
         <div className="wr-block wr-block-combined">
           <div className="wr-line">
-            <div className={`wr-line-quote ${isShort ? "wr-line-quote-short" : ""}`}>{quote.underline!.quote}</div>
+            <div className="wr-line-quote">{quote.underline!.quote}</div>
           </div>
           <div className="wr-line-source">
             — {quote.underline!.bookTitle}, {quote.underline!.bookAuthor}
@@ -245,14 +256,29 @@ export function WeaveReaderPage() {
       );
     }
 
+    // 연속 짧은 문장 묶음
+    if (pageBlocks.length >= 2 && pageBlocks.every(b => b.type === "underline")) {
+      return (
+        <div className="wr-block wr-block-multi">
+          {pageBlocks.map((b, i) => (
+            <div key={i} className="wr-multi-item">
+              <div className="wr-line-quote">{b.underline!.quote}</div>
+              <div className="wr-line-source">
+                — {b.underline!.bookTitle}, {b.underline!.bookAuthor}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
     const block = pageBlocks[0];
 
     if (block.type === "underline" && block.underline) {
-      const isShort = block.underline.quote.length < 30;
       return (
         <div className="wr-block wr-block-quote">
           <div className="wr-line">
-            <div className={`wr-line-quote ${isShort ? "wr-line-quote-short" : ""}`}>{block.underline.quote}</div>
+            <div className="wr-line-quote">{block.underline.quote}</div>
           </div>
           <div className="wr-line-source">
             — {block.underline.bookTitle}, {block.underline.bookAuthor}
