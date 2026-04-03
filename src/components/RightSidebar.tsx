@@ -98,6 +98,7 @@ export function RightSidebar() {
           value={searchQ}
           onChange={e => setSearchQ(e.target.value)}
           onFocus={() => setSearchFocused(true)}
+          onKeyDown={e => { if (e.key === "Enter" && searchQ.trim()) { navigate("/search"); } }}
         />
         {showBookDropdown && (
           <div className="rs-search-dropdown">

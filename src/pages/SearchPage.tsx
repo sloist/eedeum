@@ -1,180 +1,228 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { searchBooksAndLines, fetchPublicWeaves, type DbBook } from "../lib/api";
+import { useNavigate } from "react-router-dom";
+import { searchBooksAndLines, fetchPublicWeaves, searchUsers, type DbBook, type DbUser } from "../lib/api";
 import { searchBooks, type BookSearchResult } from "../lib/bookSearch";
 import { useAuth } from "../lib/AuthContext";
 import { trackSearch, trackSearchClick } from "../lib/tracking";
 
+type Tab = "all" | "lines" | "books" | "people" | "notes";
+
 export function SearchPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [params] = useSearchParams();
-  const scope = params.get("scope"); // "notes" or null (= global)
-  const isNotesScope = scope === "notes";
 
   const [searchQ, setSearchQ] = useState("");
+  const [tab, setTab] = useState<Tab>("all");
+  const [submitted, setSubmitted] = useState(false);
+
   const [kakaoBooks, setKakaoBooks] = useState<BookSearchResult[]>([]);
-  const [bookResults, setBookResults] = useState<DbBook[]>([]);
-  const [lineResults, setUnderlineResults] = useState<{ quote: string; bookTitle: string; bookAuthor: string }[]>([]);
-  const [noteResults, setNoteResults] = useState<{ id: string; shortId: string; title: string; userName: string; userHandle: string; coverColor: string }[]>([]);
+  const [dbBooks, setDbBooks] = useState<DbBook[]>([]);
+  const [lines, setLines] = useState<{ quote: string; bookTitle: string; bookAuthor: string }[]>([]);
+  const [people, setPeople] = useState<DbUser[]>([]);
+  const [notes, setNotes] = useState<{ id: string; shortId: string; title: string; userName: string; userHandle: string; coverColor: string }[]>([]);
   const [searching, setSearching] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem("eedeum_recent_search") || "[]"); } catch { return []; }
+  });
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
-  // 전역 검색
-  useEffect(() => {
-    if (isNotesScope) return;
-    if (!searchQ.trim()) { setKakaoBooks([]); setBookResults([]); setUnderlineResults([]); return; }
-    let mounted = true;
-    const timer = setTimeout(async () => {
-      setSearching(true);
-      const [kakao, db] = await Promise.all([
-        searchBooks(searchQ.trim()),
-        searchBooksAndLines(searchQ.trim()),
-      ]);
-      if (!mounted) return;
-      setKakaoBooks(kakao);
-      setBookResults(db.books);
-      setUnderlineResults(db.underlines);
-      setSearching(false);
-      if (user) {
-        trackSearch(user.id, searchQ, kakao.length + db.books.length + db.underlines.length);
-      }
-    }, 300);
-    return () => { mounted = false; clearTimeout(timer); };
-  }, [searchQ, isNotesScope]);
+  const doSearch = async (q: string) => {
+    if (!q.trim()) return;
+    setSubmitted(true);
+    setSearching(true);
 
-  // 노트 검색
-  useEffect(() => {
-    if (!isNotesScope) return;
-    if (!searchQ.trim()) { setNoteResults([]); return; }
-    let mounted = true;
-    const timer = setTimeout(async () => {
-      setSearching(true);
-      const weaves = await fetchPublicWeaves();
-      if (!mounted) return;
-      const q = searchQ.trim().toLowerCase();
-      const filtered = weaves
+    const [kakao, db, users, weaves] = await Promise.all([
+      searchBooks(q.trim()),
+      searchBooksAndLines(q.trim()),
+      searchUsers(q.trim()),
+      fetchPublicWeaves(),
+    ]);
+
+    setKakaoBooks(kakao);
+    setDbBooks(db.books);
+    setLines(db.underlines);
+    setPeople(users);
+
+    const qLower = q.trim().toLowerCase();
+    setNotes(
+      weaves
         .filter((w: any) =>
-          w.title.toLowerCase().includes(q) ||
-          (w.description ?? "").toLowerCase().includes(q) ||
-          (w.userName ?? "").toLowerCase().includes(q)
+          w.title.toLowerCase().includes(qLower) ||
+          (w.description ?? "").toLowerCase().includes(qLower) ||
+          (w.userName ?? "").toLowerCase().includes(qLower)
         )
         .slice(0, 10)
-        .map((w: any) => ({ id: w.id, shortId: w.shortId, title: w.title, userName: w.userName, userHandle: w.userHandle, coverColor: w.coverColor }));
-      setNoteResults(filtered);
-      setSearching(false);
-    }, 300);
-    return () => { mounted = false; clearTimeout(timer); };
-  }, [searchQ, isNotesScope]);
+        .map((w: any) => ({ id: w.id, shortId: w.shortId, title: w.title, userName: w.userName, userHandle: w.userHandle, coverColor: w.coverColor }))
+    );
 
-  const goBook = (title: string, author: string, position?: number) => {
-    if (user) {
-      trackSearchClick(user.id, searchQ, "book", title, position);
-    }
+    setSearching(false);
+
+    // 최근 검색 저장
+    const updated = [q.trim(), ...recentSearches.filter(r => r !== q.trim())].slice(0, 5);
+    setRecentSearches(updated);
+    localStorage.setItem("eedeum_recent_search", JSON.stringify(updated));
+
+    if (user) trackSearch(user.id, q, kakao.length + db.books.length + db.underlines.length + users.length);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    doSearch(searchQ);
+  };
+
+  const goBook = (title: string, author: string) => {
+    if (user) trackSearchClick(user.id, searchQ, "book", title);
     navigate(`/book/${encodeURIComponent(title)}`, { state: { author, from: "search" } });
   };
 
   const kakaoTitles = new Set(kakaoBooks.map(b => b.title.toLowerCase()));
-  const filteredDbBooks = bookResults.filter(b => !kakaoTitles.has(b.title.toLowerCase()));
+  const allBooks = [...kakaoBooks.map(b => ({ title: b.title, author: b.author, isKakao: true })), ...dbBooks.filter(b => !kakaoTitles.has(b.title.toLowerCase())).map(b => ({ title: b.title, author: b.author, isKakao: false }))];
 
-  const placeholder = isNotesScope ? "노트 찾기" : "문장, 책, 사람 찾기";
-  const hint = isNotesScope
-    ? "노트 제목이나 작성자를 입력해 보세요"
-    : "책 제목, 작가 이름, 또는 기억나는 문장을 입력해 보세요";
+  const tabs: { key: Tab; label: string; count: number }[] = [
+    { key: "all", label: "전체", count: allBooks.length + lines.length + people.length + notes.length },
+    { key: "lines", label: "문장", count: lines.length },
+    { key: "books", label: "책", count: allBooks.length },
+    { key: "people", label: "사람", count: people.length },
+    { key: "notes", label: "노트", count: notes.length },
+  ];
 
   return (
     <div className="content-fade-in">
-      <div className="search-header">
+      <form className="search-header" onSubmit={handleSubmit}>
         <input
           ref={inputRef}
           className="search-input"
-          placeholder={placeholder}
+          placeholder="문장, 책, 사람, 노트 찾기"
           value={searchQ}
           onChange={e => setSearchQ(e.target.value)}
         />
-        <button className="search-close" onClick={() => window.history.length > 1 ? navigate(-1) : navigate("/")} aria-label="닫기">×</button>
-      </div>
+        <button type="submit" className="search-submit" disabled={!searchQ.trim()}>검색</button>
+        <button type="button" className="search-close" onClick={() => window.history.length > 1 ? navigate(-1) : navigate("/")} aria-label="닫기">×</button>
+      </form>
 
-      <div className="search-results">
-        {!searchQ.trim() && (
-          <div className="search-hint">
-            <div className="search-hint-text">{hint}</div>
+      {/* 검색 전: 최근 검색어 */}
+      {!submitted && (
+        <div className="search-recent">
+          {recentSearches.length > 0 && (
+            <>
+              <div className="search-recent-label">최근 검색</div>
+              {recentSearches.map((r, i) => (
+                <button key={i} className="search-recent-item" onClick={() => { setSearchQ(r); doSearch(r); }}>
+                  {r}
+                </button>
+              ))}
+            </>
+          )}
+          {recentSearches.length === 0 && (
+            <div className="search-hint">
+              <div className="search-hint-text">책 제목, 작가, 문장, 사람을 검색해 보세요</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 검색 후: 탭 + 결과 */}
+      {submitted && (
+        <>
+          <div className="search-tabs">
+            {tabs.map(t => (
+              <button
+                key={t.key}
+                className={`search-tab ${tab === t.key ? "on" : ""}`}
+                onClick={() => setTab(t.key)}
+              >
+                {t.label}{submitted && t.count > 0 && <span className="search-tab-count">{t.count}</span>}
+              </button>
+            ))}
           </div>
-        )}
 
-        {searching && <div className="empty-inline">찾는 중...</div>}
+          <div className="search-results">
+            {searching && <div className="empty-inline">찾는 중...</div>}
 
-        {/* ─── 전역 검색 결과 ─── */}
-        {!isNotesScope && (
-          <>
-            {kakaoBooks.length > 0 && (
+            {!searching && (
               <>
-                <div className="sh"><span className="sl">책</span></div>
-                {kakaoBooks.slice(0, 6).map((b, i) => (
-                  <div key={`k-${i}`} className="search-row" onClick={() => goBook(b.title, b.author)}>
-                    <div className="search-row-title">{b.title}</div>
-                    <div className="search-row-sub">{b.author}</div>
+                {/* 문장 */}
+                {(tab === "all" || tab === "lines") && lines.length > 0 && (
+                  <div className="search-section">
+                    {tab === "all" && <div className="search-section-label">문장</div>}
+                    {lines.slice(0, tab === "all" ? 3 : 20).map((p, i) => (
+                      <div key={i} className="search-row" onClick={() => goBook(p.bookTitle, p.bookAuthor)}>
+                        <div className="search-row-quote">{p.quote}</div>
+                        <div className="search-row-sub">{p.bookTitle} · {p.bookAuthor}</div>
+                      </div>
+                    ))}
+                    {tab === "all" && lines.length > 3 && (
+                      <button className="search-more" onClick={() => setTab("lines")}>문장 {lines.length}개 전체 보기</button>
+                    )}
                   </div>
-                ))}
+                )}
+
+                {/* 책 */}
+                {(tab === "all" || tab === "books") && allBooks.length > 0 && (
+                  <div className="search-section">
+                    {tab === "all" && <div className="search-section-label">책</div>}
+                    {allBooks.slice(0, tab === "all" ? 4 : 20).map((b, i) => (
+                      <div key={i} className="search-row" onClick={() => goBook(b.title, b.author)}>
+                        <div className="search-row-title">{b.title}</div>
+                        <div className="search-row-sub">{b.author}</div>
+                      </div>
+                    ))}
+                    {tab === "all" && allBooks.length > 4 && (
+                      <button className="search-more" onClick={() => setTab("books")}>책 {allBooks.length}개 전체 보기</button>
+                    )}
+                  </div>
+                )}
+
+                {/* 사람 */}
+                {(tab === "all" || tab === "people") && people.length > 0 && (
+                  <div className="search-section">
+                    {tab === "all" && <div className="search-section-label">사람</div>}
+                    {people.slice(0, tab === "all" ? 3 : 20).map((u) => (
+                      <div key={u.id} className="search-row" onClick={() => navigate(`/@${u.handle}`)}>
+                        <div className="search-row-person">
+                          <span className="search-person-avatar">{u.avatar_emoji ?? "📖"}</span>
+                          <span className="search-row-title">{u.name}</span>
+                        </div>
+                        <div className="search-row-sub">@{u.handle}</div>
+                      </div>
+                    ))}
+                    {tab === "all" && people.length > 3 && (
+                      <button className="search-more" onClick={() => setTab("people")}>사람 {people.length}명 전체 보기</button>
+                    )}
+                  </div>
+                )}
+
+                {/* 노트 */}
+                {(tab === "all" || tab === "notes") && notes.length > 0 && (
+                  <div className="search-section">
+                    {tab === "all" && <div className="search-section-label">노트</div>}
+                    {notes.slice(0, tab === "all" ? 3 : 20).map((n) => (
+                      <div key={n.id} className="search-row" onClick={() => navigate(`/@${n.userHandle}/notes/${n.shortId}`)}>
+                        <div className="search-row-note">
+                          <span className="search-note-dot" style={{ background: n.coverColor }} />
+                          <span className="search-row-title">{n.title}</span>
+                        </div>
+                        <div className="search-row-sub">{n.userName}</div>
+                      </div>
+                    ))}
+                    {tab === "all" && notes.length > 3 && (
+                      <button className="search-more" onClick={() => setTab("notes")}>노트 {notes.length}개 전체 보기</button>
+                    )}
+                  </div>
+                )}
+
+                {/* 결과 없음 */}
+                {!searching && allBooks.length === 0 && lines.length === 0 && people.length === 0 && notes.length === 0 && (
+                  <div className="empty-inline">결과가 없습니다</div>
+                )}
               </>
             )}
-
-            {filteredDbBooks.length > 0 && (
-              <>
-                {kakaoBooks.length === 0 && <div className="sh"><span className="sl">책</span></div>}
-                {filteredDbBooks.map((b, i) => (
-                  <div key={`d-${i}`} className="search-row" onClick={() => goBook(b.title, b.author)}>
-                    <div className="search-row-title">{b.title}</div>
-                    <div className="search-row-sub">{b.author}</div>
-                  </div>
-                ))}
-              </>
-            )}
-
-            {lineResults.length > 0 && (
-              <>
-                <div className="sh"><span className="sl">문장</span></div>
-                {lineResults.slice(0, 6).map((p, i) => (
-                  <div key={`u-${i}`} className="search-row" onClick={() => goBook(p.bookTitle, p.bookAuthor)}>
-                    <div className="search-row-quote">{p.quote}</div>
-                    <div className="search-row-sub">{p.bookTitle} · {p.bookAuthor}</div>
-                  </div>
-                ))}
-              </>
-            )}
-
-            {searchQ.trim() && !searching && kakaoBooks.length === 0 && bookResults.length === 0 && lineResults.length === 0 && (
-              <div className="empty-inline">결과가 없습니다</div>
-            )}
-          </>
-        )}
-
-        {/* ─── 노트 검색 결과 ─── */}
-        {isNotesScope && (
-          <>
-            {noteResults.length > 0 && (
-              <>
-                <div className="sh"><span className="sl">노트</span></div>
-                {noteResults.map((n) => (
-                  <div key={n.id} className="search-row" onClick={() => navigate(`/@${n.userHandle}/notes/${n.shortId}`)}>
-                    <div className="search-row-note">
-                      <span className="search-note-dot" style={{ background: n.coverColor }} />
-                      <span className="search-row-title">{n.title}</span>
-                    </div>
-                    <div className="search-row-sub">{n.userName}</div>
-                  </div>
-                ))}
-              </>
-            )}
-
-            {searchQ.trim() && !searching && noteResults.length === 0 && (
-              <div className="empty-inline">결과가 없습니다</div>
-            )}
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

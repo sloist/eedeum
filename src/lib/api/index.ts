@@ -37,6 +37,7 @@ export {
   updateUserProfile,
   fetchNotifications,
   markNotificationsRead,
+  searchUsers,
   fetchUserRank,
   fetchRediscovery,
 } from "./user";

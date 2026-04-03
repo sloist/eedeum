@@ -293,6 +293,16 @@ export async function fetchReceivedEchoes(userId: string) {
   }));
 }
 
+export async function searchUsers(query: string): Promise<DbUser[]> {
+  const q = `%${query}%`;
+  const { data } = await supabase
+    .from("users")
+    .select("*")
+    .or(`name.ilike.${q},handle.ilike.${q}`)
+    .limit(10);
+  return (data ?? []) as DbUser[];
+}
+
 export async function fetchRecommendedUsers() {
   const { data } = await supabase
     .from("users")
