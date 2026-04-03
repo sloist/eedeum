@@ -31,7 +31,7 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
   }, [showMenu]);
 
   return (
-    <div className="feed-item" data-post-id={post.id} onClick={() => onDetail(post.id)}>
+    <div className="feed-item" data-post-id={post.id} onClick={() => onDetail(post.shortId)}>
       {isMine && <span className="feed-mine-badge">내 기록</span>}
       <span className="feed-quote">{post.quote}</span>
 

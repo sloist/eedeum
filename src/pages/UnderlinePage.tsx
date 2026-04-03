@@ -33,7 +33,7 @@ export function UnderlinePage() {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [echoes, setEchoes] = useState<Echo[]>([]);
-  const [sameQuoteLines, setSameQuoteLines] = useState<{ id: string; userId: string; userName: string; feeling: string | null }[]>([]);
+  const [sameQuoteLines, setSameQuoteLines] = useState<{ id: string; shortId: string; userId: string; userName: string; feeling: string | null }[]>([]);
   const [showSameQuote, setShowSameQuote] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<{ type: "echo" | "line"; echoId?: string; echoIndex?: number; isReply?: boolean; parentIndex?: number } | null>(null);
@@ -354,7 +354,7 @@ export function UnderlinePage() {
               <span className="detail-others-chevron"><Icons.ChevD /></span>
             </button>
             {showSameQuote && sameQuoteLines.map((sl) => (
-              <div key={sl.id} className="detail-other-card" onClick={() => navigate(`/line/${sl.id}`)}>
+              <div key={sl.id} className="detail-other-card" onClick={() => navigate(`/line/${sl.shortId}`)}>
                 {sl.feeling
                   ? <div className="detail-other-feeling">{sl.feeling}</div>
                   : <div className="detail-other-feeling" style={{ opacity: 0.5 }}>같은 문장, 다른 시선</div>
@@ -398,7 +398,7 @@ export function UnderlinePage() {
       {showShare && data && (
         <ShareModal
           post={{
-            id: data.id, userId: data.userId, userName: data.userName,
+            id: data.id, shortId: data.shortId, userId: data.userId, userName: data.userName,
             book: { title: data.bookTitle, author: data.bookAuthor, page: data.page },
             quote: data.quote, feeling: data.feeling ?? "", coverColor: data.coverColor,
             timestamp: "", likes: 0, topic: "", echoes: [], otherLines: [],

@@ -192,6 +192,7 @@ export async function fetchSavedLines(userId: string) {
     const u = s.underlines as unknown as DbUnderline;
     return {
       id: u?.id ?? "",
+      shortId: u?.short_id ?? "",
       quote: u?.quote ?? "",
       book: u?.books?.title ?? "",
       author: u?.books?.author ?? "",
@@ -214,6 +215,7 @@ export async function fetchLikedLines(userId: string) {
     const u = l.underlines as unknown as DbUnderline;
     return {
       id: u?.id ?? "",
+      shortId: u?.short_id ?? "",
       quote: u?.quote ?? "",
       book: u?.books?.title ?? "",
       author: u?.books?.author ?? "",
@@ -227,15 +229,17 @@ export async function fetchReceivedEchoes(userId: string) {
   // Get all underline IDs for this user
   const { data: myUnderlines } = await supabase
     .from("underlines")
-    .select("id, quote")
+    .select("id, short_id, quote")
     .eq("user_id", userId);
 
   if (!myUnderlines || myUnderlines.length === 0) return [];
 
   const lineIds = myUnderlines.map(u => u.id);
   const quoteMap: Record<string, string> = {};
+  const shortIdMap: Record<string, string> = {};
   for (const u of myUnderlines) {
     quoteMap[u.id] = u.quote;
+    shortIdMap[u.id] = u.short_id;
   }
 
   const { data: echoes } = await supabase
@@ -246,7 +250,7 @@ export async function fetchReceivedEchoes(userId: string) {
     .order("created_at", { ascending: false });
 
   return (echoes ?? []).map(e => ({
-    lineId: e.underline_id,
+    lineId: shortIdMap[e.underline_id] ?? e.underline_id,
     from: (e.users as unknown as DbUser)?.name ?? "?",
     text: e.text,
     isSameLine: !!e.is_same_line,
@@ -327,7 +331,8 @@ export async function fetchNotifications(userId: string) {
       created_at,
       underline_id,
       echo_id,
-      actor:users!notifications_actor_id_fkey(id, name, handle)
+      actor:users!notifications_actor_id_fkey(id, name, handle),
+      underlines!notifications_underline_id_fkey(short_id)
     `)
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -348,7 +353,7 @@ export async function fetchNotifications(userId: string) {
       id: n.id,
       text: getText ? getText(actorName) : `${actorName}님의 알림`,
       from: actorName,
-      lineId: n.underline_id,
+      lineId: (n.underlines as any)?.short_id ?? n.underline_id,
       time: timeAgo(n.created_at),
       isNew: !n.read,
       type: n.type,

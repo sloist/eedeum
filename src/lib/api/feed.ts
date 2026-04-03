@@ -6,6 +6,7 @@ import { getCached, setCache } from "../cache";
 export const EDITOR_USER_ID = "9b080172-cbfb-4181-bfcc-eb5c5b3931d9";
 
 export async function fetchLineAsFeedPost(lineId: string): Promise<FeedPost | null> {
+  const col = UUID_RE.test(lineId) ? "id" : "short_id";
   const { data } = await supabase
     .from("underlines")
     .select(`
@@ -15,7 +16,7 @@ export async function fetchLineAsFeedPost(lineId: string): Promise<FeedPost | nu
       echoes(*, users(*)),
       likes(count)
     `)
-    .eq("id", lineId)
+    .eq(col, lineId)
     .single();
 
   if (!data) return null;
@@ -172,15 +173,18 @@ export async function fetchEditorialPicks(): Promise<EditorialQuote[]> {
   return picks;
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function fetchLineDetail(lineId: string): Promise<any | null> {
   const cacheKey = `feed:line:${lineId}`;
   const cached = getCached<any>(cacheKey);
   if (cached) return cached;
 
+  const col = UUID_RE.test(lineId) ? "id" : "short_id";
   const { data: line } = await supabase
     .from("underlines")
     .select(`*, users!underlines_user_id_fkey(*), books(*)`)
-    .eq("id", lineId)
+    .eq(col, lineId)
     .single();
 
   if (!line) return null;
@@ -188,30 +192,33 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
   const user = line.users as DbUser;
   const book = line.books as DbBook;
 
+  const realId = line.id;
+
   // Fetch echoes
   const { data: echoes } = await supabase
     .from("echoes")
     .select(`*, users!echoes_user_id_fkey(*)`)
-    .eq("underline_id", lineId)
+    .eq("underline_id", realId)
     .order("created_at", { ascending: true });
 
   // Fetch like count
   const { count: likeCount } = await supabase
     .from("likes")
     .select("*", { count: "exact", head: true })
-    .eq("underline_id", lineId);
+    .eq("underline_id", realId);
 
   // Fetch other lines from same book
   const { data: otherLines } = await supabase
     .from("underlines")
     .select(`*, users!underlines_user_id_fkey(*)`)
     .eq("book_id", book.id)
-    .neq("id", lineId)
+    .neq("id", realId)
     .order("page", { ascending: true })
     .limit(5);
 
   const result = {
     id: line.id,
+    shortId: line.short_id,
     userId: user?.id ?? "",
     userName: user?.name ?? "?",
     userAvatar: user?.avatar_emoji ?? "📖",
@@ -238,6 +245,7 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
     })),
     otherLines: (otherLines ?? []).map(o => ({
       id: o.id,
+      shortId: o.short_id,
       userId: o.user_id,
       userName: (o.users as DbUser)?.name ?? "?",
       quote: o.quote,
@@ -250,10 +258,10 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
 }
 
 /** 같은 한줄, 다른 시선 — 같은 quote를 기록한 다른 사용자의 감상 */
-export async function fetchSameQuoteLines(quote: string, excludeLineId: string): Promise<{ id: string; userId: string; userName: string; feeling: string | null }[]> {
+export async function fetchSameQuoteLines(quote: string, excludeLineId: string): Promise<{ id: string; shortId: string; userId: string; userName: string; feeling: string | null }[]> {
   const { data } = await supabase
     .from("underlines")
-    .select(`id, user_id, feeling, users!underlines_user_id_fkey(name)`)
+    .select(`id, short_id, user_id, feeling, users!underlines_user_id_fkey(name)`)
     .eq("quote", quote)
     .neq("id", excludeLineId)
     .limit(10);
@@ -261,6 +269,7 @@ export async function fetchSameQuoteLines(quote: string, excludeLineId: string):
   if (!data) return [];
   return data.map((d: any) => ({
     id: d.id,
+    shortId: d.short_id,
     userId: d.user_id,
     userName: (d.users as DbUser)?.name ?? "?",
     feeling: d.feeling,
@@ -289,6 +298,7 @@ export async function fetchDiscoverQuotes(topic?: string) {
   const { data } = await query;
   return (data ?? []).map(u => ({
     id: u.id,
+    shortId: u.short_id,
     quote: u.quote,
     feeling: u.feeling,
     userName: (u.users as any)?.name ?? "?",
@@ -310,7 +320,7 @@ export async function fetchRandomBookWithRecords() {
 
   const { data: underlines } = await supabase
     .from("underlines")
-    .select("id, quote, feeling, users!underlines_user_id_fkey(name)")
+    .select("id, short_id, quote, feeling, users!underlines_user_id_fkey(name)")
     .eq("book_id", book.id)
     .order("created_at", { ascending: false })
     .limit(3);
@@ -322,6 +332,7 @@ export async function fetchRandomBookWithRecords() {
     coverColor: book.cover_color ?? "#7B6548",
     records: (underlines ?? []).map((u: any) => ({
       id: u.id,
+      shortId: u.short_id,
       quote: u.quote.length > 80 ? u.quote.slice(0, 80) + "..." : u.quote,
       feeling: u.feeling,
       userName: (u.users as any)?.name ?? "?",

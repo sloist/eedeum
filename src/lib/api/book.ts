@@ -15,12 +15,12 @@ export async function fetchBooks(topicFilter?: string) {
   const countsMap: Record<string, number> = {};
   const readersMap: Record<string, Set<string>> = {};
 
-  const quotesMap: Record<string, { id: string; quote: string; likes: number }[]> = {};
+  const quotesMap: Record<string, { id: string; shortId: string; quote: string; likes: number }[]> = {};
 
   if (bookIds.length > 0) {
     const { data: countData } = await supabase
       .from("underlines")
-      .select("id, book_id, user_id, quote, likes(count)")
+      .select("id, short_id, book_id, user_id, quote, likes(count)")
       .in("book_id", bookIds);
 
     for (const row of (countData ?? []) as any[]) {
@@ -30,6 +30,7 @@ export async function fetchBooks(topicFilter?: string) {
       if (!quotesMap[row.book_id]) quotesMap[row.book_id] = [];
       quotesMap[row.book_id].push({
         id: row.id,
+        shortId: row.short_id,
         quote: row.quote,
         likes: row.likes?.[0]?.count ?? 0,
       });
@@ -46,7 +47,7 @@ export async function fetchBooks(topicFilter?: string) {
     ...b,
     lines: countsMap[b.id] ?? 0,
     uniqueReaders: readersMap[b.id]?.size ?? 0,
-    topQuotes: (quotesMap[b.id] ?? []).map(q => ({ id: q.id, quote: q.quote })),
+    topQuotes: (quotesMap[b.id] ?? []).map(q => ({ id: q.id, shortId: q.shortId, quote: q.quote })),
   }));
 }
 
@@ -70,6 +71,7 @@ export async function fetchBookDetail(title: string) {
     book: book as DbBook,
     lines: (underlines ?? []).map(u => ({
       id: u.id,
+      shortId: u.short_id,
       userId: u.user_id,
       userName: (u.users as DbUser)?.name ?? "?",
       quote: u.quote,

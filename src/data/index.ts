@@ -40,6 +40,7 @@ export interface Echo {
 
 export interface Post {
   id: string;
+  shortId: string;
   userId: string;
   userName?: string;
   userAvatar?: string;

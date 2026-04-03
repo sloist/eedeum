@@ -18,7 +18,7 @@ interface HomePageProps {
 
 function feedPostToPost(fp: FeedPost): Post {
   return {
-    id: fp.id, userId: fp.userId, userName: fp.userName, userAvatar: fp.userAvatar,
+    id: fp.id, shortId: fp.shortId, userId: fp.userId, userName: fp.userName, userAvatar: fp.userAvatar,
     userHandle: fp.userHandle, book: fp.book, bookId: fp.bookId, quote: fp.quote,
     feeling: fp.feeling, coverColor: fp.coverColor, timestamp: fp.timestamp,
     likes: fp.likes, topic: fp.topic,

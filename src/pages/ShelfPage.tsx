@@ -26,9 +26,9 @@ export function ShelfPage() {
   const [profile, setProfile] = useState<User | null>(null);
   const [shelf, setShelf] = useState<{ title: string; author: string; color: string; lines: number }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userLines, setUserLines] = useState<{ id: string; quote: string; bookTitle: string; bookAuthor: string }[]>([]);
+  const [userLines, setUserLines] = useState<{ id: string; shortId: string; quote: string; bookTitle: string; bookAuthor: string }[]>([]);
   const [weaves, setWeaves] = useState<{ id: string; title: string; description: string | null; coverColor: string; isPublic: boolean; blockCount: number; createdAt: string; updatedAt: string }[]>([]);
-  const [savedItems, setSavedItems] = useState<{ id: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
+  const [savedItems, setSavedItems] = useState<{ id: string; shortId: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
   const [privateMemos, setPrivateMemos] = useState<{ lineId: string; text: string; date: string }[]>([]);
   const [showMore, setShowMore] = useState(false);
   const [blocks, setBlocks] = useState<{ blockType: string; targetId: string; label: string }[]>([]);
@@ -69,7 +69,7 @@ export function ShelfPage() {
       }
       setShelf(shelfData);
       setWeaves(weavesData);
-      setUserLines(lines.map((l: any) => ({ id: l.id, quote: l.quote, bookTitle: l.book?.title ?? "", bookAuthor: l.book?.author ?? "" })));
+      setUserLines(lines.map((l: any) => ({ id: l.id, shortId: l.shortId, quote: l.quote, bookTitle: l.book?.title ?? "", bookAuthor: l.book?.author ?? "" })));
       setSavedItems(saved);
       setPrivateMemos(memos);
       setBlocks(userBlocks);
@@ -117,7 +117,7 @@ export function ShelfPage() {
           user={profile}
           showFollow={false}
           featuredQuote={featuredQuote}
-          featuredQuoteId={featuredLine?.id}
+          featuredQuoteId={featuredLine?.shortId}
           onQuoteClick={(id) => navigate(`/line/${id}`)}
           featuredWeave={featuredWeave ? { id: featuredWeave.id, title: featuredWeave.title, coverColor: featuredWeave.coverColor } : null}
           onWeaveClick={(id) => navigate(`/notes/${id}`)}
@@ -173,7 +173,7 @@ export function ShelfPage() {
           <div className="shelf-section-label">기록</div>
           <div className="shelf-lines">
             {userLines.slice(0, showMore ? userLines.length : 5).map(l => (
-              <div key={l.id} className="shelf-line-card" onClick={() => navigate(`/line/${l.id}`)}>
+              <div key={l.id} className="shelf-line-card" onClick={() => navigate(`/line/${l.shortId}`)}>
                 <div className="shelf-line-quote">{l.quote}</div>
                 <div className="shelf-line-src">{l.bookTitle} · {l.bookAuthor}</div>
               </div>
@@ -195,7 +195,7 @@ export function ShelfPage() {
               <div className="shelf-section-label">담아둔 조각</div>
               <div className="shelf-lines">
                 {savedItems.slice(0, 3).map(s => (
-                  <div key={s.id} className="shelf-line-card" onClick={() => navigate(`/line/${s.id}`)}>
+                  <div key={s.id} className="shelf-line-card" onClick={() => navigate(`/line/${s.shortId}`)}>
                     <div className="shelf-line-quote">{s.quote}</div>
                     <div className="shelf-line-src">{s.book} · {s.author}</div>
                   </div>

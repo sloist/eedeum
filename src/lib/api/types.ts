@@ -30,6 +30,7 @@ export interface DbEcho {
 
 export interface DbUnderline {
   id: string;
+  short_id: string;
   user_id: string;
   book_id: string;
   quote: string;
@@ -46,6 +47,7 @@ export interface DbUnderline {
 
 export interface FeedPost {
   id: string;
+  shortId: string;
   userId: string;
   userName: string;
   userAvatar: string;

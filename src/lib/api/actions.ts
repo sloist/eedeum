@@ -239,11 +239,11 @@ export async function deletePrivateMemo(memoId: string): Promise<boolean> {
 export async function fetchPrivateMemos(userId: string): Promise<{ id: string; lineId: string; text: string; date: string }[]> {
   const { data, error } = await supabase
     .from("private_memos")
-    .select("id, underline_id, text, created_at")
+    .select("id, underline_id, text, created_at, underlines(short_id)")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
   if (error || !data) return [];
-  return data.map((m: any) => ({ id: m.id, lineId: m.underline_id, text: m.text, date: m.created_at }));
+  return data.map((m: any) => ({ id: m.id, lineId: (m.underlines as any)?.short_id ?? m.underline_id, text: m.text, date: m.created_at }));
 }
 
 export async function fetchPrivateMemosForLine(userId: string, underlineId: string): Promise<{ id: string; text: string; date: string }[]> {

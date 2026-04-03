@@ -13,7 +13,7 @@ export function DiscoverSheet({ onClose }: DiscoverSheetProps) {
     title: string;
     author: string;
     coverColor: string;
-    records: { id: string; quote: string; feeling: string | null; userName: string }[];
+    records: { id: string; shortId: string; quote: string; feeling: string | null; userName: string }[];
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [transitioning, setTransitioning] = useState(false);
@@ -54,7 +54,7 @@ export function DiscoverSheet({ onClose }: DiscoverSheetProps) {
 
               {/* The quote — hero of this moment */}
               {firstRecord && (
-                <div className="dsc-hero-quote" onClick={() => { navigate(`/line/${firstRecord.id}`); onClose(); }}>
+                <div className="dsc-hero-quote" onClick={() => { navigate(`/line/${firstRecord.shortId}`); onClose(); }}>
                   {firstRecord.quote}
                 </div>
               )}

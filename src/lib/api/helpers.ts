@@ -49,6 +49,7 @@ export function mapLineToFeedPost(
 
   return {
     id: u.id,
+    shortId: u.short_id,
     userId: u.user_id,
     userName: user?.name ?? "?",
     userAvatar: user?.avatar_emoji ?? "📖",

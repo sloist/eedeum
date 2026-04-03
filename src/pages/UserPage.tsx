@@ -47,6 +47,7 @@ export function UserPage() {
       }
       setPosts(linesData.map((fp: FeedPost) => ({
         id: fp.id,
+        shortId: fp.shortId,
         userId: fp.userId,
         userName: fp.userName,
         userAvatar: fp.userAvatar,
