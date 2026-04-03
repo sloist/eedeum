@@ -14,7 +14,7 @@ export function WritePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
-  const { requireAuth } = useModal();
+  const { requireAuth, notifyNewPost } = useModal();
 
   // Image from camera/gallery
   const imageUrl = (location.state as any)?.imageUrl as string | undefined;
@@ -154,6 +154,7 @@ export function WritePage() {
       toast(result.error);
     } else if (result) {
       toast("기록이 남았습니다");
+      if (result.id) notifyNewPost(result.id);
       setTimeout(() => navigate("/", { replace: true }), 300);
     } else {
       toast("잠시 후 다시 시도해보세요");

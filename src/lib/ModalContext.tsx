@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
 import { CaptureSheet } from "../components/CaptureSheet";
 import { ShareModal } from "../components/ShareModal";
 import { Toast } from "../components/Toast";
@@ -15,6 +15,7 @@ interface ModalContextValue {
   feedKey: number;
   newPostId: string | null;
   onNewPostHandled: () => void;
+  notifyNewPost: (id: string) => void;
 }
 
 const ModalContext = createContext<ModalContextValue | null>(null);
@@ -39,6 +40,19 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Escape 키로 모달 닫기
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (showAuthModal) { setShowAuthModal(false); return; }
+      if (showShare) { setShowShare(false); return; }
+      if (showCap) { setShowCap(false); return; }
+      if (showOnboarding) { setShowOnboarding(false); return; }
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, [showAuthModal, showShare, showCap, showOnboarding]);
 
   const toast = useCallback((msg: string) => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -73,6 +87,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     feedKey,
     newPostId,
     onNewPostHandled,
+    notifyNewPost: (id: string) => setNewPostId(id),
   };
 
   return (
