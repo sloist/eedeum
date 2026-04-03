@@ -539,8 +539,6 @@ export function WeaveEditorPage() {
         {blocks.map((block, index) => {
           // divider 기준 페이지 번호 계산
           const pageNum = blocks.slice(0, index).filter(b => b.type === "divider").length + 2;
-          const prevBlock = blocks[index - 1];
-          const showPageLabel = block.type === "divider" || (index === 0);
           return (
           <div key={block.id}>
             <div
