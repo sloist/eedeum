@@ -90,12 +90,16 @@ export async function searchBooksAndLines(query: string) {
 
   const [{ data: books }, { data: underlines }] = await Promise.all([
     supabase.from("books").select("*").or(`title.ilike.${q},author.ilike.${q}`).limit(10),
-    supabase.from("underlines").select(`*, books(*)`).ilike("quote", q).limit(10),
+    supabase.from("underlines").select(`id, short_id, user_id, quote, page, feeling, books(*), users!underlines_user_id_fkey(handle)`).ilike("quote", q).limit(10),
   ]);
 
   return {
     books: (books ?? []) as DbBook[],
     underlines: (underlines ?? []).map(u => ({
+      id: u.id,
+      shortId: u.short_id,
+      userId: u.user_id,
+      userHandle: (u.users as any)?.handle ?? "",
       quote: u.quote,
       bookTitle: (u.books as unknown as DbBook)?.title ?? "",
       bookAuthor: (u.books as unknown as DbBook)?.author ?? "",

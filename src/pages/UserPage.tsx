@@ -20,6 +20,7 @@ export function UserPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [weaves, setWeaves] = useState<{ id: string; shortId: string; title: string; coverColor: string; blockCount: number; userHandle: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAllWeaves, setShowAllWeaves] = useState(false);
 
   useEffect(() => {
     if (!handle) return;
@@ -115,7 +116,7 @@ export function UserPage() {
         <>
           <div className="sh"><span className="sl">{profile.name}의 노트</span></div>
           <div className="user-weaves">
-            {weaves.slice(0, 3).map(w => (
+            {weaves.slice(0, showAllWeaves ? weaves.length : 3).map(w => (
               <div key={w.id} className="user-weave-item" onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}>
                 <div className="user-weave-spine" style={{ background: w.coverColor }} />
                 <div className="user-weave-title">{w.title}</div>
@@ -123,6 +124,11 @@ export function UserPage() {
               </div>
             ))}
           </div>
+          {weaves.length > 3 && !showAllWeaves && (
+            <button className="shelf-show-more" onClick={() => setShowAllWeaves(true)} style={{ margin: "0 20px 12px" }}>
+              전체 보기 ({weaves.length}개)
+            </button>
+          )}
         </>
       )}
 

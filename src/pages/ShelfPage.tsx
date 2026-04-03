@@ -162,9 +162,9 @@ export function ShelfPage() {
       )}
 
       {/* ─── 2. 내 노트 ─── */}
-      {weaves.length > 0 && (
-        <div className="shelf-section">
-          <div className="shelf-section-label">노트</div>
+      <div className="shelf-section">
+        {weaves.length > 0 && <div className="shelf-section-label">노트</div>}
+        {weaves.length > 0 && (
           <div className="weave-grid" style={{ padding: "0 20px 8px" }}>
             {weaves.map(w => {
               const preview = w.description || w.firstQuote || null;
@@ -185,8 +185,11 @@ export function ShelfPage() {
               );
             })}
           </div>
+        )}
+        <div style={{ padding: "0 20px 8px" }}>
+          <button className="book-add-line-btn" onClick={() => navigate("/notes/new")}>+ 새 노트</button>
         </div>
-      )}
+      </div>
 
       {/* ─── 3. 내 글 — 문장이 먼저 보이게 ─── */}
       {userLines.length > 0 && (

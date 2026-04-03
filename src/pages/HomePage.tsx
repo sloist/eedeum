@@ -39,6 +39,7 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
   const [loading, setLoading] = useState(true);
   const feedRef = useRef<HTMLDivElement>(null);
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
+  const [feedFilter, setFeedFilter] = useState<"all" | "following">("all");
 
   const loadFeed = useCallback(async () => {
     const feedData = await fetchFeedPosts();
@@ -145,17 +146,21 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
     await unblock(user.id, type, targetId);
   };
 
+  const filteredPosts = feedFilter === "following" && user
+    ? posts.filter(p => followingIds.has(p.userId) || p.userId === user.id)
+    : posts;
+
   const buildFlow = () => {
     const flow: React.ReactNode[] = [];
     const shownClusterBooks = new Set<string>();
-    posts.forEach((p, i) => {
+    filteredPosts.forEach((p, i) => {
       flow.push(
         <PostCard key={p.id} post={p} onDetail={onDetail} requireAuth={requireAuth} isLoggedIn={!!user} isMine={user?.id === p.userId} onHidePerson={handleHidePerson} onHideBook={handleHideBook} onNotInterested={handleNotInterested} onDelete={handleDelete} onUndoHide={handleUndoHide} followingIds={followingIds} />
       );
-      const next = posts[i + 1];
+      const next = filteredPosts[i + 1];
       if (next && next.book.title === p.book.title && !shownClusterBooks.has(p.book.title)) {
         shownClusterBooks.add(p.book.title);
-        const sameBookPosts = posts.filter(pp => pp.book.title === p.book.title && pp.id !== p.id);
+        const sameBookPosts = filteredPosts.filter(pp => pp.book.title === p.book.title && pp.id !== p.id);
         if (sameBookPosts.length > 0) {
           const book = p.book;
           flow.push(
@@ -191,9 +196,21 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
           )}
         </div>
       ) : (
-        <div className="feed-stream" ref={feedRef}>
-          {buildFlow()}
-        </div>
+        <>
+          {user && followingIds.size > 0 && (
+            <div className="stabs">
+              <button className={`stab ${feedFilter === "all" ? "on" : ""}`} onClick={() => setFeedFilter("all")}>전체</button>
+              <button className={`stab ${feedFilter === "following" ? "on" : ""}`} onClick={() => setFeedFilter("following")}>구독</button>
+            </div>
+          )}
+          <div className="feed-stream" ref={feedRef}>
+            {feedFilter === "following" && filteredPosts.length === 0 ? (
+              <div className="empty-inline">구독 중인 사람의 기록이 아직 없습니다</div>
+            ) : (
+              buildFlow()
+            )}
+          </div>
+        </>
       )}
     </div>
   );

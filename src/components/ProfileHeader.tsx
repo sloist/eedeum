@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import type { User } from "../data";
 import { useAuth } from "../lib/AuthContext";
+import { useModal } from "../lib/ModalContext";
 import { toggleFollow, checkIsFollowing, fetchUserRank } from "../lib/api";
 
 interface FollowBtnProps {
@@ -10,6 +12,7 @@ interface FollowBtnProps {
 
 function FollowBtn({ targetUserId }: FollowBtnProps) {
   const { user } = useAuth();
+  const { toast } = useModal();
   const [f, setF] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -27,6 +30,7 @@ function FollowBtn({ targetUserId }: FollowBtnProps) {
     setLoading(true);
     const nowFollowing = await toggleFollow(user.id, targetUserId);
     setF(nowFollowing);
+    toast(nowFollowing ? "구독을 시작했습니다" : "구독을 해제했습니다");
     setLoading(false);
   };
 
@@ -52,6 +56,7 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rightActions, featuredQuote, featuredWeave, onWeaveClick, featuredQuoteId, onQuoteClick, onRankClick }: ProfileHeaderProps) {
   const { user: authUser } = useAuth();
+  const navigate = useNavigate();
   const isSelf = authUser && targetUserId && authUser.id === targetUserId;
   const [rank, setRank] = useState<{ tier: string; percentile: number } | null>(null);
 
@@ -75,6 +80,7 @@ export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rig
         </div>
       </div>
       {showFollow && !isSelf && <FollowBtn targetUserId={targetUserId} />}
+      {isSelf && <button className="prof-edit-link" onClick={() => navigate("/settings")} style={{ border: "none", background: "none", padding: "4px 0 0", fontSize: 12, color: "var(--t3)", cursor: "pointer", fontFamily: "var(--sn)" }}>프로필 편집</button>}
 
       {/* 대표 문장 + 대표 노트 */}
       {(featuredQuote || featuredWeave) && (

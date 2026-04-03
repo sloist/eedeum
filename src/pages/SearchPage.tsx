@@ -17,7 +17,7 @@ export function SearchPage() {
 
   const [kakaoBooks, setKakaoBooks] = useState<BookSearchResult[]>([]);
   const [dbBooks, setDbBooks] = useState<DbBook[]>([]);
-  const [lines, setLines] = useState<{ quote: string; bookTitle: string; bookAuthor: string }[]>([]);
+  const [lines, setLines] = useState<{ id: string; shortId: string; userId: string; userHandle: string; quote: string; bookTitle: string; bookAuthor: string }[]>([]);
   const [people, setPeople] = useState<DbUser[]>([]);
   const [notes, setNotes] = useState<{ id: string; shortId: string; title: string; userName: string; userHandle: string; coverColor: string }[]>([]);
   const [searching, setSearching] = useState(false);
@@ -149,7 +149,14 @@ export function SearchPage() {
                   <div className="search-section">
                     {tab === "all" && <div className="search-section-label">문장</div>}
                     {lines.slice(0, tab === "all" ? 3 : 20).map((p, i) => (
-                      <div key={i} className="search-row" onClick={() => goBook(p.bookTitle, p.bookAuthor)}>
+                      <div key={i} className="search-row" onClick={() => {
+                        if (p.userHandle && p.shortId) {
+                          if (user) trackSearchClick(user.id, searchQ, "underline", p.id);
+                          navigate(`/@${p.userHandle}/lines/${p.shortId}`);
+                        } else {
+                          goBook(p.bookTitle, p.bookAuthor);
+                        }
+                      }}>
                         <div className="search-row-quote">{p.quote}</div>
                         <div className="search-row-sub">{p.bookTitle} · {p.bookAuthor}</div>
                       </div>

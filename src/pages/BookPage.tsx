@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation, useSearchParams } from "react-rout
 import { Icons } from "../components/Icons";
 import { LoadingBar } from "../components/LoadingBar";
 import { useAuth } from "../lib/AuthContext";
+import { useModal } from "../lib/ModalContext";
 import { fetchBookDetail } from "../lib/api";
 import { trackEvent } from "../lib/tracking";
 
@@ -12,6 +13,7 @@ export function BookPage() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
+  const { requireAuth } = useModal();
   const author = (location.state as { author?: string })?.author ?? "";
   const isMine = searchParams.get("mine") === "1";
 
@@ -97,6 +99,9 @@ export function BookPage() {
                 <div className="empty-cta-text">{showMine ? "이 책에 남긴 기록이 없습니다" : "아직 기록이 없습니다"}</div>
                 {showMine && (
                   <button className="empty-cta-btn" onClick={() => setShowMine(false)}>모든 기록 보기</button>
+                )}
+                {!user && !showMine && (
+                  <button className="empty-cta-btn" onClick={() => requireAuth()}>로그인하고 첫 기록 남기기</button>
                 )}
               </div>
             )}

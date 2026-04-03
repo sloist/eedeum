@@ -92,7 +92,7 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
       )}
 
       <div className="feed-meta">
-        <span className="feed-src">{post.book.title} · {post.book.author}</span>
+        <span className="feed-src"><span style={{ cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); navigate(`/book/${encodeURIComponent(post.book.title)}`, { state: { author: post.book.author } }); }}>{post.book.title}</span> · {post.book.author}</span>
         <div className="feed-meta-right">
           <span className={`feed-author${followingIds?.has(post.userId) && !isMine ? " feed-author-following" : ""}`}>{post.userName}</span>
           <div className="feed-more-wrap" ref={menuRef}>
