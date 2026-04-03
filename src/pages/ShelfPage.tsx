@@ -16,7 +16,6 @@ import {
   fetchUserBlocks,
   fetchUserDbProfile,
   fetchDrafts,
-  deleteDraft,
   unblock,
 } from "../lib/api";
 
@@ -33,7 +32,7 @@ export function ShelfPage() {
   const [savedItems, setSavedItems] = useState<{ id: string; shortId: string; userHandle: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
   const [privateMemos, setPrivateMemos] = useState<{ lineId: string; lineHandle: string; text: string; date: string }[]>([]);
   const [showMore, setShowMore] = useState(false);
-  const [drafts, setDrafts] = useState<{ id: string; shortId: string; quote: string; feeling: string | null; title: string | null; bookTitle: string; bookAuthor: string; createdAt: string }[]>([]);
+  const [drafts, setDrafts] = useState<{ id: string; shortId: string; quote: string; feeling: string | null; title: string | null; page: number; bookTitle: string; bookAuthor: string; createdAt: string }[]>([]);
   const [blocks, setBlocks] = useState<{ blockType: string; targetId: string; label: string }[]>([]);
   const [showBlocks, setShowBlocks] = useState(false);
   const [dbFeaturedLineId, setDbFeaturedLineId] = useState<string | null>(null);
