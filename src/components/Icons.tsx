@@ -1,13 +1,9 @@
 export const Icons = {
   // 이듬 로고: E + 접힌 페이지 모서리
   Logo: () => (
-    <svg viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-      <path d="M17 3 L21 3 L21 7 Z" fill="var(--bg,#FAF7F3)" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-      <path d="M17 3 L17 7 L21 7 Z" fill="currentColor" opacity=".12" stroke="currentColor" strokeWidth="1" strokeLinejoin="round"/>
-      <line x1="7" y1="8.5" x2="16" y2="8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="7" y1="12" x2="14" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="7" y1="15.5" x2="16" y2="15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <svg viewBox="0 0 512 512" fill="none">
+      <path d="M 32 16 L 380 16 L 380 116 L 480 116 L 480 196 L 160 196 L 160 224 L 420 224 L 420 312 L 160 312 L 160 400 L 480 400 L 480 496 L 32 496 Z" fill="currentColor"/>
+      <path d="M 380 16 L 480 116 L 380 116 Z" fill="currentColor" opacity=".3"/>
     </svg>
   ),
 
