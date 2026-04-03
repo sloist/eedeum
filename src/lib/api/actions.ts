@@ -387,6 +387,21 @@ export async function repostLine(
   return data;
 }
 
+// ─── 한줄 수정 ───
+
+export async function updateLine(lineId: string, updates: { quote?: string; feeling?: string; title?: string; page?: number; book_id?: string; feeling_private?: boolean }): Promise<boolean> {
+  const clean: any = {};
+  if (updates.quote !== undefined) clean.quote = updates.quote;
+  if (updates.feeling !== undefined) clean.feeling = updates.feeling || null;
+  if (updates.title !== undefined) clean.title = updates.title || null;
+  if (updates.page !== undefined) clean.page = updates.page;
+  if (updates.book_id !== undefined) clean.book_id = updates.book_id;
+  if (updates.feeling_private !== undefined) clean.feeling_private = updates.feeling_private;
+  const { error } = await supabase.from("underlines").update(clean).eq("id", lineId);
+  if (!error) invalidateCache("feed");
+  return !error;
+}
+
 // ─── 감상 수정 ───
 
 export async function updateLineFeeling(lineId: string, feeling: string): Promise<boolean> {

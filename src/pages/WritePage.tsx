@@ -4,7 +4,7 @@ import { useAuth } from "../lib/AuthContext";
 import { useModal } from "../lib/ModalContext";
 import { Toast } from "../components/Toast";
 import { Icons } from "../components/Icons";
-import { findOrCreateBook, createLine, saveDraft, fetchBooks } from "../lib/api";
+import { findOrCreateBook, createLine, updateLine, saveDraft, fetchBooks } from "../lib/api";
 import { searchBooks } from "../lib/bookSearch";
 import { createWorker } from "tesseract.js";
 
@@ -19,14 +19,19 @@ export function WritePage() {
   // Image from camera/gallery
   const imageUrl = (location.state as any)?.imageUrl as string | undefined;
 
-  const [title, setTitle] = useState("");
-  const [quote, setQuote] = useState("");
-  const [feeling, setFeeling] = useState("");
+  // Edit mode — 상세에서 수정 버튼으로 진입 시
+  const editState = location.state as any;
+  const editId = editState?.editId as string | undefined;
+  const isEditMode = !!editId;
+
+  const [title, setTitle] = useState(editState?.editTitle ?? "");
+  const [quote, setQuote] = useState(editState?.editQuote ?? "");
+  const [feeling, setFeeling] = useState(editState?.editFeeling ?? "");
   const [feelingPrivate, setFeelingPrivate] = useState(false);
-  const [bookTitle, setBookTitle] = useState("");
-  const [bookAuthor, setBookAuthor] = useState("");
-  const [page, setPage] = useState("");
-  const [bookSearch, setBookSearch] = useState("");
+  const [bookTitle, setBookTitle] = useState(editState?.editBookTitle ?? "");
+  const [bookAuthor, setBookAuthor] = useState(editState?.editBookAuthor ?? "");
+  const [page, setPage] = useState(editState?.editPage ? String(editState.editPage) : "");
+  const [bookSearch, setBookSearch] = useState(editState?.editBookTitle ? "" : "");
   const [bookResults, setBookResults] = useState<{ id?: string; title: string; author: string; thumbnail?: string }[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -101,7 +106,7 @@ export function WritePage() {
   const applyOcrSelection = () => {
     const selected = ocrLines.filter(l => l.selected).map(l => l.text).join("\n");
     if (selected) {
-      setQuote(prev => prev ? prev + "\n" + selected : selected);
+      setQuote((prev: string) => prev ? prev + "\n" + selected : selected);
       toast("문장이 입력되었습니다");
     }
     setShowOcrPicker(false);
@@ -147,17 +152,37 @@ export function WritePage() {
       bookId = book.id;
     }
 
-    const result = await createLine(user.id, bookId, quote.trim(), parseInt(page) || 0, feeling.trim() || undefined, title.trim() || undefined, feelingPrivate);
-    setSubmitting(false);
-
-    if (result && typeof result === "object" && "error" in result && typeof result.error === "string") {
-      toast(result.error);
-    } else if (result) {
-      toast("기록에 남았습니다");
-      if (result.id) notifyNewPost(result.id);
-      setTimeout(() => navigate("/", { replace: true }), 300);
+    if (isEditMode) {
+      // 수정 모드 — update
+      const ok = await updateLine(editId!, {
+        quote: quote.trim(),
+        feeling: feeling.trim(),
+        title: title.trim(),
+        page: parseInt(page) || 0,
+        book_id: bookId,
+        feeling_private: feelingPrivate,
+      });
+      setSubmitting(false);
+      if (ok) {
+        toast("수정되었습니다");
+        setTimeout(() => navigate(-1), 300);
+      } else {
+        toast("수정에 실패했습니다");
+      }
     } else {
-      toast("잠시 후 다시 시도해보세요");
+      // 새 작성 모드 — insert
+      const result = await createLine(user.id, bookId, quote.trim(), parseInt(page) || 0, feeling.trim() || undefined, title.trim() || undefined, feelingPrivate);
+      setSubmitting(false);
+
+      if (result && typeof result === "object" && "error" in result && typeof result.error === "string") {
+        toast(result.error);
+      } else if (result) {
+        toast("기록에 남았습니다");
+        if (result.id) notifyNewPost(result.id);
+        setTimeout(() => navigate("/", { replace: true }), 300);
+      } else {
+        toast("잠시 후 다시 시도해보세요");
+      }
     }
   };
 
@@ -193,12 +218,13 @@ export function WritePage() {
       {/* Header */}
       <div className="write-header">
         <button className="write-cancel" onClick={() => {
+          if (isEditMode) { navigate(-1); return; }
           const hasContent = quote.trim() || feeling.trim() || title.trim();
           if (hasContent && !window.confirm("작성 중인 내용이 사라집니다. 나가시겠습니까?")) return;
           if (location.pathname === "/write") navigate("/");
           else navigate(-1);
         }}>취소</button>
-        {quote.trim() && (
+        {!isEditMode && quote.trim() && (
           <button
             className="write-draft-btn"
             onClick={handleSaveDraft}
@@ -212,7 +238,7 @@ export function WritePage() {
           onClick={handleSubmit}
           disabled={submitting}
         >
-          {submitting ? "저장 중..." : "기록하기"}
+          {submitting ? "저장 중..." : isEditMode ? "수정하기" : "기록하기"}
         </button>
       </div>
 

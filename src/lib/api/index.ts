@@ -63,6 +63,7 @@ export {
   batchCheckLikedSaved,
   createLine,
   repostLine,
+  updateLine,
   updateLineFeeling,
   saveDraft,
   fetchDrafts,

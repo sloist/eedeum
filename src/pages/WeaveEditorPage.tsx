@@ -82,10 +82,12 @@ export function WeaveEditorPage() {
   const dragStartY = useRef(0);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Cleanup long press timer on unmount
+  // Cleanup timers on unmount
   useEffect(() => {
     return () => {
       if (longPressTimer.current) clearTimeout(longPressTimer.current);
+      // 미저장 feeling 타이머 flush
+      Object.values(feelingTimers.current).forEach(t => clearTimeout(t));
     };
   }, []);
 
@@ -263,13 +265,22 @@ export function WeaveEditorPage() {
     await updateWeaveBlock(blockId, content);
   };
 
-  const handleFeelingChange = (blockId: string, feeling: string) => {
+  const feelingTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  const handleFeelingChange = (blockId: string, underlineId: string, feeling: string) => {
     setBlocks(prev => prev.map(b =>
       b.id === blockId && b.underline ? { ...b, underline: { ...b.underline, feeling } } : b
     ));
+    // 디바운스 자동저장 — 1.5초 후 DB 반영
+    if (feelingTimers.current[underlineId]) clearTimeout(feelingTimers.current[underlineId]);
+    feelingTimers.current[underlineId] = setTimeout(() => {
+      updateLineFeeling(underlineId, feeling);
+    }, 1500);
   };
 
   const handleFeelingBlur = async (underlineId: string, feeling: string) => {
+    // blur 시 즉시 저장 (디바운스 취소)
+    if (feelingTimers.current[underlineId]) clearTimeout(feelingTimers.current[underlineId]);
     await updateLineFeeling(underlineId, feeling);
   };
 
@@ -550,7 +561,7 @@ export function WeaveEditorPage() {
                   <textarea
                     className="wb-feeling-edit"
                     value={block.underline.feeling ?? ""}
-                    onChange={e => handleFeelingChange(block.id, e.target.value)}
+                    onChange={e => handleFeelingChange(block.id, block.underline!.id, e.target.value)}
                     onBlur={e => handleFeelingBlur(block.underline!.id, e.target.value)}
                     placeholder="이 문장에 대한 내 생각..."
                     rows={1}
