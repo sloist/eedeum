@@ -168,8 +168,8 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 @media(min-width:768px) and (max-width:1099px){
   :root{--sidebar-width:60px;--rightsidebar-width:0px}
   .app-shell{max-width:100%}
-  .left-sidebar{width:60px;padding:16px 8px;align-items:center}
-  .ls-logo{font-size:14px;margin-bottom:20px;padding-left:0;text-align:center}
+  .left-sidebar{width:60px;padding:16px 8px;align-items:flex-end}
+  .ls-logo{font-size:14px;margin-bottom:20px;padding-left:0;padding-right:2px;text-align:right}
   .ls-nav-item{font-size:0;padding:10px;gap:0;justify-content:center;width:40px;height:40px}
   .ls-nav-item span{display:none}
   .ls-nav-item svg{width:20px;height:20px}
