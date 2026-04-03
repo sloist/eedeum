@@ -6,6 +6,7 @@ import {
   fetchWeaveDetail,
   createWeave,
   updateWeave,
+  deleteWeave,
   addWeaveBlock,
   updateBlockPositions,
   updateWeaveBlock,
@@ -66,6 +67,8 @@ export function WeaveEditorPage() {
   const [blocks, setBlocks] = useState<WeaveBlock[]>([]);
   const [loading, setLoading] = useState(!!id);
   const [saving, setSaving] = useState(false);
+  const [isPublic, setIsPublic] = useState(false);
+  const [showEditorMenu, setShowEditorMenu] = useState(false);
 
   // Insert menu
   const [insertAt, setInsertAt] = useState<number | null>(null);
@@ -106,6 +109,7 @@ export function WeaveEditorPage() {
         setWeaveId(detail.id);
         setWeaveShortId(detail.shortId);
         setMyHandle(detail.userHandle);
+        setIsPublic(detail.isPublic);
         // detail.id는 UUID — weave_blocks 조회에 사용
         const blockData = await fetchWeaveBlocks(detail.id);
         if (!mounted) return;
@@ -520,6 +524,28 @@ export function WeaveEditorPage() {
         >
           미리보기
         </button>
+        <div className="we-menu-wrap">
+          <button className="we-menu-trigger" onClick={() => setShowEditorMenu(!showEditorMenu)}>···</button>
+          {showEditorMenu && (
+            <div className="we-menu-dropdown">
+              <button onClick={async () => {
+                const next = !isPublic;
+                await updateWeave(weaveId, { is_public: next });
+                setIsPublic(next);
+                setShowEditorMenu(false);
+              }}>
+                {isPublic ? "비공개로 전환" : "공개하기"}
+              </button>
+              <button className="danger" onClick={async () => {
+                if (!window.confirm("이 노트를 삭제할까요?")) { setShowEditorMenu(false); return; }
+                await deleteWeave(weaveId);
+                navigate("/notes", { replace: true });
+              }}>
+                삭제
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="weave-blocks" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
