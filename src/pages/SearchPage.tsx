@@ -2,9 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { searchBooksAndLines, fetchPublicWeaves, type DbBook } from "../lib/api";
 import { searchBooks, type BookSearchResult } from "../lib/bookSearch";
+import { useAuth } from "../lib/AuthContext";
+import { trackSearch, trackSearchClick } from "../lib/tracking";
 
 export function SearchPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [params] = useSearchParams();
   const scope = params.get("scope"); // "notes" or null (= global)
   const isNotesScope = scope === "notes";
@@ -35,6 +38,9 @@ export function SearchPage() {
       setBookResults(db.books);
       setUnderlineResults(db.underlines);
       setSearching(false);
+      if (user) {
+        trackSearch(user.id, searchQ, kakao.length + db.books.length + db.underlines.length);
+      }
     }, 300);
     return () => { mounted = false; clearTimeout(timer); };
   }, [searchQ, isNotesScope]);
@@ -63,8 +69,11 @@ export function SearchPage() {
     return () => { mounted = false; clearTimeout(timer); };
   }, [searchQ, isNotesScope]);
 
-  const goBook = (title: string, author: string) => {
-    navigate(`/book/${encodeURIComponent(title)}`, { state: { author } });
+  const goBook = (title: string, author: string, position?: number) => {
+    if (user) {
+      trackSearchClick(user.id, searchQ, "book", title, position);
+    }
+    navigate(`/book/${encodeURIComponent(title)}`, { state: { author, from: "search" } });
   };
 
   const kakaoTitles = new Set(kakaoBooks.map(b => b.title.toLowerCase()));
@@ -85,7 +94,7 @@ export function SearchPage() {
           value={searchQ}
           onChange={e => setSearchQ(e.target.value)}
         />
-        <button className="search-close" onClick={() => navigate(-1)} aria-label="닫기">×</button>
+        <button className="search-close" onClick={() => window.history.length > 1 ? navigate(-1) : navigate("/")} aria-label="닫기">×</button>
       </div>
 
       <div className="search-results">

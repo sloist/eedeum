@@ -21,7 +21,6 @@ function FollowBtn({ targetUserId }: FollowBtnProps) {
   const handleClick = async () => {
     if (!user) {
       return;
-      return;
     }
     if (!targetUserId) return;
     if (loading) return;
@@ -46,9 +45,11 @@ interface ProfileHeaderProps {
   featuredQuote?: string;
   featuredWeave?: { id: string; title: string; coverColor: string } | null;
   onWeaveClick?: (id: string) => void;
+  featuredQuoteId?: string;
+  onQuoteClick?: (id: string) => void;
 }
 
-export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rightActions, featuredQuote, featuredWeave, onWeaveClick }: ProfileHeaderProps) {
+export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rightActions, featuredQuote, featuredWeave, onWeaveClick, featuredQuoteId, onQuoteClick }: ProfileHeaderProps) {
   const { user: authUser } = useAuth();
   const isSelf = authUser && targetUserId && authUser.id === targetUserId;
 
@@ -71,7 +72,7 @@ export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rig
       {(featuredQuote || featuredWeave) && (
         <div className="prof-featured">
           {featuredQuote && (
-            <div className="prof-featured-quote">{featuredQuote}</div>
+            <div className="prof-featured-quote" style={{ cursor: featuredQuoteId ? "pointer" : undefined }} onClick={() => featuredQuoteId && onQuoteClick?.(featuredQuoteId)}>{featuredQuote}</div>
           )}
           {featuredWeave && (
             <div className="prof-featured-weave" style={{ background: featuredWeave.coverColor }} onClick={() => onWeaveClick?.(featuredWeave.id)}>
@@ -82,10 +83,8 @@ export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rig
       )}
 
       <div className="prof-stats-sub">
-        <span>{profileUser.books}권의 책</span>
-        <span className="qdot" />
-        <span>{profileUser.lines}개의 기록</span>
-        <span className="qdot" />
+        {profileUser.books > 0 && <><span>{profileUser.books}권의 책</span><span className="qdot" /></>}
+        {profileUser.lines > 0 && <><span>{profileUser.lines}개의 기록</span><span className="qdot" /></>}
         <span>구독자 {profileUser.followers}</span>
         <span className="qdot" />
         <span>구독 중 {profileUser.following}</span>

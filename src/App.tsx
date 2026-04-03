@@ -1,4 +1,4 @@
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "./lib/AuthContext";
 import { ModalProvider, useModal } from "./lib/ModalContext";
@@ -13,7 +13,6 @@ import "./styles/auth.css";
 
 // Eager: main tabs (instant navigation)
 import { HomePage } from "./pages/HomePage";
-import { MyRecordsPage } from "./pages/MyRecordsPage";
 import { WeaveListPage } from "./pages/WeaveListPage";
 import { ShelfPage } from "./pages/ShelfPage";
 
@@ -36,6 +35,7 @@ const PrivacyPage = lazy(() => import("./pages/settings/PrivacyPage").then(m => 
 const TermsPage = lazy(() => import("./pages/settings/TermsPage").then(m => ({ default: m.TermsPage })));
 const DeleteAccountPage = lazy(() => import("./pages/settings/DeleteAccountPage").then(m => ({ default: m.DeleteAccountPage })));
 const CommunityGuidePage = lazy(() => import("./pages/settings/CommunityGuidePage").then(m => ({ default: m.CommunityGuidePage })));
+const FeedbackPage = lazy(() => import("./pages/settings/FeedbackPage").then(m => ({ default: m.FeedbackPage })));
 const WritePage = lazy(() => import("./pages/WritePage").then(m => ({ default: m.WritePage })));
 
 /* ------------------------------------------------------------------ */
@@ -65,6 +65,7 @@ const HEADER_CONFIG: Record<string, HeaderConfig> = {
   "/settings/notifications": { back: true, center: "알림 설정", right: "none" },
   "/settings/delete-account": { back: true, center: "계정 삭제", right: "none" },
   "/settings/community": { back: true, center: "커뮤니티 가이드", right: "none" },
+  "/settings/feedback": { back: true, center: "버그 제보", right: "none" },
 };
 
 function AppHeader() {
@@ -127,22 +128,49 @@ function AppHeader() {
 /* ------------------------------------------------------------------ */
 
 function AppLayout() {
-  const navigate = useNavigate();
   const location = useLocation();
-  const isWideContent = ["/weaves", "/shelf", "/settings", "/discover", "/weave/", "/my"].some(
-    (p) => location.pathname.startsWith(p),
+
+  // backgroundLocation: 피드에서 상세를 열면 state에 저장됨
+  const backgroundLocation = (location.state as any)?.backgroundLocation;
+  // 라우팅 기준: backgroundLocation이 있으면 그걸로 (피드 유지), 없으면 실제 location
+  const routeLocation = backgroundLocation || location;
+
+  const isWideContent = ["/shelf", "/settings", "/discover", "/weave/", "/my"].some(
+    (p) => routeLocation.pathname.startsWith(p),
   );
 
   const { toast, openShare, requireAuth, feedKey, newPostId, onNewPostHandled } = useModal();
+  const appRef = useRef<HTMLDivElement>(null);
+  const [overlayBounds, setOverlayBounds] = useState({ left: 0, width: 0 });
 
-  // Scroll to top on sub-page navigation (not main tabs — BottomNav handles those)
+  // .app의 실제 위치를 읽어서 오버레이 bounds 설정
   useEffect(() => {
-    const mainTabs = ["/", "/my", "/weaves", "/shelf"];
-    if (!mainTabs.includes(location.pathname)) {
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() => window.scrollTo(0, 0));
+    if (!backgroundLocation || !appRef.current) return;
+    const update = () => {
+      const rect = appRef.current!.getBoundingClientRect();
+      setOverlayBounds({ left: rect.left, width: rect.width });
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [backgroundLocation]);
+
+  // 오버레이 열릴 때 body 스크롤 잠금
+  useEffect(() => {
+    if (backgroundLocation) {
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = ""; };
     }
-  }, [location.pathname]);
+  }, [backgroundLocation]);
+
+  // 서브페이지 진입 시 top으로 (backgroundLocation이 있으면 스크롤 안 건드림)
+  useEffect(() => {
+    if (backgroundLocation) return; // 오버레이 열릴 때 스크롤 유지
+    const keepScroll = ["/", "/my", "/weaves", "/shelf"];
+    if (!keepScroll.includes(location.pathname)) {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname, backgroundLocation]);
 
   return (
     <div className={`app-shell ${isWideContent ? "wide-content" : ""}`}>
@@ -150,22 +178,22 @@ function AppLayout() {
       <LeftSidebar onAuthRequired={requireAuth} />
 
       {/* Center Feed */}
-      <div className="app">
+      <div className="app" ref={appRef}>
         <AppHeader />
 
         <div className="ct">
+          {/* 메인 라우트: backgroundLocation 기준으로 렌더 → 피드가 언마운트 안 됨 */}
           <Suspense fallback={<LoadingBar />}>
-          <Routes>
+          <Routes location={routeLocation}>
             <Route path="/" element={<HomePage onShare={openShare} toast={toast} feedKey={feedKey} newPostId={newPostId} onNewPostHandled={onNewPostHandled} requireAuth={requireAuth} />} />
-            {/* /discover merged into home */}
-            <Route path="/my" element={<MyRecordsPage onCapture={() => navigate("/write")} onAuthRequired={requireAuth} />} />
+            <Route path="/line/:id" element={<UnderlinePage />} />
+            <Route path="/my" element={<WritePage />} />
             <Route path="/write" element={<WritePage />} />
             <Route path="/weaves" element={<WeaveListPage />} />
             <Route path="/notifications" element={<NotificationsListPage />} />
             <Route path="/shelf" element={<ShelfPage />} />
-            <Route path="/user/:userId" element={<UserPage onShare={openShare} toast={toast} />} />
+            <Route path="/user/:userId" element={<UserPage />} />
             <Route path="/book/:title" element={<BookPage />} />
-            <Route path="/line/:id" element={<UnderlinePage />} />
             <Route path="/weave/new" element={<WeaveEditorPage />} />
             <Route path="/weave/:id" element={<WeaveReaderPage />} />
             <Route path="/weave/:id/edit" element={<WeaveEditorPage />} />
@@ -181,9 +209,22 @@ function AppLayout() {
             <Route path="/settings/terms" element={<TermsPage />} />
             <Route path="/settings/delete-account" element={<DeleteAccountPage />} />
             <Route path="/settings/community" element={<CommunityGuidePage />} />
+            <Route path="/settings/feedback" element={<FeedbackPage />} />
           </Routes>
           </Suspense>
+
         </div>
+
+        {/* 상세 오버레이 — position:fixed, .app 너비에 맞춤 */}
+        {backgroundLocation && (
+          <div className="line-overlay" style={{ left: overlayBounds.left, width: overlayBounds.width || "100%" }}>
+            <Suspense fallback={<LoadingBar />}>
+              <Routes>
+                <Route path="/line/:id" element={<UnderlinePage />} />
+              </Routes>
+            </Suspense>
+          </div>
+        )}
 
         {/* Bottom Nav — mobile only */}
         <BottomNav />

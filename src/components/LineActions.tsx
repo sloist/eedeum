@@ -14,10 +14,11 @@ type Props = {
   onHideBook?: () => void;
   onNotInterested?: () => void;
   onSetPrivate?: () => void;
+  isPrivate?: boolean;
   onEdit?: () => void;
 };
 
-export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, onDeleteLine, onAuthRequired, onReport, onHidePerson, onHideBook, onNotInterested, onSetPrivate, onEdit }: Props) {
+export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, onDeleteLine, onAuthRequired, onReport, onHidePerson, onHideBook, onNotInterested, onSetPrivate, onEdit, isPrivate }: Props) {
   const [showMoreActions, setShowMoreActions] = useState(false);
   const [showReportReasons, setShowReportReasons] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -25,14 +26,15 @@ export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, 
   // Close menu on outside click
   useEffect(() => {
     if (!showMoreActions) return;
-    const handle = (e: MouseEvent) => {
+    const handle = (e: Event) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setShowMoreActions(false);
         setShowReportReasons(false);
       }
     };
     document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
+    document.addEventListener("touchstart", handle);
+    return () => { document.removeEventListener("mousedown", handle); document.removeEventListener("touchstart", handle); };
   }, [showMoreActions]);
 
   return (
@@ -57,7 +59,7 @@ export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, 
               <>
                 {onSetPrivate && (
                   <button onClick={() => { onSetPrivate(); setShowMoreActions(false); }}>
-                    나만 보기
+                    {isPrivate ? "공개로 전환" : "나만 보기"}
                   </button>
                 )}
                 {onEdit && (

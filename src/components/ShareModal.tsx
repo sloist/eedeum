@@ -1,7 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import { ShareCard, STYLE_LABELS, type CardStyle, type CardRatio, type CardFont } from "./ShareCard";
 import type { Post } from "../data";
+import { useAuth } from "../lib/AuthContext";
+import { trackEvent } from "../lib/tracking";
 
 interface ShareModalProps {
   post: Post;
@@ -17,7 +19,18 @@ const FONTS: { key: CardFont; label: string }[] = [
 ];
 
 export function ShareModal({ post, onClose, toast }: ShareModalProps) {
+  const { user } = useAuth();
   const [style, setStyle] = useState<CardStyle>("paper");
+
+  // share_card_create: 모달 열린 시점
+  useEffect(() => {
+    if (user) {
+      trackEvent(user.id, {
+        eventType: "share_card_create", targetType: "underline", targetId: post.id,
+        source: "detail",
+      });
+    }
+  }, []);
   const [ratio, setRatio] = useState<CardRatio>("feed");
   const [font, setFont] = useState<CardFont>("serif");
   const [saving, setSaving] = useState(false);
@@ -44,19 +57,48 @@ export function ShareModal({ post, onClose, toast }: ShareModalProps) {
       const blob = await new Promise<Blob | null>(resolve =>
         canvas.toBlob(b => resolve(b), "image/png")
       );
-      if (blob && navigator.share && navigator.canShare?.({ files: [new File([blob], "share.png", { type: "image/png" })] })) {
-        const file = new File([blob], `이듬_${post.book.title.slice(0, 10)}.png`, { type: "image/png" });
-        await navigator.share({ files: [file] });
-        toast("공유 완료");
-      } else {
+      const cardMeta = { card_style: style, card_ratio: ratio, card_font: font, has_feeling: !!post.feeling };
+      const fileName = `이듬_${post.book.title.slice(0, 10)}.png`;
+
+      // 다운로드 fallback 함수
+      const downloadFallback = () => {
         const link = document.createElement("a");
-        link.download = `이듬_${post.book.title.slice(0, 10)}.png`;
+        link.download = fileName;
         link.href = canvas.toDataURL("image/png");
         link.click();
-        toast("이미지가 저장되었습니다");
+        toast("카드가 저장되었습니다");
+        if (user) {
+          trackEvent(user.id, {
+            eventType: "share_card_save", targetType: "underline", targetId: post.id,
+            source: "detail", metadata: cardMeta,
+          });
+        }
+      };
+
+      if (blob && navigator.share) {
+        try {
+          const file = new File([blob], fileName, { type: "image/png" });
+          if (navigator.canShare?.({ files: [file] })) {
+            await navigator.share({ files: [file] });
+            toast("공유 완료");
+            if (user) {
+              trackEvent(user.id, {
+                eventType: "share_card_system_share", targetType: "underline", targetId: post.id,
+                source: "detail", metadata: cardMeta,
+              });
+            }
+          } else {
+            downloadFallback();
+          }
+        } catch (shareErr) {
+          if ((shareErr as Error)?.name !== "AbortError") downloadFallback();
+        }
+      } else {
+        downloadFallback();
       }
     } catch (e) {
-      if ((e as Error)?.name !== "AbortError") toast("잠시 후 다시 시도해보세요");
+      console.error("ShareCard error:", e);
+      toast("카드 생성에 실패했습니다. 다시 시도해주세요");
     }
     setSaving(false);
   };
@@ -73,7 +115,7 @@ export function ShareModal({ post, onClose, toast }: ShareModalProps) {
 
   return (
     <div className="ov" onClick={onClose}>
-      <div className="sht" onClick={e => e.stopPropagation()} style={{ maxHeight: "90vh" }}>
+      <div className="sht" onClick={e => e.stopPropagation()}>
         <div className="shndl" />
 
         {/* Style picker */}
@@ -102,14 +144,16 @@ export function ShareModal({ post, onClose, toast }: ShareModalProps) {
         </div>
 
         {/* Card preview */}
-        <div className="sm-card-preview" ref={cardRef}>
-          <ShareCard data={cardData} style={style} ratio={ratio} font={font} />
+        <div className="sm-card-preview">
+          <div ref={cardRef} style={{ display: "inline-block" }}>
+            <ShareCard data={cardData} style={style} ratio={ratio} font={font} />
+          </div>
         </div>
 
         {/* Actions */}
         <div className="share-save-buttons">
           <button className="share-save-btn share-save-btn-primary" onClick={handleSaveImage} disabled={saving}>
-            {saving ? "저장 중..." : "이미지 저장"}
+            {saving ? "저장 중..." : "카드 저장"}
           </button>
           <button className="share-save-btn" onClick={handleCopyText}>
             문장 복사
