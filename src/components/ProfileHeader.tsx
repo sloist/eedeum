@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import type { User } from "../data";
 import { useAuth } from "../lib/AuthContext";
-import { toggleFollow, checkIsFollowing } from "../lib/api";
+import { toggleFollow, checkIsFollowing, fetchUserRank } from "../lib/api";
 
 interface FollowBtnProps {
   targetUserId?: string;
@@ -52,6 +52,12 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rightActions, featuredQuote, featuredWeave, onWeaveClick, featuredQuoteId, onQuoteClick }: ProfileHeaderProps) {
   const { user: authUser } = useAuth();
   const isSelf = authUser && targetUserId && authUser.id === targetUserId;
+  const [rank, setRank] = useState<{ tier: string; percentile: number } | null>(null);
+
+  useEffect(() => {
+    if (!targetUserId) return;
+    fetchUserRank(targetUserId).then(r => setRank(r));
+  }, [targetUserId]);
 
   return (
     <>
@@ -64,6 +70,7 @@ export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rig
             {rightActions && <span className="prof-actions">{rightActions}</span>}
           </div>
           {profileUser.bio && <div className="prof-bio">{profileUser.bio}</div>}
+          {rank && <div className="rank-badge">{rank.tier} · 상위 {rank.percentile}%</div>}
         </div>
       </div>
       {showFollow && !isSelf && <FollowBtn targetUserId={targetUserId} />}

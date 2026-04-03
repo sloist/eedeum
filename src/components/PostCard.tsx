@@ -12,9 +12,10 @@ interface PostCardProps {
   onHideBook?: (bookId: string) => void;
   onNotInterested?: (postId: string) => void;
   onDelete?: (postId: string) => void;
+  followingIds?: Set<string>;
 }
 
-export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onHideBook, onNotInterested, onDelete, requireAuth }: PostCardProps) {
+export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onHideBook, onNotInterested, onDelete, requireAuth, followingIds }: PostCardProps) {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -41,7 +42,7 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
       <div className="feed-meta">
         <span className="feed-src">{post.book.title} · {post.book.author}</span>
         <div className="feed-meta-right">
-          <span className="feed-author">{post.userName}</span>
+          <span className="feed-author">{post.userName}{followingIds?.has(post.userId) && !isMine && <span className="feed-following">구독</span>}</span>
           <div className="feed-more-wrap" ref={menuRef}>
             <button
               className="feed-more-btn"

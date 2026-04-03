@@ -386,6 +386,14 @@ export async function fetchUserBlocks(userId: string): Promise<{ blockType: stri
   return blocks;
 }
 
+export async function fetchFollowingIds(userId: string): Promise<string[]> {
+  const { data } = await supabase
+    .from("follows")
+    .select("following_id")
+    .eq("follower_id", userId);
+  return data?.map((r: any) => r.following_id) ?? [];
+}
+
 export async function unblock(userId: string, blockType: string, targetId: string): Promise<boolean> {
   const { error } = await supabase.from("user_blocks")
     .delete()

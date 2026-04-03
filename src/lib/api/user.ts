@@ -363,3 +363,27 @@ export async function markNotificationsRead(userId: string) {
     .eq("user_id", userId)
     .eq("read", false);
 }
+
+export async function fetchUserRank(userId: string): Promise<{ tier: string; percentile: number } | null> {
+  const { count: totalUsers } = await supabase.from("users").select("*", { count: "exact", head: true });
+  if (!totalUsers) return null;
+
+  const { data: allLines } = await supabase.from("underlines").select("user_id");
+  const { data: allWeaves } = await supabase.from("weaves").select("user_id");
+
+  const scores = new Map<string, number>();
+  allLines?.forEach((l: any) => scores.set(l.user_id, (scores.get(l.user_id) || 0) + 2));
+  allWeaves?.forEach((w: any) => scores.set(w.user_id, (scores.get(w.user_id) || 0) + 5));
+
+  const myScore = scores.get(userId) || 0;
+  const allScores = [...scores.values()].sort((a, b) => b - a);
+  const myRank = allScores.findIndex(s => s <= myScore);
+  const percentile = Math.round(((myRank + 1) / Math.max(allScores.length, 1)) * 100);
+
+  let tier: string;
+  if (percentile <= 5) tier = "깊이 남기는";
+  else if (percentile <= 20) tier = "꾸준히 쌓는";
+  else tier = "기록하는";
+
+  return { tier, percentile };
+}

@@ -2384,6 +2384,23 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .settings-footer a{color:var(--ac);text-decoration:none}
 .settings-footer a:hover{text-decoration:underline}
 
+/* ─── 노트에 담기 시트 ─── */
+.note-sheet-list{padding:8px 0}
+.note-sheet-item{display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;border-bottom:0.5px solid var(--bdL);transition:opacity .15s}
+.note-sheet-item:last-child{border-bottom:none}
+.note-sheet-item:hover{opacity:.7}
+.note-sheet-spine{width:3px;height:28px;border-radius:2px;flex-shrink:0}
+.note-sheet-title{font-size:14px;color:var(--t1);font-family:var(--sn)}
+.note-sheet-count{font-size:11px;color:var(--t3);margin-top:2px}
+.note-sheet-new{display:flex;align-items:center;gap:8px;padding:14px 0;cursor:pointer;color:var(--ac);font-size:13px;font-family:var(--sn)}
+.note-sheet-new-input{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:var(--sn);background:var(--bgW);color:var(--t1);outline:none;margin-top:8px}
+
+/* ─── 구독 표시 ─── */
+.feed-following{font-size:10px;color:var(--ac);opacity:.6;margin-left:4px}
+
+/* ─── 등급 표시 ─── */
+.rank-badge{font-size:11px;color:var(--t3);opacity:.5;letter-spacing:-.1px}
+
 /* ─── Route-aware sidebar hiding ─── */
 @media (min-width: 1280px) {
   .app-shell.wide-content .right-sidebar { display: none; }

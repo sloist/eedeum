@@ -16,9 +16,10 @@ type Props = {
   onSetPrivate?: () => void;
   isPrivate?: boolean;
   onEdit?: () => void;
+  onAddToNote?: () => void;
 };
 
-export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, onDeleteLine, onAuthRequired, onReport, onHidePerson, onHideBook, onNotInterested, onSetPrivate, onEdit, isPrivate }: Props) {
+export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, onDeleteLine, onAuthRequired, onReport, onHidePerson, onHideBook, onNotInterested, onSetPrivate, onEdit, isPrivate, onAddToNote }: Props) {
   const [showMoreActions, setShowMoreActions] = useState(false);
   const [showReportReasons, setShowReportReasons] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -42,6 +43,14 @@ export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, 
       <button className={`abtn ${saved ? "on" : ""}`} onClick={onSave} aria-label="담기">
         {Icons.Bmark(saved)}
       </button>
+      {onAddToNote && (
+        <button className="abtn" onClick={() => {
+          if (!isLoggedIn) { onAuthRequired?.(); return; }
+          onAddToNote();
+        }} aria-label="노트에 담기">
+          <Icons.NoteAdd />
+        </button>
+      )}
       <button className="abtn" onClick={onShare} aria-label="카드 만들기">
         <Icons.CardMake />
       </button>

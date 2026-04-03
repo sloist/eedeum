@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { PostCard } from "../components/PostCard";
 import { LoadingBar } from "../components/LoadingBar";
 import type { Post, Book } from "../data";
-import { fetchFeedPosts, fetchLineAsFeedPost, fetchUserBlocks, blockUser, blockBook, blockUnderline, deleteUnderline, type FeedPost } from "../lib/api";
+import { fetchFeedPosts, fetchLineAsFeedPost, fetchUserBlocks, blockUser, blockBook, blockUnderline, deleteUnderline, fetchFollowingIds, type FeedPost } from "../lib/api";
 import { useAuth } from "../lib/AuthContext";
 import { trackEvent } from "../lib/tracking";
 
@@ -38,11 +38,13 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const feedRef = useRef<HTMLDivElement>(null);
+  const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
 
   const loadFeed = useCallback(async () => {
     const feedData = await fetchFeedPosts();
     let filtered = feedData;
     if (user) {
+      fetchFollowingIds(user.id).then(ids => setFollowingIds(new Set(ids)));
       const blocks = await fetchUserBlocks(user.id);
       if (blocks.length > 0) {
         const blockedUsers = new Set(blocks.filter(b => b.blockType === "user").map(b => b.targetId));
@@ -156,7 +158,7 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
     const shownClusterBooks = new Set<string>();
     posts.forEach((p, i) => {
       flow.push(
-        <PostCard key={p.id} post={p} onDetail={onDetail} requireAuth={requireAuth} isLoggedIn={!!user} isMine={user?.id === p.userId} onHidePerson={handleHidePerson} onHideBook={handleHideBook} onNotInterested={handleNotInterested} onDelete={handleDelete} />
+        <PostCard key={p.id} post={p} onDetail={onDetail} requireAuth={requireAuth} isLoggedIn={!!user} isMine={user?.id === p.userId} onHidePerson={handleHidePerson} onHideBook={handleHideBook} onNotInterested={handleNotInterested} onDelete={handleDelete} followingIds={followingIds} />
       );
       const next = posts[i + 1];
       if (next && next.book.title === p.book.title && !shownClusterBooks.has(p.book.title)) {

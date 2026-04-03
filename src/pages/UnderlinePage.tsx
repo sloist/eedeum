@@ -12,6 +12,7 @@ import { EchoList, type Echo } from "../components/EchoList";
 import { EchoInput, ReplyInput } from "../components/EchoInput";
 import { LineActions } from "../components/LineActions";
 import { OtherLines } from "../components/OtherLines";
+import { AddToNoteSheet } from "../components/AddToNoteSheet";
 
 export function UnderlinePage() {
   const { id } = useParams<{ id: string }>();
@@ -39,6 +40,7 @@ export function UnderlinePage() {
   const [replyTo, setReplyTo] = useState<{ echoId: string; echoIndex: number; userName: string } | null>(null);
   const [replyText, setReplyText] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
+  const [showAddToNote, setShowAddToNote] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -313,6 +315,7 @@ export function UnderlinePage() {
           onSetPrivate={isPostAuthor ? handleSetPrivate : undefined}
           isPrivate={isPrivate}
           onEdit={isPostAuthor ? () => navigate(`/write`, { state: { editId: data.id, editQuote: data.quote, editFeeling: data.feeling, editBookTitle: data.bookTitle, editBookAuthor: data.bookAuthor, editPage: data.page } }) : undefined}
+          onAddToNote={() => setShowAddToNote(true)}
         />
 
         <EchoList
@@ -377,6 +380,18 @@ export function UnderlinePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {showAddToNote && user && (
+        <AddToNoteSheet
+          userId={user.id}
+          lineId={data.id}
+          onClose={() => setShowAddToNote(false)}
+          onSuccess={(title) => {
+            setShowAddToNote(false);
+            toast(title ? `"${title}" 노트에 담았습니다` : "노트에 담기에 실패했습니다");
+          }}
+        />
       )}
 
       {showToast && <Toast message={toastMsg} />}

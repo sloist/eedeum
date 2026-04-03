@@ -37,6 +37,7 @@ export {
   updateUserProfile,
   fetchNotifications,
   markNotificationsRead,
+  fetchUserRank,
 } from "./user";
 
 // Book
@@ -75,6 +76,7 @@ export {
   blockUnderline,
   fetchUserBlocks,
   unblock,
+  fetchFollowingIds,
 } from "./actions";
 
 // Weave
