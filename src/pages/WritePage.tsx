@@ -247,30 +247,20 @@ export function WritePage() {
         </div>
       )}
 
-      {/* Form */}
+      {/* Writing space */}
       <div className="write-body">
-        <input
-          className="write-title"
-          placeholder="제목 한 줄"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          maxLength={50}
-          autoFocus={!imageUrl}
-        />
-
-        <textarea
-          className="write-quote"
-          placeholder="멈춘 문장을 남겨주세요"
-          value={quote}
-          onChange={e => { if (e.target.value.split("\n").length <= 15) setQuote(e.target.value); }}
-          rows={6}
-        />
-
-        {/* 카메라/갤러리 */}
-        <div className="write-attach-row">
-          <label className="write-attach-btn">
+        {/* 주인공: 문장 */}
+        <div className="write-stage">
+          <textarea
+            className="write-quote"
+            placeholder="멈춘 문장을 남겨주세요"
+            value={quote}
+            onChange={e => { if (e.target.value.split("\n").length <= 15) setQuote(e.target.value); }}
+            rows={6}
+            autoFocus={!imageUrl}
+          />
+          <label className="write-camera-icon">
             <Icons.Camera />
-            <span>사진에서 문장 가져오기</span>
             <input
               type="file"
               accept="image/*"
@@ -289,10 +279,18 @@ export function WritePage() {
           </label>
         </div>
 
+        {/* 나의 감상 — 다른 온도 */}
         <div className="write-feeling-wrap">
+          <input
+            className="write-title"
+            placeholder="제목"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            maxLength={50}
+          />
           <textarea
             className="write-feeling"
-            placeholder="이 문장 앞에서 떠오른 생각"
+            placeholder="떠오른 생각이 있다면"
             value={feeling}
             onChange={e => { if (e.target.value.split("\n").length <= 10) setFeeling(e.target.value); }}
             rows={3}
@@ -308,6 +306,7 @@ export function WritePage() {
           )}
         </div>
 
+        {/* 출처 — 가장 조용하게 */}
         <div className="write-source">
           <div className="write-source-label">출처</div>
           <div style={{ position: "relative" }}>
