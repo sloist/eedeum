@@ -42,7 +42,7 @@ export function WeaveReaderPage() {
   const [blocks, setBlocks] = useState<WeaveBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
-  const [showUI, setShowUI] = useState(false);
+  const [showUI, setShowUI] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [otherWeaves, setOtherWeaves] = useState<{ id: string; shortId: string; title: string; coverColor: string; blockCount: number; userHandle: string }[]>([]);
   const [fadeState, setFadeState] = useState<"in" | "out">("in");
@@ -107,6 +107,7 @@ export function WeaveReaderPage() {
   const pageRef = useRef<HTMLDivElement>(null);
   const goToPage = useCallback((target: number) => {
     if (target < 0 || target >= totalPages || target === currentPage) return;
+    setShowUI(false);
     setFadeState("out");
     setTimeout(() => {
       setCurrentPage(target);
@@ -268,10 +269,10 @@ export function WeaveReaderPage() {
         {renderPage()}
       </div>
 
-      {/* 좌우 터치 + 중앙 탭 영역 */}
+      {/* 상단 탭 = UI 토글, 좌우 = 페이지 이동 */}
       <div className="wr-nav-zones">
+        <div className="wr-nav-top" onClick={() => { setShowUI(v => !v); setShowMenu(false); }} />
         {currentPage > 0 && <div className="wr-nav-left" onClick={goPrev} />}
-        <div className="wr-nav-center" onClick={() => { setShowUI(v => !v); setShowMenu(false); }} />
         {currentPage < totalPages - 1 && <div className="wr-nav-right" onClick={goNext} />}
       </div>
     </div>

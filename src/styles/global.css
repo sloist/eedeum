@@ -1233,10 +1233,10 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .wr-fade-out{opacity:0}
 /* 좌우 클릭 네비 영역 */
 .wr-nav-zones{position:fixed;top:50px;bottom:0;left:0;right:0;pointer-events:none;z-index:10}
-.wr-nav-left,.wr-nav-right,.wr-nav-center{position:absolute;top:0;bottom:0;pointer-events:auto;cursor:pointer}
-.wr-nav-left{left:0;width:25%}
-.wr-nav-right{right:0;width:25%}
-.wr-nav-center{left:25%;right:25%}
+.wr-nav-top{position:absolute;top:0;left:0;right:0;height:56px;pointer-events:auto;cursor:pointer}
+.wr-nav-left,.wr-nav-right{position:absolute;top:56px;bottom:0;pointer-events:auto;cursor:pointer}
+.wr-nav-left{left:0;width:30%}
+.wr-nav-right{right:0;width:30%}
 /* Page indicator */
 .wr-page-indicator{font-size:11px;color:var(--t3);letter-spacing:.1px}
 /* Weave reader blocks — flowing text on each page */
