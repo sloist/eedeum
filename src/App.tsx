@@ -186,16 +186,16 @@ function AppLayout() {
           <Suspense fallback={<LoadingBar />}>
           <Routes location={routeLocation}>
             <Route path="/" element={<HomePage onShare={openShare} toast={toast} feedKey={feedKey} newPostId={newPostId} onNewPostHandled={onNewPostHandled} requireAuth={requireAuth} />} />
-            <Route path="/line/:id" element={<UnderlinePage />} />
+            <Route path="/@:handle/lines/:id" element={<UnderlinePage />} />
+            <Route path="/@:handle/notes/:id" element={<WeaveReaderPage />} />
+            <Route path="/@:handle/notes/:id/edit" element={<WeaveEditorPage />} />
+            <Route path="/@:handle" element={<UserPage />} />
             <Route path="/write" element={<WritePage />} />
             <Route path="/notes" element={<WeaveListPage />} />
+            <Route path="/notes/new" element={<WeaveEditorPage />} />
             <Route path="/notifications" element={<NotificationsListPage />} />
             <Route path="/shelf" element={<ShelfPage />} />
-            <Route path="/user/:userId" element={<UserPage />} />
             <Route path="/book/:title" element={<BookPage />} />
-            <Route path="/notes/new" element={<WeaveEditorPage />} />
-            <Route path="/notes/:id" element={<WeaveReaderPage />} />
-            <Route path="/notes/:id/edit" element={<WeaveEditorPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/share-cards" element={<ShareCardsPage />} />
             <Route path="/settings" element={<SettingsPage requireAuth={requireAuth} />} />
@@ -219,7 +219,7 @@ function AppLayout() {
           <div className="line-overlay" style={{ left: overlayBounds.left, width: overlayBounds.width || "100%" }}>
             <Suspense fallback={<LoadingBar />}>
               <Routes>
-                <Route path="/line/:id" element={<UnderlinePage />} />
+                <Route path="/@:handle/lines/:id" element={<UnderlinePage />} />
               </Routes>
             </Suspense>
           </div>

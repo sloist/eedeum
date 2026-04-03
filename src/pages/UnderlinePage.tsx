@@ -15,7 +15,7 @@ import { OtherLines } from "../components/OtherLines";
 import { AddToNoteSheet } from "../components/AddToNoteSheet";
 
 export function UnderlinePage() {
-  const { id } = useParams<{ id: string }>();
+  const { handle, id } = useParams<{ handle: string; id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const hasBackground = !!(location.state as any)?.backgroundLocation;
@@ -33,7 +33,7 @@ export function UnderlinePage() {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [echoes, setEchoes] = useState<Echo[]>([]);
-  const [sameQuoteLines, setSameQuoteLines] = useState<{ id: string; shortId: string; userId: string; userName: string; feeling: string | null }[]>([]);
+  const [sameQuoteLines, setSameQuoteLines] = useState<{ id: string; shortId: string; userId: string; userName: string; userHandle: string; feeling: string | null }[]>([]);
   const [showSameQuote, setShowSameQuote] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<{ type: "echo" | "line"; echoId?: string; echoIndex?: number; isReply?: boolean; parentIndex?: number } | null>(null);
@@ -270,11 +270,11 @@ export function UnderlinePage() {
 
       <div style={{ padding: "8px 20px 20px" }}>
         <div className="ptop">
-          <div className="pava" style={{ background: data.coverColor + "40" }} onClick={() => navigate(`/user/${data.userId}`)}>
+          <div className="pava" style={{ background: data.coverColor + "40" }} onClick={() => navigate(`/@${data.userHandle}`)}>
             {data.userAvatar}
           </div>
           <div className="pmeta">
-            <span className="pname" onClick={() => navigate(`/user/${data.userId}`)}>{data.userName}</span>
+            <span className="pname" onClick={() => navigate(`/@${data.userHandle}`)}>{data.userName}</span>
             <div className="pbref" onClick={() => navigate(`/book/${encodeURIComponent(data.bookTitle)}`, { state: { author: data.bookAuthor } })}>
               {data.bookTitle} · {data.bookAuthor}
             </div>
@@ -354,7 +354,7 @@ export function UnderlinePage() {
               <span className="detail-others-chevron"><Icons.ChevD /></span>
             </button>
             {showSameQuote && sameQuoteLines.map((sl) => (
-              <div key={sl.id} className="detail-other-card" onClick={() => navigate(`/line/${sl.shortId}`)}>
+              <div key={sl.id} className="detail-other-card" onClick={() => navigate(`/@${sl.userHandle}/lines/${sl.shortId}`)}>
                 {sl.feeling
                   ? <div className="detail-other-feeling">{sl.feeling}</div>
                   : <div className="detail-other-feeling" style={{ opacity: 0.5 }}>같은 문장, 다른 시선</div>

@@ -11,6 +11,7 @@ import {
   updateWeaveBlock,
   deleteWeaveBlock,
   fetchUserLinesForWeave,
+  fetchUserDbProfile,
 } from "../lib/api";
 import { trackEvent } from "../lib/tracking";
 
@@ -46,7 +47,7 @@ interface PickerLine {
 
 export function WeaveEditorPage() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { handle, id } = useParams<{ handle: string; id: string }>();
   const { user } = useAuth();
 
   // Create form state
@@ -58,6 +59,8 @@ export function WeaveEditorPage() {
 
   // Editor state
   const [weaveId, setWeaveId] = useState(id ?? "");
+  const [weaveShortId, setWeaveShortId] = useState("");
+  const [myHandle, setMyHandle] = useState(handle ?? "");
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState<WeaveBlock[]>([]);
   const [loading, setLoading] = useState(!!id);
@@ -90,14 +93,18 @@ export function WeaveEditorPage() {
     if (!id || !user) return;
     let mounted = true;
     async function load() {
-      const [detail, blockData] = await Promise.all([
+      const [detail, blockData, dbProfile] = await Promise.all([
         fetchWeaveDetail(id!),
         fetchWeaveBlocks(id!),
+        fetchUserDbProfile(user!.id),
       ]);
       if (!mounted) return;
       if (detail) {
         setTitle(detail.title);
+        setWeaveShortId(detail.shortId);
+        setMyHandle(detail.userHandle);
       }
+      if (dbProfile) setMyHandle(dbProfile.handle);
       setBlocks(blockData);
       setLoading(false);
     }
@@ -119,9 +126,17 @@ export function WeaveEditorPage() {
     if ("error" in result) return;
     if (result.data) {
       const newId = (result.data as any).id;
+      const newShortId = (result.data as any).short_id;
       setWeaveId(newId);
+      setWeaveShortId(newShortId);
       setTitle(createTitle.trim());
       setIsCreateMode(false);
+      // Get handle if not yet loaded
+      let userHandle = myHandle;
+      if (!userHandle) {
+        const dbProfile = await fetchUserDbProfile(user.id);
+        if (dbProfile) { userHandle = dbProfile.handle; setMyHandle(userHandle); }
+      }
       trackEvent(user.id, {
         eventType: "weave_create", targetType: "weave", targetId: newId,
         source: "record", metadata: { is_public: createPublic },
@@ -132,7 +147,7 @@ export function WeaveEditorPage() {
           source: "record",
         });
       }
-      navigate(`/notes/${newId}/edit`, { replace: true });
+      navigate(`/@${userHandle}/notes/${newShortId}/edit`, { replace: true });
     }
   };
 
@@ -461,7 +476,7 @@ export function WeaveEditorPage() {
     <div className="weave-editor">
       <div className="weave-editor-header">
         <button
-          onClick={() => navigate(`/notes/${weaveId}`)}
+          onClick={() => navigate(`/@${myHandle}/notes/${weaveShortId || id}`)}
           className="weave-back-btn"
         >
           ←
@@ -475,7 +490,7 @@ export function WeaveEditorPage() {
         />
         <button
           className="weave-save-btn"
-          onClick={() => navigate(`/notes/${weaveId}`)}
+          onClick={() => navigate(`/@${myHandle}/notes/${weaveShortId || id}`)}
           disabled={saving}
         >
           미리보기

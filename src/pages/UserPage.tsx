@@ -5,30 +5,36 @@ import { PostCard } from "../components/PostCard";
 import { LoadingBar } from "../components/LoadingBar";
 import { Icons } from "../components/Icons";
 import type { Post, User } from "../data";
-import { fetchUserProfile, fetchUserLines, fetchUserWeaves, type FeedPost } from "../lib/api";
+import { fetchUserProfile, fetchUserByHandle, fetchUserLines, fetchUserWeaves, type FeedPost } from "../lib/api";
 import { useAuth } from "../lib/AuthContext";
 import { trackEvent } from "../lib/tracking";
 
 export function UserPage() {
-  const { userId } = useParams<{ userId: string }>();
+  const { handle } = useParams<{ handle: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
 
   const [profile, setProfile] = useState<User | null>(null);
+  const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [weaves, setWeaves] = useState<{ id: string; title: string; coverColor: string; blockCount: number }[]>([]);
+  const [weaves, setWeaves] = useState<{ id: string; shortId: string; title: string; coverColor: string; blockCount: number; userHandle: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!handle) return;
     let mounted = true;
 
     async function load() {
+      const dbUser = await fetchUserByHandle(handle!);
+      if (!mounted || !dbUser) { setLoading(false); return; }
+      const userId = dbUser.id;
+      setResolvedUserId(userId);
+
       const [profileData, linesData, weavesData] = await Promise.all([
-        fetchUserProfile(userId!),
-        fetchUserLines(userId!),
-        fetchUserWeaves(userId!),
+        fetchUserProfile(userId),
+        fetchUserLines(userId),
+        fetchUserWeaves(userId),
       ]);
       if (!mounted) return;
       if (profileData) {
@@ -64,7 +70,7 @@ export function UserPage() {
         otherLines: fp.otherLines.map(o => ({ userId: o.userId, userName: o.userName, quote: o.quote, page: o.page })),
         sameLineCount: fp.sameLineCount,
       })));
-      setWeaves(weavesData.filter(w => w.isPublic).map(w => ({ id: w.id, title: w.title, coverColor: w.coverColor, blockCount: w.blockCount })));
+      setWeaves(weavesData.filter(w => w.isPublic).map(w => ({ id: w.id, shortId: w.shortId, title: w.title, coverColor: w.coverColor, blockCount: w.blockCount, userHandle: w.userHandle })));
       if (user && userId && user.id !== userId) {
         const from = (location.state as any)?.from || "detail";
         trackEvent(user.id, {
@@ -76,11 +82,11 @@ export function UserPage() {
     }
     load();
     return () => { mounted = false; };
-  }, [userId]);
+  }, [handle]);
 
-  const onDetail = (postId: string) => navigate(`/line/${postId}`);
+  const onDetail = (postId: string, postHandle: string) => navigate(`/@${postHandle}/lines/${postId}`);
 
-  if (!userId) {
+  if (!handle) {
     return <div className="empty-inline">사용자를 찾을 수 없습니다</div>;
   }
 
@@ -105,13 +111,13 @@ export function UserPage() {
   return (
     <div className="content-fade-in">
       <button className="backbtn" onClick={() => navigate(-1)}><Icons.Back /> 뒤로</button>
-      <ProfileHeader user={profile} showFollow={true} targetUserId={userId} />
+      <ProfileHeader user={profile} showFollow={true} targetUserId={resolvedUserId ?? undefined} />
       {weaves.length > 0 && (
         <>
           <div className="sh"><span className="sl">{profile.name}의 노트</span></div>
           <div className="user-weaves">
             {weaves.slice(0, 3).map(w => (
-              <div key={w.id} className="user-weave-item" onClick={() => navigate(`/notes/${w.id}`)}>
+              <div key={w.id} className="user-weave-item" onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}>
                 <div className="user-weave-spine" style={{ background: w.coverColor }} />
                 <div className="user-weave-title">{w.title}</div>
                 <div className="user-weave-count">{w.blockCount}개 조각</div>

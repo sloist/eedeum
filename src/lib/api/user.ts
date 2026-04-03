@@ -193,6 +193,7 @@ export async function fetchSavedLines(userId: string) {
     return {
       id: u?.id ?? "",
       shortId: u?.short_id ?? "",
+      userHandle: (u?.users as any)?.handle ?? "",
       quote: u?.quote ?? "",
       book: u?.books?.title ?? "",
       author: u?.books?.author ?? "",
@@ -216,6 +217,7 @@ export async function fetchLikedLines(userId: string) {
     return {
       id: u?.id ?? "",
       shortId: u?.short_id ?? "",
+      userHandle: (u?.users as any)?.handle ?? "",
       quote: u?.quote ?? "",
       book: u?.books?.title ?? "",
       author: u?.books?.author ?? "",
@@ -332,7 +334,7 @@ export async function fetchNotifications(userId: string) {
       underline_id,
       echo_id,
       actor:users!notifications_actor_id_fkey(id, name, handle),
-      underlines!notifications_underline_id_fkey(short_id)
+      underlines!notifications_underline_id_fkey(short_id, users!underlines_user_id_fkey(handle))
     `)
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -354,6 +356,7 @@ export async function fetchNotifications(userId: string) {
       text: getText ? getText(actorName) : `${actorName}님의 알림`,
       from: actorName,
       lineId: (n.underlines as any)?.short_id ?? n.underline_id,
+      lineHandle: (n.underlines as any)?.users?.handle ?? "",
       time: timeAgo(n.created_at),
       isNew: !n.read,
       type: n.type,

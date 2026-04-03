@@ -13,7 +13,7 @@ interface BookRow {
   topics: string[] | null;
   lines: number;
   uniqueReaders: number;
-  topQuotes: { id: string; shortId: string; quote: string }[];
+  topQuotes: { id: string; shortId: string; userHandle: string; quote: string }[];
 }
 
 export function DiscoverPage() {
@@ -162,7 +162,7 @@ export function DiscoverPage() {
               {books.map((b, i) => (
                 <div key={i} className="dsc-cluster">
                   {b.topQuotes.map((q, qi) => (
-                    <div key={qi} className="dsc-q" onClick={() => navigate(`/line/${q.shortId}`)}>
+                    <div key={qi} className="dsc-q" onClick={() => navigate(`/@${q.userHandle}/lines/${q.shortId}`)}>
                       <div className="dsc-q-text">{q.quote}</div>
                     </div>
                   ))}

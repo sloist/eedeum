@@ -10,7 +10,7 @@ export function RightSidebar() {
 
   const [searchQ, setSearchQ] = useState("");
   const [searchResults, setSearchResults] = useState<{ title: string; author: string }[]>([]);
-  const [noteResults, setNoteResults] = useState<{ id: string; title: string; userName: string }[]>([]);
+  const [noteResults, setNoteResults] = useState<{ id: string; shortId: string; userHandle: string; title: string; userName: string }[]>([]);
   const [searchFocused, setSearchFocused] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
@@ -53,7 +53,7 @@ export function RightSidebar() {
             (w.userName ?? "").toLowerCase().includes(q)
           )
           .slice(0, 6)
-          .map((w: any) => ({ id: w.id, title: w.title, userName: w.userName }))
+          .map((w: any) => ({ id: w.id, shortId: w.shortId, userHandle: w.userHandle, title: w.title, userName: w.userName }))
       );
     }, 300);
     return () => clearTimeout(timer);
@@ -109,7 +109,7 @@ export function RightSidebar() {
                 key={n.id}
                 className="rs-search-item"
                 onClick={() => {
-                  navigate(`/notes/${n.id}`);
+                  navigate(`/@${n.userHandle}/notes/${n.shortId}`);
                   setSearchQ("");
                   setSearchFocused(false);
                 }}

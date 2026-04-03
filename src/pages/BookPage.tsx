@@ -17,7 +17,7 @@ export function BookPage() {
 
   const bookTitle = decodeURIComponent(title ?? "");
 
-  const [allLines, setAllLines] = useState<{ id: string; shortId: string; userId: string; userName: string; quote: string; page: number; feeling?: string; createdAt?: string; echoCount?: number }[]>([]);
+  const [allLines, setAllLines] = useState<{ id: string; shortId: string; userId: string; userName: string; userHandle: string; quote: string; page: number; feeling?: string; createdAt?: string; echoCount?: number }[]>([]);
   const [bookAuthor, setBookAuthor] = useState(author);
   const [loading, setLoading] = useState(true);
   const [showMine, setShowMine] = useState(isMine);
@@ -72,7 +72,7 @@ export function BookPage() {
         ) : (
           <div className="content-fade-in">
             {lines.map((l, i) => (
-              <div key={i} className="cmpitm" onClick={() => navigate(`/line/${l.shortId}`)}>
+              <div key={i} className="cmpitm" onClick={() => navigate(`/@${l.userHandle}/lines/${l.shortId}`)}>
                 <div className="cmpq">{l.quote}</div>
                 {l.feeling && <div className="cmpfeel">{l.feeling}</div>}
                 <div className="cmpur">

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 export type Echo = {
-  id: string; userId: string; userName: string; text: string;
+  id: string; userId: string; userName: string; userHandle?: string; text: string;
   isSameLine: boolean; isPrivate?: boolean;
   parentId?: string | null; pinned?: boolean;
   replies?: Echo[];
@@ -68,7 +68,7 @@ export function EchoList({ echoes, isPostAuthor, currentUserId, onDelete, onPin,
               {e.pinned && <span className="epin-label">고정됨</span>}
               <span className="edot" />
               <div className="etxt">
-                <span className="eusr" onClick={() => e.userId !== currentUserId && e.userId !== "me" && navigate(`/user/${e.userId}`)}>{e.userName}</span>
+                <span className="eusr" onClick={() => e.userId !== currentUserId && e.userId !== "me" && e.userHandle && navigate(`/@${e.userHandle}`)}>{e.userName}</span>
                 {e.text}
                 {e.isPrivate && <span className="eprivate-tag">나만 보기</span>}
               </div>

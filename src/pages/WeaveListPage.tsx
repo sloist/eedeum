@@ -6,12 +6,14 @@ import { fetchPublicWeaves } from "../lib/api";
 
 interface WeaveItem {
   id: string;
+  shortId: string;
   title: string;
   description: string | null;
   coverColor: string;
   isPublic: boolean;
   blockCount: number;
   userName: string;
+  userHandle: string;
   userId?: string;
   updatedAt: string;
   firstQuote?: string | null;
@@ -62,7 +64,7 @@ export function WeaveListPage() {
                   <article
                     key={w.id}
                     className="weave-booklet"
-                      onClick={() => navigate(`/notes/${w.id}`)}
+                      onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}
                   >
                     {preview ? (
                       <div className="weave-booklet-excerpt">

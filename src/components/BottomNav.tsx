@@ -6,8 +6,8 @@ const scrollPositions: Record<string, number> = {};
 
 // 현재 경로가 어떤 탭 루트에 속하는지
 function getTabRoot(path: string): string | null {
-  if (path === "/" || path.startsWith("/line/") || path.startsWith("/book/") || path.startsWith("/user/")) return "/";
-  if (path.startsWith("/notes") || path.startsWith("/notes/")) return "/notes";
+  if (path === "/" || path.startsWith("/@") || path.startsWith("/book/")) return "/";
+  if (path.startsWith("/notes")) return "/notes";
   return null;
 }
 
@@ -17,8 +17,8 @@ export function BottomNav() {
   const path = location.pathname;
 
   const isActive = (p: string) => {
-    if (p === "/") return path === "/" || path.startsWith("/line/") || path.startsWith("/book/") || path.startsWith("/user/");
-    if (p === "/notes") return path.startsWith("/notes") || path.startsWith("/notes/");
+    if (p === "/") return path === "/" || path.startsWith("/@") || path.startsWith("/book/");
+    if (p === "/notes") return path.startsWith("/notes");
     if (p === "/shelf") return path.startsWith("/shelf") || path === "/notifications" || path.startsWith("/settings");
     if (p === "/write") return path === "/write" || path === "/write";
     return path.startsWith(p);

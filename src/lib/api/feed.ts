@@ -238,6 +238,7 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
       id: e.id,
       userId: e.user_id,
       userName: (e.users as DbUser)?.name ?? "?",
+      userHandle: (e.users as any)?.handle ?? "",
       text: e.text,
       isSameLine: e.is_same_line,
       parentId: e.parent_id ?? null,
@@ -248,6 +249,7 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
       shortId: o.short_id,
       userId: o.user_id,
       userName: (o.users as DbUser)?.name ?? "?",
+      userHandle: (o.users as any)?.handle ?? "",
       quote: o.quote,
       page: o.page,
     })),
@@ -258,10 +260,10 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
 }
 
 /** 같은 한줄, 다른 시선 — 같은 quote를 기록한 다른 사용자의 감상 */
-export async function fetchSameQuoteLines(quote: string, excludeLineId: string): Promise<{ id: string; shortId: string; userId: string; userName: string; feeling: string | null }[]> {
+export async function fetchSameQuoteLines(quote: string, excludeLineId: string): Promise<{ id: string; shortId: string; userId: string; userName: string; userHandle: string; feeling: string | null }[]> {
   const { data } = await supabase
     .from("underlines")
-    .select(`id, short_id, user_id, feeling, users!underlines_user_id_fkey(name)`)
+    .select(`id, short_id, user_id, feeling, users!underlines_user_id_fkey(name, handle)`)
     .eq("quote", quote)
     .neq("id", excludeLineId)
     .limit(10);
@@ -272,6 +274,7 @@ export async function fetchSameQuoteLines(quote: string, excludeLineId: string):
     shortId: d.short_id,
     userId: d.user_id,
     userName: (d.users as DbUser)?.name ?? "?",
+    userHandle: (d.users as any)?.handle ?? "",
     feeling: d.feeling,
   }));
 }
@@ -302,6 +305,7 @@ export async function fetchDiscoverQuotes(topic?: string) {
     quote: u.quote,
     feeling: u.feeling,
     userName: (u.users as any)?.name ?? "?",
+    userHandle: (u.users as any)?.handle ?? "",
     userId: u.user_id,
     bookTitle: (u.books as any)?.title ?? "",
     bookAuthor: (u.books as any)?.author ?? "",
@@ -320,7 +324,7 @@ export async function fetchRandomBookWithRecords() {
 
   const { data: underlines } = await supabase
     .from("underlines")
-    .select("id, short_id, quote, feeling, users!underlines_user_id_fkey(name)")
+    .select("id, short_id, quote, feeling, users!underlines_user_id_fkey(name, handle)")
     .eq("book_id", book.id)
     .order("created_at", { ascending: false })
     .limit(3);
@@ -336,6 +340,7 @@ export async function fetchRandomBookWithRecords() {
       quote: u.quote.length > 80 ? u.quote.slice(0, 80) + "..." : u.quote,
       feeling: u.feeling,
       userName: (u.users as any)?.name ?? "?",
+      userHandle: (u.users as any)?.handle ?? "",
     })),
   };
 }

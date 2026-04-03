@@ -6,6 +6,7 @@ import {
   fetchSavedLines,
   fetchReceivedEchoes,
   fetchLikedLines,
+  fetchUserDbProfile,
 } from "../lib/api";
 
 interface MoumPageProps {
@@ -26,22 +27,25 @@ export function MoumPage({ onClearNewEcho, hasNewEcho }: MoumPageProps) {
   const navigate = useNavigate();
   const [moumTab, setMoumTab] = useState("saved");
 
-  const [savedItems, setSavedItems] = useState<{ id: string; shortId: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
+  const [savedItems, setSavedItems] = useState<{ id: string; shortId: string; userHandle: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
   const [echoItems, setEchoItems] = useState<{ lineId: string; from: string; text: string; myQuote: string; time: string; isNew: boolean }[]>([]);
-  const [likedItems, setLikedItems] = useState<{ id: string; shortId: string; quote: string; book: string; author: string; userName: string; timestamp: string }[]>([]);
+  const [likedItems, setLikedItems] = useState<{ id: string; shortId: string; userHandle: string; quote: string; book: string; author: string; userName: string; timestamp: string }[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [myHandle, setMyHandle] = useState("");
 
   useEffect(() => {
     if (!user) return;
     let mounted = true;
 
     async function load() {
-      const [saved, echoes, liked] = await Promise.all([
+      const [saved, echoes, liked, dbProfile] = await Promise.all([
         fetchSavedLines(user!.id),
         fetchReceivedEchoes(user!.id),
         fetchLikedLines(user!.id),
+        fetchUserDbProfile(user!.id),
       ]);
+      if (dbProfile) setMyHandle(dbProfile.handle);
       if (!mounted) return;
       setSavedItems(saved);
       setEchoItems(echoes);
@@ -96,7 +100,7 @@ export function MoumPage({ onClearNewEcho, hasNewEcho }: MoumPageProps) {
                   key={i}
                   className="moum-record-card"
                   style={{ animationDelay: `${i * 0.06}s` }}
-                  onClick={() => navigate(`/line/${s.shortId}`)}
+                  onClick={() => navigate(`/@${s.userHandle}/lines/${s.shortId}`)}
                 >
                   <div className="mrc-quote">{s.quote}</div>
                   <div className="mrc-meta">
@@ -124,7 +128,7 @@ export function MoumPage({ onClearNewEcho, hasNewEcho }: MoumPageProps) {
                   key={i}
                   className="moum-echo-card"
                   style={{ animationDelay: `${i * 0.06}s` }}
-                  onClick={() => navigate(`/line/${e.lineId}`)}
+                  onClick={() => navigate(`/@${myHandle}/lines/${e.lineId}`)}
                 >
                   <div className="mec-quote">{e.myQuote}</div>
                   <div className="mec-echo">{e.text}</div>
@@ -151,7 +155,7 @@ export function MoumPage({ onClearNewEcho, hasNewEcho }: MoumPageProps) {
                   key={i}
                   className="moum-record-card"
                   style={{ animationDelay: `${i * 0.06}s` }}
-                  onClick={() => navigate(`/line/${p.shortId}`)}
+                  onClick={() => navigate(`/@${p.userHandle}/lines/${p.shortId}`)}
                 >
                   <div className="mrc-quote">{p.quote}</div>
                   <div className="mrc-meta">

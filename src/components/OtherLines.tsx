@@ -5,6 +5,7 @@ import { Icons } from "./Icons";
 type OtherLine = {
   id: string;
   shortId: string;
+  userHandle: string;
   quote: string;
   userName: string;
   page: number;
@@ -27,7 +28,7 @@ export function OtherLines({ otherLines }: Props) {
         <span className="detail-others-chevron"><Icons.ChevD /></span>
       </button>
       {othersOpen && otherLines.slice(0, 5).map((ol, i) => (
-        <div key={i} className="detail-other-card" onClick={() => navigate(`/line/${ol.shortId}`)}>
+        <div key={i} className="detail-other-card" onClick={() => navigate(`/@${ol.userHandle}/lines/${ol.shortId}`)}>
           <div className="detail-other-quote">{ol.quote}</div>
           <div className="detail-other-meta">
             <span>{ol.userName}</span>

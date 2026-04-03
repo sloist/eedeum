@@ -4,7 +4,7 @@ import type { Post } from "../data";
 
 interface PostCardProps {
   post: Post;
-  onDetail: (postId: string) => void;
+  onDetail: (postId: string, handle: string) => void;
   requireAuth?: () => void;
   isLoggedIn?: boolean;
   isMine?: boolean;
@@ -31,7 +31,7 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
   }, [showMenu]);
 
   return (
-    <div className="feed-item" data-post-id={post.id} onClick={() => onDetail(post.shortId)}>
+    <div className="feed-item" data-post-id={post.id} onClick={() => onDetail(post.shortId, post.userHandle ?? "")}>
       {isMine && <span className="feed-mine-badge">내 기록</span>}
       <span className="feed-quote">{post.quote}</span>
 

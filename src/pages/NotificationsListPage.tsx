@@ -9,7 +9,7 @@ export function NotificationsListPage() {
   const { user, loading: authLoading } = useAuth();
   const { requireAuth } = useModal();
   const navigate = useNavigate();
-  const [items, setItems] = useState<{ id: string; from: string; text: string; lineId: string | null; time: string; isNew: boolean; type: string }[]>([]);
+  const [items, setItems] = useState<{ id: string; from: string; text: string; lineId: string | null; lineHandle: string; time: string; isNew: boolean; type: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export function NotificationsListPage() {
               key={n.id}
               className={`echo-card ${n.isNew ? "new" : ""}`}
               style={{ animationDelay: `${i * 0.06}s`, cursor: n.lineId ? "pointer" : "default" }}
-              onClick={() => n.lineId && navigate(`/line/${n.lineId}`)}
+              onClick={() => n.lineId && navigate(`/@${n.lineHandle}/lines/${n.lineId}`)}
             >
               <div className="echo-msg">{n.text}</div>
               <div className="echo-time">{n.time}</div>

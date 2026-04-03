@@ -27,9 +27,9 @@ export function ShelfPage() {
   const [shelf, setShelf] = useState<{ title: string; author: string; color: string; lines: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [userLines, setUserLines] = useState<{ id: string; shortId: string; quote: string; bookTitle: string; bookAuthor: string }[]>([]);
-  const [weaves, setWeaves] = useState<{ id: string; title: string; description: string | null; coverColor: string; isPublic: boolean; blockCount: number; createdAt: string; updatedAt: string }[]>([]);
-  const [savedItems, setSavedItems] = useState<{ id: string; shortId: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
-  const [privateMemos, setPrivateMemos] = useState<{ lineId: string; text: string; date: string }[]>([]);
+  const [weaves, setWeaves] = useState<{ id: string; shortId: string; title: string; description: string | null; coverColor: string; isPublic: boolean; blockCount: number; userHandle: string; createdAt: string; updatedAt: string }[]>([]);
+  const [savedItems, setSavedItems] = useState<{ id: string; shortId: string; userHandle: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
+  const [privateMemos, setPrivateMemos] = useState<{ lineId: string; lineHandle: string; text: string; date: string }[]>([]);
   const [showMore, setShowMore] = useState(false);
   const [blocks, setBlocks] = useState<{ blockType: string; targetId: string; label: string }[]>([]);
   const [showBlocks, setShowBlocks] = useState(false);
@@ -118,9 +118,12 @@ export function ShelfPage() {
           showFollow={false}
           featuredQuote={featuredQuote}
           featuredQuoteId={featuredLine?.shortId}
-          onQuoteClick={(id) => navigate(`/line/${id}`)}
+          onQuoteClick={(id) => navigate(`/@${profile.handle.replace(/^@/, "")}/lines/${id}`)}
           featuredWeave={featuredWeave ? { id: featuredWeave.id, title: featuredWeave.title, coverColor: featuredWeave.coverColor } : null}
-          onWeaveClick={(id) => navigate(`/notes/${id}`)}
+          onWeaveClick={(id) => {
+            const w = weaves.find(wv => wv.id === id);
+            navigate(`/@${profile.handle.replace(/^@/, "")}/notes/${w?.shortId ?? id}`);
+          }}
           rightActions={
             <>
               <button className="hd-bell-btn" onClick={() => navigate("/notifications")} aria-label="알림"><Icons.Bell /></button>
@@ -151,7 +154,7 @@ export function ShelfPage() {
           <div className="shelf-section-label">노트</div>
           <div className="weave-grid" style={{ padding: "0 20px 8px" }}>
             {weaves.map(w => (
-              <article key={w.id} className="weave-booklet" onClick={() => navigate(`/notes/${w.id}`)}>
+              <article key={w.id} className="weave-booklet" onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}>
                 <div className="weave-booklet-cover" style={{ background: w.coverColor }}>
                   <h3 className="weave-booklet-title">{w.title}</h3>
                 </div>
@@ -173,7 +176,7 @@ export function ShelfPage() {
           <div className="shelf-section-label">기록</div>
           <div className="shelf-lines">
             {userLines.slice(0, showMore ? userLines.length : 5).map(l => (
-              <div key={l.id} className="shelf-line-card" onClick={() => navigate(`/line/${l.shortId}`)}>
+              <div key={l.id} className="shelf-line-card" onClick={() => navigate(`/@${profile.handle.replace(/^@/, "")}/lines/${l.shortId}`)}>
                 <div className="shelf-line-quote">{l.quote}</div>
                 <div className="shelf-line-src">{l.bookTitle} · {l.bookAuthor}</div>
               </div>
@@ -195,7 +198,7 @@ export function ShelfPage() {
               <div className="shelf-section-label">담아둔 조각</div>
               <div className="shelf-lines">
                 {savedItems.slice(0, 3).map(s => (
-                  <div key={s.id} className="shelf-line-card" onClick={() => navigate(`/line/${s.shortId}`)}>
+                  <div key={s.id} className="shelf-line-card" onClick={() => navigate(`/@${s.userHandle}/lines/${s.shortId}`)}>
                     <div className="shelf-line-quote">{s.quote}</div>
                     <div className="shelf-line-src">{s.book} · {s.author}</div>
                   </div>
@@ -209,7 +212,7 @@ export function ShelfPage() {
               <div className="shelf-section-label" style={{ marginTop: savedItems.length > 0 ? 16 : 0 }}>나의 메모</div>
               <div className="shelf-memos" style={{ padding: "0 20px 8px" }}>
                 {privateMemos.slice(0, 3).map((m, i) => (
-                  <div key={i} className="shelf-memo-card" onClick={() => navigate(`/line/${m.lineId}`)}>
+                  <div key={i} className="shelf-memo-card" onClick={() => navigate(`/@${m.lineHandle}/lines/${m.lineId}`)}>
                     <div className="shelf-memo-text">{m.text}</div>
                     <div className="shelf-memo-src">{new Date(m.date).toLocaleDateString("ko-KR")}</div>
                   </div>

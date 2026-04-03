@@ -16,7 +16,7 @@ export function SearchPage() {
   const [kakaoBooks, setKakaoBooks] = useState<BookSearchResult[]>([]);
   const [bookResults, setBookResults] = useState<DbBook[]>([]);
   const [lineResults, setUnderlineResults] = useState<{ quote: string; bookTitle: string; bookAuthor: string }[]>([]);
-  const [noteResults, setNoteResults] = useState<{ id: string; title: string; userName: string; coverColor: string }[]>([]);
+  const [noteResults, setNoteResults] = useState<{ id: string; shortId: string; title: string; userName: string; userHandle: string; coverColor: string }[]>([]);
   const [searching, setSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -62,7 +62,7 @@ export function SearchPage() {
           (w.userName ?? "").toLowerCase().includes(q)
         )
         .slice(0, 10)
-        .map((w: any) => ({ id: w.id, title: w.title, userName: w.userName, coverColor: w.coverColor }));
+        .map((w: any) => ({ id: w.id, shortId: w.shortId, title: w.title, userName: w.userName, userHandle: w.userHandle, coverColor: w.coverColor }));
       setNoteResults(filtered);
       setSearching(false);
     }, 300);
@@ -158,7 +158,7 @@ export function SearchPage() {
               <>
                 <div className="sh"><span className="sl">노트</span></div>
                 {noteResults.map((n) => (
-                  <div key={n.id} className="search-row" onClick={() => navigate(`/notes/${n.id}`)}>
+                  <div key={n.id} className="search-row" onClick={() => navigate(`/@${n.userHandle}/notes/${n.shortId}`)}>
                     <div className="search-row-note">
                       <span className="search-note-dot" style={{ background: n.coverColor }} />
                       <span className="search-row-title">{n.title}</span>

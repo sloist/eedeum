@@ -108,14 +108,14 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
   }, [user, posts]);
 
   const onBook = (book: Book) => navigate(`/book/${encodeURIComponent(book.title)}`, { state: { author: book.author, from: "feed" } });
-  const onDetail = (postId: string) => {
+  const onDetail = (postId: string, handle: string) => {
     if (user) {
       trackEvent(user.id, {
         eventType: "underline_detail_view", targetType: "underline", targetId: postId,
         source: "feed", context: "home_feed",
       });
     }
-    navigate(`/line/${postId}`, { state: { from: "feed", backgroundLocation: location } });
+    navigate(`/@${handle}/lines/${postId}`, { state: { from: "feed", backgroundLocation: location } });
   };
 
   const handleDelete = async (postId: string) => {

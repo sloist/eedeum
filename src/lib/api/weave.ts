@@ -27,12 +27,14 @@ export async function fetchPublicWeaves() {
 
     return {
       id: w.id as string,
+      shortId: w.short_id as string,
       title: w.title as string,
       description: w.description as string | null,
       coverColor: w.cover_color as string,
       isPublic: true,
       blockCount: blocks.length,
       userName: (w.users as any)?.name ?? "",
+      userHandle: (w.users as any)?.handle ?? "",
       userId: w.user_id as string,
       updatedAt: w.updated_at as string,
       firstQuote,
@@ -43,38 +45,45 @@ export async function fetchPublicWeaves() {
 export async function fetchUserWeaves(userId: string) {
   const { data } = await supabase
     .from("weaves")
-    .select("*, weave_blocks(id)")
+    .select("*, weave_blocks(id), users!weaves_user_id_fkey(handle)")
     .eq("user_id", userId)
     .order("updated_at", { ascending: false });
 
   return (data ?? []).map((w: any) => ({
     id: w.id as string,
+    shortId: w.short_id as string,
     title: w.title as string,
     description: w.description as string | null,
     coverColor: w.cover_color as string,
     isPublic: w.is_public as boolean,
+    userHandle: (w.users as any)?.handle ?? "",
     blockCount: (w.weave_blocks as any[])?.length ?? 0,
     createdAt: w.created_at as string,
     updatedAt: w.updated_at as string,
   }));
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function fetchWeaveDetail(weaveId: string) {
+  const col = UUID_RE.test(weaveId) ? "id" : "short_id";
   const { data } = await supabase
     .from("weaves")
     .select("*, users!weaves_user_id_fkey(*)")
-    .eq("id", weaveId)
+    .eq(col, weaveId)
     .single();
 
   if (!data) return null;
   return {
     id: data.id as string,
+    shortId: (data as any).short_id as string,
     userId: data.user_id as string,
     title: data.title as string,
     description: data.description as string | null,
     coverColor: data.cover_color as string,
     isPublic: data.is_public as boolean,
     userName: ((data as any).users as any)?.name ?? "?",
+    userHandle: ((data as any).users as any)?.handle ?? "",
     createdAt: data.created_at as string,
     updatedAt: data.updated_at as string,
   };

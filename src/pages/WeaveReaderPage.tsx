@@ -23,17 +23,19 @@ interface WeaveBlock {
 
 interface WeaveInfo {
   id: string;
+  shortId: string;
   userId: string;
   title: string;
   description: string | null;
   coverColor: string;
   isPublic: boolean;
   userName: string;
+  userHandle: string;
 }
 
 export function WeaveReaderPage() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { handle, id } = useParams<{ handle: string; id: string }>();
   const { user } = useAuth();
 
   const [weave, setWeave] = useState<WeaveInfo | null>(null);
@@ -41,7 +43,7 @@ export function WeaveReaderPage() {
   const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [otherWeaves, setOtherWeaves] = useState<{ id: string; title: string; coverColor: string; blockCount: number }[]>([]);
+  const [otherWeaves, setOtherWeaves] = useState<{ id: string; shortId: string; title: string; coverColor: string; blockCount: number; userHandle: string }[]>([]);
   const [fadeState, setFadeState] = useState<"in" | "out">("in");
 
   const totalPages = blocks.length + 2; // cover + blocks + footer
@@ -70,7 +72,7 @@ export function WeaveReaderPage() {
           setOtherWeaves(
             authorWeaves
               .filter(w => w.id !== id && w.isPublic)
-              .map(w => ({ id: w.id, title: w.title, coverColor: w.coverColor, blockCount: w.blockCount }))
+              .map(w => ({ id: w.id, shortId: w.shortId, title: w.title, coverColor: w.coverColor, blockCount: w.blockCount, userHandle: w.userHandle }))
           );
         }
       }
@@ -175,7 +177,7 @@ export function WeaveReaderPage() {
       return (
         <div className="wr-end">
           <div className="wr-end-count">{blocks.length}개의 조각</div>
-          <div className="wr-end-author-card" onClick={() => navigate(`/user/${weave.userId}`)}>
+          <div className="wr-end-author-card" onClick={() => navigate(`/@${weave.userHandle}`)}>
             <span className="wr-end-author-name">{weave.userName}</span>
             <span className="wr-end-author-action">가 남긴 문장 더 보기</span>
           </div>
@@ -183,7 +185,7 @@ export function WeaveReaderPage() {
             <div className="wr-end-more">
               <div className="wr-end-more-label">{weave.userName}의 다른 노트</div>
               {otherWeaves.map(w => (
-                <div key={w.id} className="wr-end-weave" onClick={() => navigate(`/notes/${w.id}`)}>
+                <div key={w.id} className="wr-end-weave" onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}>
                   <div className="wr-end-weave-spine" style={{ background: w.coverColor }} />
                   <div className="wr-end-weave-title">{w.title}</div>
                 </div>
@@ -246,7 +248,7 @@ export function WeaveReaderPage() {
             <button className="wr-menu-trigger" onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}>···</button>
             {showMenu && (
               <div className="wr-menu-dropdown">
-                <button className="wr-menu-item" onClick={() => { setShowMenu(false); navigate(`/notes/${id}/edit`); }}>편집하기</button>
+                <button className="wr-menu-item" onClick={() => { setShowMenu(false); navigate(`/@${handle}/notes/${id}/edit`); }}>편집하기</button>
                 <button className="wr-menu-item danger" onClick={() => { setShowMenu(false); handleDelete(); }}>삭제하기</button>
               </div>
             )}
