@@ -49,7 +49,7 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
         position: "fixed",
         bottom: popPos.bottom,
         left: popPos.left,
-        width: 200,
+        width: 160,
         background: "var(--bgC)",
         borderRadius: 10,
         border: "0.5px solid var(--bdL)",
