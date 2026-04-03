@@ -1,15 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="fold" x1="1" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#C4B5A3"/>
-      <stop offset="100%" stop-color="#A89580"/>
+    <linearGradient id="foldFace" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E8DFD4"/>
+      <stop offset="100%" stop-color="#D4C9BB"/>
+    </linearGradient>
+    <!-- Shadow under the fold flap -->
+    <linearGradient id="foldShadow" x1="0" y1="0" x2="0.7" y2="0.7">
+      <stop offset="0%" stop-color="#1A1510" stop-opacity=".25"/>
+      <stop offset="100%" stop-color="#1A1510" stop-opacity="0"/>
     </linearGradient>
   </defs>
 
-  <!-- E shape with folded top-right corner, 3 bars of equal 80px height -->
+  <!-- E body: top bar goes full width to 480, corner will be overlaid -->
   <path d="
     M 32 16
-    L 380 16
+    L 480 16
     L 480 96
     L 160 96
     L 160 216
@@ -23,6 +28,9 @@
     Z
   " fill="#2A231D"/>
 
-  <!-- Folded corner -->
-  <path d="M 380 16 L 480 96 L 380 96 Z" fill="url(#fold)"/>
+  <!-- Shadow beneath the fold (on the E surface) -->
+  <path d="M 368 28 L 368 108 L 468 108 Z" fill="url(#foldShadow)"/>
+
+  <!-- Fold flap: paper curling back, sits ON TOP of the E -->
+  <path d="M 480 16 L 480 120 L 376 16 Z" fill="url(#foldFace)" stroke="#BFB2A2" stroke-width="3" stroke-linejoin="round"/>
 </svg>

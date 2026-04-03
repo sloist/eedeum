@@ -2,8 +2,8 @@ export const Icons = {
   // 이듬 로고: E + 접힌 페이지 모서리
   Logo: () => (
     <svg viewBox="0 0 512 512" fill="none">
-      <path d="M 32 16 L 380 16 L 480 96 L 160 96 L 160 216 L 400 216 L 400 296 L 160 296 L 160 416 L 480 416 L 480 496 L 32 496 Z" fill="currentColor"/>
-      <path d="M 380 16 L 480 96 L 380 96 Z" fill="currentColor" opacity=".3"/>
+      <path d="M 32 16 L 480 16 L 480 96 L 160 96 L 160 216 L 400 216 L 400 296 L 160 296 L 160 416 L 480 416 L 480 496 L 32 496 Z" fill="currentColor"/>
+      <path d="M 480 16 L 480 120 L 376 16 Z" fill="currentColor" opacity=".2"/>
     </svg>
   ),
 
