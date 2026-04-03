@@ -2373,5 +2373,4 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 /* ─── Route-aware sidebar hiding ─── */
 @media (min-width: 1100px) {
   .app-shell.wide-content .right-sidebar { display: none; }
-  .app-shell.wide-content .app { max-width: none; }
 }
