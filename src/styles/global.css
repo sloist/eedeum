@@ -1262,8 +1262,22 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .wr-block-quote .wr-line{margin-bottom:12px}
 .wr-block-quote .wr-line-source{text-align:center}
 
+/* 짧은 문장 — 더 큰 타이포로 존재감 */
+.wr-line-quote-short{font-size:22px;font-weight:300;line-height:1.7}
+
 /* 메모 페이지 — 좌측 정렬, 은은한 왼쪽 선 */
 .wr-block-memo{padding-left:16px;border-left:1.5px solid var(--bdL)}
+
+/* 문장+메모 합친 페이지 — 문장이 위, 메모가 아래 */
+.wr-block-combined{text-align:center}
+.wr-block-combined .wr-line-source{text-align:center}
+.wr-combined-memo{
+  margin-top:24px;padding-top:20px;
+  border-top:0.5px solid var(--bdL);
+  font-family:var(--sn);font-size:13.5px;line-height:1.7;
+  color:var(--t2);opacity:.7;text-align:left;
+  white-space:pre-wrap;
+}
 
 /* 구분 페이지 — 가운데, 장 전환 느낌 */
 .wr-block-divider{text-align:center}

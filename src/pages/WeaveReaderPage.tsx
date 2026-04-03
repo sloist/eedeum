@@ -47,7 +47,25 @@ export function WeaveReaderPage() {
   const [otherWeaves, setOtherWeaves] = useState<{ id: string; shortId: string; title: string; coverColor: string; blockCount: number; userHandle: string }[]>([]);
   const [fadeState, setFadeState] = useState<"in" | "out">("in");
 
-  const totalPages = blocks.length + 2; // cover + blocks + footer
+  // 인접한 quote+note를 한 페이지로 묶기
+  const pages = (() => {
+    const result: { blocks: typeof blocks }[] = [];
+    let i = 0;
+    while (i < blocks.length) {
+      const curr = blocks[i];
+      const next = blocks[i + 1];
+      // 문장 바로 다음에 메모가 오면 한 페이지로 합침
+      if (curr.type === "underline" && next?.type === "note") {
+        result.push({ blocks: [curr, next] });
+        i += 2;
+      } else {
+        result.push({ blocks: [curr] });
+        i += 1;
+      }
+    }
+    return result;
+  })();
+  const totalPages = pages.length + 2; // cover + pages + footer
   const progress = totalPages > 1 ? (currentPage / (totalPages - 1)) * 100 : 0;
 
   useEffect(() => {
@@ -202,15 +220,39 @@ export function WeaveReaderPage() {
       );
     }
 
-    const blockIdx = currentPage - 1;
-    const block = blocks[blockIdx];
-    if (!block) return <div className="empty-inline">아직 조각이 없습니다</div>;
+    const pageIdx = currentPage - 1;
+    const page = pages[pageIdx];
+    if (!page) return <div className="empty-inline">아직 조각이 없습니다</div>;
+
+    const pageBlocks = page.blocks;
+
+    // 문장+메모 합친 페이지
+    if (pageBlocks.length === 2) {
+      const quote = pageBlocks[0];
+      const memo = pageBlocks[1];
+      const isShort = (quote.underline?.quote.length ?? 0) < 30;
+      return (
+        <div className="wr-block wr-block-combined">
+          <div className="wr-line">
+            <div className={`wr-line-quote ${isShort ? "wr-line-quote-short" : ""}`}>{quote.underline!.quote}</div>
+          </div>
+          <div className="wr-line-source">
+            — {quote.underline!.bookTitle}, {quote.underline!.bookAuthor}
+            {quote.underline!.page > 0 && ` · p.${quote.underline!.page}`}
+          </div>
+          <div className="wr-combined-memo">{memo.content}</div>
+        </div>
+      );
+    }
+
+    const block = pageBlocks[0];
 
     if (block.type === "underline" && block.underline) {
+      const isShort = block.underline.quote.length < 30;
       return (
         <div className="wr-block wr-block-quote">
           <div className="wr-line">
-            <div className="wr-line-quote">{block.underline.quote}</div>
+            <div className={`wr-line-quote ${isShort ? "wr-line-quote-short" : ""}`}>{block.underline.quote}</div>
           </div>
           <div className="wr-line-source">
             — {block.underline.bookTitle}, {block.underline.bookAuthor}
