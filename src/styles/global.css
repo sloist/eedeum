@@ -85,19 +85,18 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   /* Left Sidebar — 3 groups: nav / secondary / account */
   .left-sidebar{
     display:flex;flex-direction:column;
-    width:170px;flex-shrink:0;
+    width:180px;flex-shrink:0;
     position:sticky;top:0;height:100vh;
-    padding:16px 8px;
+    padding:16px 8px 16px 32px;
     background:transparent;
     overflow:visible;
-    align-items:flex-end;
   }
   .left-sidebar::-webkit-scrollbar{display:none}
   .ls-logo{
     font-family:var(--sf);font-size:15px;font-weight:500;
     color:var(--t2);letter-spacing:-.2px;cursor:pointer;
     display:inline-block;
-    margin-bottom:24px;padding-right:8px;
+    margin-bottom:24px;padding-left:8px;
   }
 
   /* All sidebar items share the same style */
@@ -107,22 +106,22 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
     background:none;border:none;cursor:pointer;
     font-family:var(--sn);font-size:14px;color:var(--t3);
     transition:color 0.15s ease;position:relative;
-    letter-spacing:-.1px;width:auto;text-align:left;
+    letter-spacing:-.1px;width:100%;text-align:left;
   }
   .ls-nav-item svg{width:22px;height:22px;flex-shrink:0}
   .ls-nav-item:hover{color:var(--t2)}
   .ls-nav-item.on{color:var(--t1);font-weight:600}
 
   /* Sidebar groups — main on top, sub below, account at bottom */
-  .ls-main{display:flex;flex-direction:column;gap:1px;align-items:flex-end}
-  .ls-sub{display:flex;flex-direction:column;gap:1px;margin-top:16px;padding-top:12px;border-top:0.5px solid rgba(221,212,200,0.3);align-items:flex-end}
+  .ls-main{display:flex;flex-direction:column;gap:1px}
+  .ls-sub{display:flex;flex-direction:column;gap:1px;margin-top:16px;padding-top:12px;border-top:0.5px solid rgba(221,212,200,0.3)}
   .ls-muted{opacity:.5}
   .ls-muted:hover{opacity:.7}
 
   /* More menu — bottom */
   .ls-more-wrap{
     margin-top:auto;padding-top:12px;
-    position:relative;align-self:flex-end;
+    position:relative;
   }
   .ls-more-btn{opacity:.6}
   .ls-more-btn:hover{opacity:1}
@@ -179,10 +178,10 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 }
 /* ─── Tablet: text sidebar, no right panel (900–1099) — content centered ─── */
 @media(min-width:900px) and (max-width:1099px){
-  :root{--sidebar-width:160px;--rightsidebar-width:0px}
+  :root{--sidebar-width:170px;--rightsidebar-width:0px}
   .right-sidebar{display:none!important}
   .app-shell{max-width:100%}
-  .left-sidebar{width:160px}
+  .left-sidebar{width:170px;padding-left:24px}
   .app{max-width:680px;margin:0 auto}
 }
 
