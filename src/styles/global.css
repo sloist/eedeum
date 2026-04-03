@@ -158,13 +158,13 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   .srcov{max-width:600px}
 }
 
-/* 검색 버튼: 중간 너비(우측 사이드바 없을 때)에서만 보임 */
+/* 검색 버튼: 우측 사이드바 없을 때만 보임 */
 .ls-search-btn{display:none!important}
-@media(min-width:768px) and (max-width:1099px){
+@media(min-width:768px) and (max-width:1279px){
   .ls-search-btn{display:flex!important}
 }
 
-/* ─── Tablet: icon-only sidebar (768–1099) ─── */
+/* ─── Tablet: compact sidebar (768–1099) ─── */
 @media(min-width:768px) and (max-width:1099px){
   :root{--sidebar-width:60px;--rightsidebar-width:0px}
   .app-shell{max-width:100%}
@@ -174,14 +174,21 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   .ls-nav-item span{display:none}
   .ls-nav-item svg{width:20px;height:20px}
   .ls-more-btn span{display:none}
-  .app{flex:1}
+  .app{flex:1;max-width:680px;margin:0 auto}
+}
+/* ─── Tablet wide: text sidebar, no right panel (1100–1279) ─── */
+@media(min-width:1100px) and (max-width:1279px){
+  .right-sidebar{display:none!important}
+  .app-shell{max-width:100%}
+  .left-sidebar{width:150px}
+  .app{max-width:680px}
 }
 
 /* ─── Right sidebar: hidden by default, shown on wide screens ─── */
-@media(max-width:1099px){
+@media(max-width:1279px){
   .right-sidebar{display:none}
 }
-@media(min-width:1100px){
+@media(min-width:1280px){
   :root{--sidebar-width:150px;--rightsidebar-width:220px}
   .app-shell{max-width:1060px;margin:0 auto}
   .right-sidebar{
@@ -2372,6 +2379,6 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .settings-footer a:hover{text-decoration:underline}
 
 /* ─── Route-aware sidebar hiding ─── */
-@media (min-width: 1100px) {
+@media (min-width: 1280px) {
   .app-shell.wide-content .right-sidebar { display: none; }
 }
