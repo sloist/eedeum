@@ -15,7 +15,7 @@ import { OtherLines } from "../components/OtherLines";
 import { AddToNoteSheet } from "../components/AddToNoteSheet";
 
 export function UnderlinePage() {
-  const { id } = useParams<{ handle: string; id: string }>();
+  const { handle, id } = useParams<{ handle: string; id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const hasBackground = !!(location.state as any)?.backgroundLocation;
@@ -50,6 +50,11 @@ export function UnderlinePage() {
       if (!mounted) return;
       setData(result);
       if (result) {
+        // handle 변경 대응: URL의 handle이 실제 작성자와 다르면 올바른 URL로 리다이렉트
+        if (handle && result.userHandle && handle !== result.userHandle) {
+          navigate(`/@${result.userHandle}/lines/${result.shortId}`, { replace: true, state: location.state });
+          return;
+        }
         setIsPrivate(result.isPrivate ?? false);
         // 상세 진입 추적 (피드에서 이미 찍었으면 dedup됨)
         if (user) {

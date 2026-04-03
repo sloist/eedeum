@@ -66,6 +66,11 @@ export function WeaveReaderPage() {
       ]);
       if (!mounted) return;
       if (detail) {
+        // handle 변경 대응
+        if (handle && detail.userHandle && handle !== detail.userHandle) {
+          navigate(`/@${detail.userHandle}/notes/${detail.shortId}`, { replace: true });
+          return;
+        }
         setWeave(detail as WeaveInfo);
         const authorWeaves = await fetchUserWeaves(detail.userId);
         if (mounted) {
