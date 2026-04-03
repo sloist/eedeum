@@ -1254,7 +1254,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 /* Page indicator */
 .wr-page-indicator{font-size:11px;color:var(--t3);letter-spacing:.1px}
 /* Weave reader blocks — flowing text on each page */
-.wr-block{position:relative;max-width:480px;width:100%;margin:auto 0}
+.wr-block{position:relative;max-width:640px;width:100%;margin:auto 0}
 .wr-line{
   padding:0;border:none;
   margin-bottom:8px;
