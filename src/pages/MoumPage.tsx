@@ -128,7 +128,7 @@ export function MoumPage({ onClearNewEcho, hasNewEcho }: MoumPageProps) {
                   key={i}
                   className="moum-echo-card"
                   style={{ animationDelay: `${i * 0.06}s` }}
-                  onClick={() => navigate(`/@${myHandle}/lines/${e.lineId}`)}
+                  onClick={() => myHandle && navigate(`/@${myHandle}/lines/${e.lineId}`)}
                 >
                   <div className="mec-quote">{e.myQuote}</div>
                   <div className="mec-echo">{e.text}</div>

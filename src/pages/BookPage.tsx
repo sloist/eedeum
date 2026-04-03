@@ -77,8 +77,7 @@ export function BookPage() {
                 {l.feeling && <div className="cmpfeel">{l.feeling}</div>}
                 <div className="cmpur">
                   <span>{l.userName}</span>
-                  <span className="qdot" />
-                  <span>p.{l.page}</span>
+                  {l.page > 0 && <><span className="qdot" /><span>p.{l.page}</span></>}
                 </div>
               </div>
             ))}

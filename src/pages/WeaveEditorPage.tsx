@@ -66,7 +66,7 @@ export function WeaveEditorPage() {
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState<WeaveBlock[]>([]);
   const [loading, setLoading] = useState(!!id);
-  const [_saving, setSaving] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [showEditorMenu, setShowEditorMenu] = useState(false);
 
@@ -324,8 +324,10 @@ export function WeaveEditorPage() {
   };
 
   // Touch drag support
+  const touchStartPos = useRef({ x: 0, y: 0 });
   const handleTouchStart = (index: number, e: React.TouchEvent) => {
     const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     longPressTimer.current = setTimeout(() => {
       handleDragStart(index, touch.clientY);
     }, 400);
@@ -333,8 +335,14 @@ export function WeaveEditorPage() {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
+      const touch = e.touches[0];
+      const dx = Math.abs(touch.clientX - touchStartPos.current.x);
+      const dy = Math.abs(touch.clientY - touchStartPos.current.y);
+      // 10px 이상 움직이면 long press 취소
+      if (dx > 10 || dy > 10) {
+        clearTimeout(longPressTimer.current);
+        longPressTimer.current = null;
+      }
     }
     if (dragIndex === null) return;
     const touch = e.touches[0];
@@ -539,7 +547,8 @@ export function WeaveEditorPage() {
           onBlur={handleSaveTitle}
           placeholder="노트 제목"
         />
-        <button className="weave-save-btn" onClick={async () => {
+        <button className="weave-save-btn" disabled={saving} onClick={async () => {
+          setSaving(true);
           if (!isPublic) {
             await updateWeave(weaveId, { is_public: true });
             setIsPublic(true);

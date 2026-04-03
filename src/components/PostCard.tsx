@@ -81,7 +81,7 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
     <div className="feed-item" data-post-id={post.id} onClick={() => onDetail(post.shortId, post.userHandle ?? "")}>
       {isMine && !post.repostOf && <span className="feed-mine-badge">내 기록</span>}
       {post.repostOf && (
-        <span className="feed-repost-badge" onClick={(e) => { e.stopPropagation(); navigate(`/@${post.repostOf!.userHandle}`); }}>
+        <span className="feed-repost-badge" onClick={(e) => { e.stopPropagation(); navigate(`/@${post.repostOf!.userHandle.replace(/^@/, "")}`); }}>
           ↻ {post.repostOf.userName}님의 한줄
         </span>
       )}
@@ -112,7 +112,7 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
               <div className="feed-more-menu">
                 {isMine ? (
                   <>
-                    <button onClick={(e) => { e.stopPropagation(); setShowMenu(false); navigate(`/write`, { state: { editId: post.id, editQuote: post.quote, editFeeling: post.feeling, editBookTitle: post.book.title, editBookAuthor: post.book.author } }); }}>
+                    <button onClick={(e) => { e.stopPropagation(); setShowMenu(false); navigate(`/write`, { state: { editId: post.id, editQuote: post.quote, editFeeling: post.feeling, editBookTitle: post.book.title, editBookAuthor: post.book.author, editPage: post.book.page } }); }}>
                       수정
                     </button>
                     <button className="danger" onClick={(e) => { e.stopPropagation(); onDelete?.(post.id); setShowMenu(false); }}>
