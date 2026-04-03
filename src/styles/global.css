@@ -287,6 +287,10 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   .rs-user-name{font-size:14px;font-weight:600;color:var(--t1);letter-spacing:-.2px}
   .rs-user-handle{font-size:12px;color:var(--t3)}
 
+  .rs-search-link{display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;color:var(--t3);font-family:var(--sn);font-size:13px;transition:color .15s;margin-bottom:20px}
+  .rs-search-link:hover{color:var(--t2)}
+  .rs-search-link svg{width:16px;height:16px}
+
   .rs-rediscovery{margin-top:28px;padding:0;cursor:pointer;transition:opacity .2s}
   .rs-rediscovery:hover{opacity:.7}
   .rs-rediscovery-label{font-family:var(--sn);font-size:10px;color:var(--t3);opacity:.5;margin-bottom:8px;letter-spacing:.2px}
