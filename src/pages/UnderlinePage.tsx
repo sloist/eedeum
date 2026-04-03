@@ -15,7 +15,7 @@ import { OtherLines } from "../components/OtherLines";
 import { AddToNoteSheet } from "../components/AddToNoteSheet";
 
 export function UnderlinePage() {
-  const { handle, id } = useParams<{ handle: string; id: string }>();
+  const { id } = useParams<{ handle: string; id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const hasBackground = !!(location.state as any)?.backgroundLocation;
