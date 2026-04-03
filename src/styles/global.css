@@ -933,6 +933,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .shelf-rank-row{padding:0 20px 12px}
 .shelf-rank-tier{font-family:var(--sn);font-size:11px;color:var(--t3);opacity:.6;letter-spacing:-.1px;border:none;background:none;border-bottom:1px dashed var(--bdL);padding:0 0 1px;cursor:pointer}
 .shelf-rank-tier:hover{opacity:.8;color:var(--t2)}
+.shelf-section .weave-booklet-excerpt-text{-webkit-line-clamp:2}
 .shelf-accumulation{padding:0 20px 16px;font-family:var(--sn);font-size:11px;color:var(--t3);opacity:.5;letter-spacing:-.1px}
 .shelf-drafts{display:flex;flex-direction:column;gap:2px;padding:0 20px}
 .shelf-draft-card{padding:14px 0;border-bottom:0.5px solid var(--bdL);cursor:pointer;transition:opacity .15s}

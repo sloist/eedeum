@@ -45,22 +45,34 @@ export async function fetchPublicWeaves() {
 export async function fetchUserWeaves(userId: string) {
   const { data } = await supabase
     .from("weaves")
-    .select("*, weave_blocks(id), users!weaves_user_id_fkey(handle)")
+    .select("*, weave_blocks(id, block_type, content, position, underlines(quote)), users!weaves_user_id_fkey(handle)")
     .eq("user_id", userId)
     .order("updated_at", { ascending: false });
 
-  return (data ?? []).map((w: any) => ({
-    id: w.id as string,
-    shortId: w.short_id as string,
-    title: w.title as string,
-    description: w.description as string | null,
-    coverColor: w.cover_color as string,
-    isPublic: w.is_public as boolean,
-    userHandle: (w.users as any)?.handle ?? "",
-    blockCount: (w.weave_blocks as any[])?.length ?? 0,
-    createdAt: w.created_at as string,
-    updatedAt: w.updated_at as string,
-  }));
+  return (data ?? []).map((w: any) => {
+    const blocks = (w.weave_blocks as any[]) ?? [];
+    const sorted = [...blocks].sort((a: any, b: any) => a.position - b.position);
+    let firstQuote: string | null = null;
+    const ulBlock = sorted.find((b: any) => b.block_type === "underline" && b.underlines);
+    if (ulBlock?.underlines?.quote) firstQuote = ulBlock.underlines.quote;
+    if (!firstQuote) {
+      const noteBlock = sorted.find((b: any) => b.block_type === "note" && b.content);
+      if (noteBlock) firstQuote = noteBlock.content;
+    }
+    return {
+      id: w.id as string,
+      shortId: w.short_id as string,
+      title: w.title as string,
+      description: w.description as string | null,
+      coverColor: w.cover_color as string,
+      isPublic: w.is_public as boolean,
+      userHandle: (w.users as any)?.handle ?? "",
+      blockCount: blocks.length,
+      createdAt: w.created_at as string,
+      updatedAt: w.updated_at as string,
+      firstQuote,
+    };
+  });
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

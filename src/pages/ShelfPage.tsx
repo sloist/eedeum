@@ -28,7 +28,7 @@ export function ShelfPage() {
   const [shelf, setShelf] = useState<{ title: string; author: string; color: string; lines: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [userLines, setUserLines] = useState<{ id: string; shortId: string; quote: string; bookTitle: string; bookAuthor: string }[]>([]);
-  const [weaves, setWeaves] = useState<{ id: string; shortId: string; title: string; description: string | null; coverColor: string; isPublic: boolean; blockCount: number; userHandle: string; createdAt: string; updatedAt: string }[]>([]);
+  const [weaves, setWeaves] = useState<{ id: string; shortId: string; title: string; description: string | null; coverColor: string; isPublic: boolean; blockCount: number; userHandle: string; createdAt: string; updatedAt: string; firstQuote?: string | null }[]>([]);
   const [savedItems, setSavedItems] = useState<{ id: string; shortId: string; userHandle: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
   const [privateMemos, setPrivateMemos] = useState<{ lineId: string; lineHandle: string; text: string; date: string }[]>([]);
   const [showMore, setShowMore] = useState(false);
@@ -149,7 +149,7 @@ export function ShelfPage() {
       {/* ─── 1. 읽고 있는 책 ─── */}
       {shelf.length > 0 && (
         <div className="shelf-section">
-          <div className="shelf-section-label">머무는 책</div>
+          <div className="shelf-section-label">읽는 책</div>
           <div className="sgrid">
             {shelf.map((b, i) => (
               <div key={i} className="sbook" style={{ background: b.color }} onClick={() => navigate(`/book/${encodeURIComponent(b.title)}?mine=1`, { state: { author: b.author } })}>
@@ -166,19 +166,24 @@ export function ShelfPage() {
         <div className="shelf-section">
           <div className="shelf-section-label">노트</div>
           <div className="weave-grid" style={{ padding: "0 20px 8px" }}>
-            {weaves.map(w => (
-              <article key={w.id} className="weave-booklet" onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}>
-                <div className="weave-booklet-cover" style={{ background: w.coverColor }}>
-                  <h3 className="weave-booklet-title">{w.title}</h3>
-                </div>
-                <div className="weave-booklet-body">
-                  {w.description && <p className="weave-booklet-desc">{w.description}</p>}
-                  <div className="weave-booklet-meta">
-                    <span>{w.blockCount}개의 조각</span>
+            {weaves.map(w => {
+              const preview = w.description || w.firstQuote || null;
+              return (
+                <article key={w.id} className="weave-booklet" onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}>
+                  {preview ? (
+                    <div className="weave-booklet-excerpt">
+                      <p className="weave-booklet-excerpt-text">{preview}</p>
+                    </div>
+                  ) : <div style={{ flex: 1 }} />}
+                  <div className="weave-booklet-cover" style={{ background: w.coverColor }}>
+                    <h3 className="weave-booklet-title">{w.title}</h3>
                   </div>
-                </div>
-              </article>
-            ))}
+                  <div className="weave-booklet-footer">
+                    <span className="weave-booklet-meta">{w.blockCount}개의 조각</span>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       )}
