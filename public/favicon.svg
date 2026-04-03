@@ -1,36 +1,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="foldFace" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#E8DFD4"/>
-      <stop offset="100%" stop-color="#D4C9BB"/>
-    </linearGradient>
-    <!-- Shadow under the fold flap -->
-    <linearGradient id="foldShadow" x1="0" y1="0" x2="0.7" y2="0.7">
-      <stop offset="0%" stop-color="#1A1510" stop-opacity=".25"/>
-      <stop offset="100%" stop-color="#1A1510" stop-opacity="0"/>
+    <linearGradient id="fold" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D4C9BB"/>
+      <stop offset="100%" stop-color="#C4B5A3"/>
     </linearGradient>
   </defs>
 
-  <!-- E body: top bar goes full width to 480, corner will be overlaid -->
+  <!-- Page outline with folded corner -->
   <path d="
-    M 32 16
-    L 480 16
-    L 480 96
-    L 160 96
-    L 160 216
-    L 400 216
-    L 400 296
-    L 160 296
-    L 160 416
-    L 480 416
-    L 480 496
-    L 32 496
+    M 56 24
+    L 360 24
+    L 456 120
+    L 456 488
+    L 56 488
     Z
-  " fill="#2A231D"/>
+  " fill="none" stroke="#2A231D" stroke-width="28" stroke-linejoin="round"/>
 
-  <!-- Shadow beneath the fold (on the E surface) -->
-  <path d="M 368 28 L 368 108 L 468 108 Z" fill="url(#foldShadow)"/>
+  <!-- Fold crease -->
+  <path d="M 360 24 L 360 120 L 456 120" fill="none" stroke="#2A231D" stroke-width="20" stroke-linejoin="round"/>
+  <!-- Fold face -->
+  <path d="M 360 24 L 360 120 L 456 120 Z" fill="url(#fold)"/>
 
-  <!-- Fold flap: paper curling back, sits ON TOP of the E -->
-  <path d="M 480 16 L 480 120 L 376 16 Z" fill="url(#foldFace)" stroke="#BFB2A2" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Three text lines forming E -->
+  <!-- Top line (full width) -->
+  <line x1="130" y1="200" x2="380" y2="200" stroke="#2A231D" stroke-width="32" stroke-linecap="round"/>
+  <!-- Middle line (shorter) -->
+  <line x1="130" y1="290" x2="330" y2="290" stroke="#2A231D" stroke-width="32" stroke-linecap="round"/>
+  <!-- Bottom line (full width) -->
+  <line x1="130" y1="380" x2="380" y2="380" stroke="#2A231D" stroke-width="32" stroke-linecap="round"/>
+
+  <!-- Left vertical connecting the lines (E spine) -->
+  <line x1="130" y1="200" x2="130" y2="380" stroke="#2A231D" stroke-width="32" stroke-linecap="round"/>
 </svg>
