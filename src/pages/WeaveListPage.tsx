@@ -64,11 +64,11 @@ export function WeaveListPage() {
                     className="weave-booklet"
                       onClick={() => navigate(`/weave/${w.id}`)}
                   >
-                    {preview && (
+                    {preview ? (
                       <div className="weave-booklet-excerpt">
                         <p className="weave-booklet-excerpt-text">{preview}</p>
                       </div>
-                    )}
+                    ) : <div style={{ flex: 1 }} />}
                     <div className="weave-booklet-cover" style={{ background: w.coverColor }}>
                       <h3 className="weave-booklet-title">{w.title}</h3>
                     </div>

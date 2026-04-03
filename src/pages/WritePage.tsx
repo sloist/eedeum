@@ -258,8 +258,6 @@ export function WritePage() {
           autoFocus={!imageUrl}
         />
 
-        <div className="write-divider" />
-
         <textarea
           className="write-quote"
           placeholder="멈춘 문장을 남겨주세요"
@@ -291,8 +289,6 @@ export function WritePage() {
           </label>
         </div>
 
-        <div className="write-divider" />
-
         <div className="write-feeling-wrap">
           <textarea
             className="write-feeling"
@@ -311,8 +307,6 @@ export function WritePage() {
             </button>
           )}
         </div>
-
-        <div className="write-divider" />
 
         <div className="write-source">
           <div className="write-source-label">출처</div>
