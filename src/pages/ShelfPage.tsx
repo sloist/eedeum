@@ -140,25 +140,6 @@ export function ShelfPage() {
       </div>
 
       {/* ─── 임시 보관함 ─── */}
-      {drafts.length > 0 && (
-        <div className="shelf-section">
-          <div className="shelf-section-label">아직 정리 중</div>
-          <div className="shelf-drafts">
-            {drafts.slice(0, 5).map(d => (
-              <div
-                key={d.id}
-                className="shelf-draft-card"
-                onClick={() => navigate("/write", { state: { editId: d.id, editQuote: d.quote, editFeeling: d.feeling || "", editBookTitle: d.bookTitle, editBookAuthor: d.bookAuthor, editPage: d.page } })}
-              >
-                <div className="shelf-draft-quote">{d.quote.length > 60 ? d.quote.slice(0, 60) + "…" : d.quote}</div>
-                {d.bookTitle && <div className="shelf-draft-src">{d.bookTitle} · {d.bookAuthor}</div>}
-                {!d.bookTitle && <div className="shelf-draft-src" style={{ opacity: 0.4 }}>출처 미입력</div>}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* ─── 1. 읽고 있는 책 ─── */}
       {shelf.length > 0 && (
         <div className="shelf-section">
@@ -212,6 +193,25 @@ export function ShelfPage() {
                 전체 보기 ({userLines.length}개)
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ─── 남겨둔 문장 (임시 보관) ─── */}
+      {drafts.length > 0 && (
+        <div className="shelf-section">
+          <div className="shelf-section-label">남겨둔 문장</div>
+          <div className="shelf-drafts">
+            {drafts.slice(0, 5).map(d => (
+              <div
+                key={d.id}
+                className="shelf-draft-card"
+                onClick={() => navigate("/write", { state: { editId: d.id, editQuote: d.quote, editFeeling: d.feeling || "", editBookTitle: d.bookTitle, editBookAuthor: d.bookAuthor, editPage: d.page } })}
+              >
+                <div className="shelf-draft-quote">{d.quote.length > 60 ? d.quote.slice(0, 60) + "…" : d.quote}</div>
+                {d.bookTitle ? <div className="shelf-draft-src">{d.bookTitle} · {d.bookAuthor}</div> : <div className="shelf-draft-src" style={{ opacity: 0.4 }}>출처 미입력</div>}
+              </div>
+            ))}
           </div>
         </div>
       )}

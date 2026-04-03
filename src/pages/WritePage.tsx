@@ -198,13 +198,13 @@ export function WritePage() {
           if (location.pathname === "/write") navigate("/");
           else navigate(-1);
         }}>취소</button>
-        {quote.trim() && !hasSource && (
+        {quote.trim() && (
           <button
             className="write-draft-btn"
             onClick={handleSaveDraft}
             disabled={submitting}
           >
-            {submitting ? "저장 중..." : "임시로 남기기"}
+            임시로 남기기
           </button>
         )}
         <button
