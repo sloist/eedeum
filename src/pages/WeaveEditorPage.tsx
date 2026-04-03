@@ -12,6 +12,7 @@ import {
   deleteWeaveBlock,
   fetchUserLinesForWeave,
   fetchUserDbProfile,
+  updateLineFeeling,
 } from "../lib/api";
 import { trackEvent } from "../lib/tracking";
 
@@ -260,6 +261,16 @@ export function WeaveEditorPage() {
 
   const handleNoteBlur = async (blockId: string, content: string) => {
     await updateWeaveBlock(blockId, content);
+  };
+
+  const handleFeelingChange = (blockId: string, feeling: string) => {
+    setBlocks(prev => prev.map(b =>
+      b.id === blockId && b.underline ? { ...b, underline: { ...b.underline, feeling } } : b
+    ));
+  };
+
+  const handleFeelingBlur = async (underlineId: string, feeling: string) => {
+    await updateLineFeeling(underlineId, feeling);
   };
 
   const handleDividerChange = (blockId: string, content: string) => {
@@ -518,7 +529,7 @@ export function WeaveEditorPage() {
         {blocks.map((block, index) => (
           <div key={block.id}>
             <div
-              className={`weave-block ${dragIndex === index ? "dragging" : ""}`}
+              className={`weave-block ${dragIndex === index ? "dragging" : ""}${overIndex === index && dragIndex !== null && dragIndex !== index ? " drag-over" : ""}`}
               onTouchStart={e => handleTouchStart(index, e)}
             >
               <div
@@ -536,6 +547,19 @@ export function WeaveEditorPage() {
                     — {block.underline.bookTitle}, {block.underline.bookAuthor}
                     {block.underline.page > 0 && ` · p.${block.underline.page}`}
                   </div>
+                  <textarea
+                    className="wb-feeling-edit"
+                    value={block.underline.feeling ?? ""}
+                    onChange={e => handleFeelingChange(block.id, e.target.value)}
+                    onBlur={e => handleFeelingBlur(block.underline!.id, e.target.value)}
+                    placeholder="이 문장에 대한 내 생각..."
+                    rows={1}
+                    onInput={e => {
+                      const t = e.target as HTMLTextAreaElement;
+                      t.style.height = "auto";
+                      t.style.height = t.scrollHeight + "px";
+                    }}
+                  />
                 </div>
               )}
 
@@ -543,10 +567,19 @@ export function WeaveEditorPage() {
                 <div className="weave-block-note">
                   <textarea
                     value={block.content ?? ""}
-                    onChange={e => handleNoteChange(block.id, e.target.value)}
+                    onChange={e => {
+                      handleNoteChange(block.id, e.target.value);
+                      e.target.style.height = "auto";
+                      e.target.style.height = e.target.scrollHeight + "px";
+                    }}
                     onBlur={e => handleNoteBlur(block.id, e.target.value)}
                     placeholder="생각을 적어보세요..."
-                    rows={2}
+                    rows={5}
+                    ref={el => {
+                      if (el && el.scrollHeight > el.clientHeight) {
+                        el.style.height = el.scrollHeight + "px";
+                      }
+                    }}
                   />
                 </div>
               )}

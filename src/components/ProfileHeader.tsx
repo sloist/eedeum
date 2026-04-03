@@ -70,7 +70,7 @@ export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rig
             {rightActions && <span className="prof-actions">{rightActions}</span>}
           </div>
           {profileUser.bio && <div className="prof-bio">{profileUser.bio}</div>}
-          {rank && <div className="rank-badge">{rank.tier} · 상위 {rank.percentile}%</div>}
+          {rank && <div className="rank-badge">{rank.tier}</div>}
         </div>
       </div>
       {showFollow && !isSelf && <FollowBtn targetUserId={targetUserId} />}

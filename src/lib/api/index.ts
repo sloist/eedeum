@@ -62,6 +62,7 @@ export {
   batchCheckLikedSaved,
   createLine,
   repostLine,
+  updateLineFeeling,
   deleteEcho,
   deleteUnderline,
   pinEcho,

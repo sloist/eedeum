@@ -1105,9 +1105,18 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .weave-blocks{padding:8px 0 120px}
 .weave-block{
   padding:16px 20px;position:relative;
-  transition:opacity 0.2s,transform 0.2s;
+  transition:opacity 0.2s,transform 0.2s,box-shadow 0.2s;
 }
-.weave-block.dragging{opacity:0.5;transform:scale(0.98)}
+.weave-block.dragging{
+  opacity:0.85;transform:scale(0.97);
+  background:var(--bgW);border-radius:10px;
+  box-shadow:0 4px 20px rgba(31,26,21,0.1);
+  z-index:10;
+}
+.weave-block.drag-over{
+  border-top:2.5px solid var(--ac);
+  margin-top:-1px;
+}
 .weave-block-handle{
   position:absolute;left:4px;top:50%;transform:translateY(-50%);
   color:var(--t3);font-size:14px;cursor:grab;padding:8px;
@@ -1128,13 +1137,21 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   line-height:1.75;color:var(--tq);margin-bottom:8px;
 }
 .weave-block-line .wb-source{font-size:11px;color:var(--t3)}
+.wb-feeling-edit{
+  width:100%;border:none;background:none;
+  font-family:var(--sn);font-size:13px;
+  color:var(--ac);line-height:1.6;resize:none;
+  outline:none;padding:0;margin-top:10px;
+  min-height:20px;overflow:hidden;
+}
+.wb-feeling-edit::placeholder{color:var(--t3);opacity:.5}
 .weave-block-note textarea{
   width:100%;border:none;background:none;
   font-family:var(--sn);font-size:14px;
   color:var(--t2);line-height:1.7;resize:none;
   outline:none;padding:0 0 0 16px;
   border-left:1px dashed var(--bdL);
-  min-height:40px;
+  min-height:120px;overflow:hidden;
 }
 .weave-block-divider{
   display:flex;align-items:center;gap:12px;

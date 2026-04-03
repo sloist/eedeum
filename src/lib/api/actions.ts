@@ -387,6 +387,14 @@ export async function repostLine(
   return data;
 }
 
+// ─── 감상 수정 ───
+
+export async function updateLineFeeling(lineId: string, feeling: string): Promise<boolean> {
+  const { error } = await supabase.from("underlines").update({ feeling: feeling || null }).eq("id", lineId);
+  if (!error) invalidateCache("feed");
+  return !error;
+}
+
 // ─── 나만 보기 (비공개) ───
 
 export async function setLinePrivate(lineId: string, isPrivate: boolean): Promise<boolean> {
