@@ -536,7 +536,12 @@ export function WeaveEditorPage() {
           }}
         />
 
-        {blocks.map((block, index) => (
+        {blocks.map((block, index) => {
+          // divider 기준 페이지 번호 계산
+          const pageNum = blocks.slice(0, index).filter(b => b.type === "divider").length + 2;
+          const prevBlock = blocks[index - 1];
+          const showPageLabel = block.type === "divider" || (index === 0);
+          return (
           <div key={block.id}>
             <div
               className={`weave-block ${dragIndex === index ? "dragging" : ""}${overIndex === index && dragIndex !== null && dragIndex !== index ? " drag-over" : ""}`}
@@ -596,6 +601,7 @@ export function WeaveEditorPage() {
 
               {block.type === "divider" && (
                 <div className="weave-block-divider">
+                  <span className="weave-page-label">{pageNum}페이지</span>
                   <input
                     value={block.content ?? ""}
                     onChange={e => handleDividerChange(block.id, e.target.value)}
@@ -619,7 +625,7 @@ export function WeaveEditorPage() {
               }}
             />
           </div>
-        ))}
+        );})}
 
         {blocks.length === 0 && (
           <div className="empty-inline">첫 조각을 담아보세요</div>
@@ -628,12 +634,21 @@ export function WeaveEditorPage() {
 
       {/* 하단 액션 */}
       <div className="we-bottom-actions">
+        <button className="we-bottom-btn we-bottom-primary" onClick={async () => {
+          if (!isPublic) {
+            await updateWeave(weaveId, { is_public: true });
+            setIsPublic(true);
+          }
+          navigate(`/@${myHandle}/notes/${weaveShortId || id}`, { replace: true });
+        }}>
+          등록
+        </button>
         <button className="we-bottom-btn" onClick={async () => {
           const next = !isPublic;
           await updateWeave(weaveId, { is_public: next });
           setIsPublic(next);
         }}>
-          {isPublic ? "비공개로 전환" : "등록"}
+          {isPublic ? "비공개로 전환" : "공개하기"}
         </button>
         <button className="we-bottom-btn we-bottom-danger" onClick={async () => {
           if (!window.confirm("이 노트를 삭제할까요?")) return;
