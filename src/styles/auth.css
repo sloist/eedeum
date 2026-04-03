@@ -33,6 +33,27 @@
   margin-bottom:24px;letter-spacing:-.3px;
 }
 
+/* Google button */
+.auth-google-btn{
+  width:100%;padding:12px 16px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--bg);color:var(--t1);
+  border:1px solid var(--bd);border-radius:12px;
+  font-size:14px;font-weight:500;font-family:var(--sn);
+  cursor:pointer;transition:all .2s;letter-spacing:-.2px;
+}
+.auth-google-btn:hover{background:var(--bgW);border-color:var(--t3)}
+.auth-google-btn svg{flex-shrink:0}
+
+/* Divider */
+.auth-divider{
+  display:flex;align-items:center;gap:12px;
+  margin:16px 0;color:var(--t3);font-size:12px;
+}
+.auth-divider::before,.auth-divider::after{
+  content:"";flex:1;height:1px;background:var(--bd);
+}
+
 /* Form */
 .auth-form{display:flex;flex-direction:column;gap:12px}
 .auth-input{

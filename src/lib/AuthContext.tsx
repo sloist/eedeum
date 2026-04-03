@@ -25,9 +25,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
+      async (event, session) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
         setLoading(false);
+
+        // OAuth 신규 유저: 프로필 자동 생성
+        if (currentUser && event === "SIGNED_IN" && currentUser.app_metadata?.provider !== "email") {
+          const { data: existing } = await supabase
+            .from("users")
+            .select("id")
+            .eq("id", currentUser.id)
+            .maybeSingle();
+
+          if (!existing) {
+            const meta = currentUser.user_metadata;
+            const displayName = meta?.full_name || meta?.name || "이듬 사용자";
+            const baseHandle = (meta?.email?.split("@")[0] || "user").replace(/[^a-zA-Z0-9_]/g, "").slice(0, 20);
+            const handle = `${baseHandle}${Math.floor(Math.random() * 1000)}`;
+
+            await supabase.rpc("create_user_profile", {
+              user_id: currentUser.id,
+              user_name: displayName,
+              user_handle: handle,
+              user_bio: "이듬에서 기록하는 사람",
+            });
+          }
+        }
       }
     );
 
