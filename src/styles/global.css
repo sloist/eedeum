@@ -353,15 +353,15 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   cursor:pointer;
 }
 .feed-item + .feed-item{border-top:none;margin-top:0;position:relative}
-.feed-item + .feed-item::before{content:'';display:block;width:32px;height:0.5px;background:var(--bd);opacity:.15;margin:0 auto;position:absolute;top:0;left:50%;transform:translateX(-50%)}
+.feed-item + .feed-item::before{content:'·';display:block;font-size:16px;color:var(--bd);text-align:center;position:absolute;top:-2px;left:50%;transform:translateX(-50%);opacity:.4}
 .feed-quote{
-  display:block;font-family:var(--sf);font-size:16.5px;line-height:1.9;
-  color:var(--tq);font-weight:400;letter-spacing:-.15px;
+  display:block;font-family:var(--sf);font-size:18px;line-height:1.85;
+  color:var(--tq);font-weight:300;letter-spacing:-.2px;
   display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
 }
 .feed-feeling{
-  display:block;font-family:var(--sn);font-size:13px;line-height:1.65;
-  color:var(--t3);margin-top:16px;letter-spacing:-.1px;
+  display:block;font-family:var(--sf);font-size:13px;line-height:1.7;
+  color:var(--ac);font-style:italic;margin-top:14px;letter-spacing:-.1px;opacity:.75;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
 .feed-meta{
@@ -1103,9 +1103,9 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .pfeel-clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 
 /* ─── Detail page: restore full presence ─── */
-.content-fade-in > div > .qwrap{padding:16px 0 16px 18px;border-left:1.5px solid var(--acS);margin-top:12px;margin-bottom:28px}
-.content-fade-in > div > .qwrap .qtxt{font-size:17.5px;line-height:1.9;opacity:1}
-.content-fade-in > div > .pfeel{font-size:14px;color:var(--t2);padding:0;margin-bottom:20px;opacity:.8;line-height:1.7}
+.content-fade-in > div > .qwrap{padding:20px 0 20px 20px;border-left:2px solid var(--acS);margin-top:16px;margin-bottom:32px}
+.content-fade-in > div > .qwrap .qtxt{font-size:19px;line-height:1.9;opacity:1;font-weight:300}
+.content-fade-in > div > .pfeel{font-size:14px;color:var(--ac);font-family:var(--sf);font-style:italic;padding:0;margin-bottom:20px;opacity:.7;line-height:1.7}
 
 /* ─── Share save buttons ─── */
 .share-save-buttons{display:flex;gap:12px;padding:0 0 calc(16px + env(safe-area-inset-bottom))}
@@ -1973,16 +1973,16 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   border-radius:2px 5px 5px 2px;overflow:hidden;
   background:var(--bgC);
   box-shadow:
-    0 1px 2px rgba(0,0,0,.04),
-    2px 3px 8px rgba(0,0,0,.05),
-    inset 2px 0 0 rgba(0,0,0,.04);
+    0 1px 3px rgba(0,0,0,.06),
+    2px 4px 12px rgba(0,0,0,.06),
+    inset 3px 0 0 rgba(0,0,0,.06);
   display:flex;flex-direction:column;
   aspect-ratio:1/1.44;
   position:relative;
 }
 .weave-booklet::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
-  background:linear-gradient(to right,rgba(0,0,0,.1) 0%,rgba(0,0,0,.02) 60%,transparent);
+  content:'';position:absolute;left:0;top:0;bottom:0;width:5px;
+  background:linear-gradient(to right,rgba(0,0,0,.12) 0%,rgba(0,0,0,.03) 60%,transparent);
   z-index:1;pointer-events:none;
 }
 .weave-booklet::after{
@@ -1990,7 +1990,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   background:rgba(0,0,0,.03);
   z-index:1;pointer-events:none;
 }
-.weave-booklet:hover{transform:translateY(-3px) rotate(-.3deg);box-shadow:2px 6px 16px rgba(0,0,0,.08),inset 2px 0 0 rgba(0,0,0,.04)}
+.weave-booklet:hover{transform:translateY(-4px) rotate(-.5deg);box-shadow:3px 8px 20px rgba(0,0,0,.1),inset 3px 0 0 rgba(0,0,0,.06)}
 
 /* 대표 한줄 — 첫 페이지 */
 .weave-booklet-excerpt{
@@ -2009,9 +2009,9 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   display:flex;flex-direction:column;justify-content:flex-end;
 }
 .weave-booklet-title{
-  font-family:var(--sf);font-size:13px;font-weight:400;
-  color:rgba(255,255,255,.95);letter-spacing:-.15px;line-height:1.45;
-  margin:0;text-shadow:0 1px 4px rgba(0,0,0,.2);
+  font-family:var(--sf);font-size:13.5px;font-weight:300;
+  color:rgba(255,255,255,.95);letter-spacing:-.2px;line-height:1.5;
+  margin:0;text-shadow:0 1px 6px rgba(0,0,0,.25);
   word-break:keep-all;
 }
 
