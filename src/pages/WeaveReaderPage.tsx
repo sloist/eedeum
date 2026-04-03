@@ -60,10 +60,7 @@ export function WeaveReaderPage() {
     if (!id) return;
     let mounted = true;
     async function load() {
-      const [detail, blockData] = await Promise.all([
-        fetchWeaveDetail(id!),
-        fetchWeaveBlocks(id!),
-      ]);
+      const detail = await fetchWeaveDetail(id!);
       if (!mounted) return;
       if (detail) {
         // handle 변경 대응
@@ -72,23 +69,24 @@ export function WeaveReaderPage() {
           return;
         }
         setWeave(detail as WeaveInfo);
-        const authorWeaves = await fetchUserWeaves(detail.userId);
-        if (mounted) {
-          setOtherWeaves(
-            authorWeaves
-              .filter(w => w.id !== id && w.isPublic)
-              .map(w => ({ id: w.id, shortId: w.shortId, title: w.title, coverColor: w.coverColor, blockCount: w.blockCount, userHandle: w.userHandle }))
-          );
-        }
-      }
-      setBlocks(blockData);
-      setLoading(false);
-      if (user && detail) {
-        trackEvent(user.id, {
-          eventType: "weave_view", targetType: "weave", targetId: id!,
+        // detail.id는 UUID — weave_blocks 조회에 사용
+        const [blockData, authorWeaves] = await Promise.all([
+          fetchWeaveBlocks(detail.id),
+          fetchUserWeaves(detail.userId),
+        ]);
+        if (!mounted) { setLoading(false); return; }
+        setBlocks(blockData);
+        setOtherWeaves(
+          authorWeaves
+            .filter(w => w.id !== id && w.isPublic)
+            .map(w => ({ id: w.id, shortId: w.shortId, title: w.title, coverColor: w.coverColor, blockCount: w.blockCount, userHandle: w.userHandle }))
+        );
+        trackEvent(user?.id ?? "", {
+          eventType: "weave_view", targetType: "weave", targetId: detail.id,
           source: "weave", metadata: { block_count: blockData.length },
         });
       }
+      setLoading(false);
     }
     load();
     return () => { mounted = false; };

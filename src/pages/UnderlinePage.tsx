@@ -56,14 +56,15 @@ export function UnderlinePage() {
           return;
         }
         setIsPrivate(result.isPrivate ?? false);
-        // 상세 진입 추적 (피드에서 이미 찍었으면 dedup됨)
+        const realId = result.id; // UUID — 모든 연관 조회에 사용
+        // 상세 진입 추적
         if (user) {
           trackEvent(user.id, {
-            eventType: "underline_detail_view", targetType: "underline", targetId: id!,
+            eventType: "underline_detail_view", targetType: "underline", targetId: realId,
             source: "detail", metadata: { book_id: result.bookId },
           });
         }
-        const privateMemos = user ? await fetchPrivateMemosForLine(user.id, id!) : [];
+        const privateMemos = user ? await fetchPrivateMemosForLine(user.id, realId) : [];
         const privateEchoes = privateMemos.map((m: any) => ({
           id: m.id, userId: user!.id, userName: "나", text: m.text, isSameLine: false, isPrivate: true,
         }));
@@ -85,8 +86,8 @@ export function UnderlinePage() {
         // Sort: pinned first
         topLevel.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
         setEchoes(topLevel);
-        // Fetch "같은 한줄, 다른 시선"
-        const sameLines = await fetchSameQuoteLines(result.quote, id!);
+        // Fetch "같은 한줄, 다른 시선" — UUID로 제외
+        const sameLines = await fetchSameQuoteLines(result.quote, realId);
         if (mounted) setSameQuoteLines(sameLines);
       }
       setLoading(false);

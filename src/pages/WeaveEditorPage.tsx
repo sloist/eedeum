@@ -58,7 +58,7 @@ export function WeaveEditorPage() {
   const [createPublic, setCreatePublic] = useState(false);
 
   // Editor state
-  const [weaveId, setWeaveId] = useState(id ?? "");
+  const [weaveId, setWeaveId] = useState("");
   const [weaveShortId, setWeaveShortId] = useState("");
   const [myHandle, setMyHandle] = useState(handle ?? "");
   const [title, setTitle] = useState("");
@@ -93,19 +93,22 @@ export function WeaveEditorPage() {
     if (!id || !user) return;
     let mounted = true;
     async function load() {
-      const [detail, blockData, dbProfile] = await Promise.all([
+      const [detail, dbProfile] = await Promise.all([
         fetchWeaveDetail(id!),
-        fetchWeaveBlocks(id!),
         fetchUserDbProfile(user!.id),
       ]);
       if (!mounted) return;
       if (detail) {
         setTitle(detail.title);
+        setWeaveId(detail.id);
         setWeaveShortId(detail.shortId);
         setMyHandle(detail.userHandle);
+        // detail.id는 UUID — weave_blocks 조회에 사용
+        const blockData = await fetchWeaveBlocks(detail.id);
+        if (!mounted) return;
+        setBlocks(blockData);
       }
       if (dbProfile) setMyHandle(dbProfile.handle);
-      setBlocks(blockData);
       setLoading(false);
     }
     load();

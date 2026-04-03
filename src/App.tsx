@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { Component, useEffect, useRef, useState, lazy, Suspense, type ReactNode, type ErrorInfo } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "./lib/AuthContext";
 import { ModalProvider, useModal } from "./lib/ModalContext";
@@ -17,6 +17,9 @@ import { WeaveListPage } from "./pages/WeaveListPage";
 import { ShelfPage } from "./pages/ShelfPage";
 
 // Lazy: sub-pages (loaded on demand)
+const LegacyLineRedirect = lazy(() => import("./pages/LegacyRedirects").then(m => ({ default: m.LegacyLineRedirect })));
+const LegacyUserRedirect = lazy(() => import("./pages/LegacyRedirects").then(m => ({ default: m.LegacyUserRedirect })));
+const LegacyNoteRedirect = lazy(() => import("./pages/LegacyRedirects").then(m => ({ default: m.LegacyNoteRedirect })));
 const UserPage = lazy(() => import("./pages/UserPage").then(m => ({ default: m.UserPage })));
 const BookPage = lazy(() => import("./pages/BookPage").then(m => ({ default: m.BookPage })));
 const SearchPage = lazy(() => import("./pages/SearchPage").then(m => ({ default: m.SearchPage })));
@@ -37,6 +40,28 @@ const DeleteAccountPage = lazy(() => import("./pages/settings/DeleteAccountPage"
 const CommunityGuidePage = lazy(() => import("./pages/settings/CommunityGuidePage").then(m => ({ default: m.CommunityGuidePage })));
 const FeedbackPage = lazy(() => import("./pages/settings/FeedbackPage").then(m => ({ default: m.FeedbackPage })));
 const WritePage = lazy(() => import("./pages/WritePage").then(m => ({ default: m.WritePage })));
+
+/* ------------------------------------------------------------------ */
+/* Error Boundary                                                      */
+/* ------------------------------------------------------------------ */
+
+class RouteErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  state = { error: null as Error | null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  componentDidCatch(error: Error, info: ErrorInfo) { console.error("Route error:", error, info); }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: "40px 20px", textAlign: "center", color: "#999" }}>
+          <div style={{ marginBottom: 12 }}>페이지를 불러올 수 없습니다</div>
+          <button style={{ padding: "8px 16px", border: "1px solid #ccc", borderRadius: 6, background: "none", cursor: "pointer" }}
+            onClick={() => { this.setState({ error: null }); window.location.href = "/"; }}>홈으로</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* Header configuration                                                */
@@ -183,6 +208,7 @@ function AppLayout() {
 
         <div className="ct">
           {/* 메인 라우트: backgroundLocation 기준으로 렌더 → 피드가 언마운트 안 됨 */}
+          <RouteErrorBoundary>
           <Suspense fallback={<LoadingBar />}>
           <Routes location={routeLocation}>
             <Route path="/" element={<HomePage onShare={openShare} toast={toast} feedKey={feedKey} newPostId={newPostId} onNewPostHandled={onNewPostHandled} requireAuth={requireAuth} />} />
@@ -209,19 +235,26 @@ function AppLayout() {
             <Route path="/settings/delete-account" element={<DeleteAccountPage />} />
             <Route path="/settings/community" element={<CommunityGuidePage />} />
             <Route path="/settings/feedback" element={<FeedbackPage />} />
+            {/* 레거시 URL 리다이렉트 */}
+            <Route path="/line/:id" element={<LegacyLineRedirect />} />
+            <Route path="/user/:userId" element={<LegacyUserRedirect />} />
+            <Route path="/notes/:id" element={<LegacyNoteRedirect />} />
           </Routes>
           </Suspense>
+          </RouteErrorBoundary>
 
         </div>
 
         {/* 상세 오버레이 — position:fixed, .app 너비에 맞춤 */}
         {backgroundLocation && (
           <div className="line-overlay" style={{ left: overlayBounds.left, width: overlayBounds.width || "100%" }}>
+            <RouteErrorBoundary>
             <Suspense fallback={<LoadingBar />}>
               <Routes>
                 <Route path="/@:handle/lines/:id" element={<UnderlinePage />} />
               </Routes>
             </Suspense>
+            </RouteErrorBoundary>
           </div>
         )}
 
