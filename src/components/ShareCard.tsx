@@ -34,7 +34,7 @@ interface ShareCardProps {
 function Watermark({ light }: { light?: boolean }) {
   return (
     <div className={`sc-watermark ${light ? "sc-watermark-light" : ""}`}>
-      from · eedeum
+      eedeum
     </div>
   );
 }
