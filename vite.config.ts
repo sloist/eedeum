@@ -9,8 +9,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: '이림',
-        short_name: '이림',
+        name: '이듬',
+        short_name: '이듬',
         description: '당신이 멈춘 문장',
         theme_color: '#FFFFFF',
         background_color: '#FFFFFF',

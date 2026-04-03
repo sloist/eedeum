@@ -83,6 +83,7 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
     <>
       <aside className="left-sidebar">
         <div className="ls-logo" onClick={() => navigate("/")}>
+          <span className="ls-logo-icon"><Icons.Logo /></span>
           이듬
         </div>
 

@@ -111,7 +111,7 @@ function AppHeader() {
         </button>
       )}
       {config.logo && (
-        <div className="logo" onClick={() => navigate("/")}>이듬</div>
+        <div className="logo" onClick={() => navigate("/")}><span className="logo-icon"><Icons.Logo /></span>이듬</div>
       )}
       {config.title && <div className="hd-title">{config.title}</div>}
 

@@ -1,4 +1,16 @@
 export const Icons = {
+  // 이듬 로고: E + 접힌 페이지 모서리
+  Logo: () => (
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+      <path d="M17 3 L21 3 L21 7 Z" fill="var(--bg,#FAF7F3)" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M17 3 L17 7 L21 7 Z" fill="currentColor" opacity=".12" stroke="currentColor" strokeWidth="1" strokeLinejoin="round"/>
+      <line x1="7" y1="8.5" x2="16" y2="8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="7" y1="12" x2="14" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="7" y1="15.5" x2="16" y2="15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  ),
+
   Search: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="7.5"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>,
 
   // Tab icons — 쪽지 → 펜 → 묶음 → 책장
