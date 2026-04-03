@@ -166,8 +166,15 @@ export function WritePage() {
       });
       setSubmitting(false);
       if (ok) {
-        toast("수정되었습니다");
-        setTimeout(() => navigate(-1), 300);
+        if (editState?.isDraft) {
+          // draft → 공개: 홈 피드로
+          notifyNewPost(editId!);
+          toast("기록에 남았습니다");
+          setTimeout(() => navigate("/", { replace: true }), 300);
+        } else {
+          toast("수정되었습니다");
+          setTimeout(() => navigate(-1), 300);
+        }
       } else {
         toast("수정에 실패했습니다");
       }

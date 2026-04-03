@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
 import { useModal } from "../lib/ModalContext";
 import { ProfileHeader } from "../components/ProfileHeader";
@@ -16,11 +16,13 @@ import {
   fetchUserBlocks,
   fetchUserDbProfile,
   fetchDrafts,
+  deleteDraft,
   unblock,
 } from "../lib/api";
 
 export function ShelfPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading: authLoading } = useAuth();
   const { requireAuth } = useModal();
 
@@ -86,7 +88,7 @@ export function ShelfPage() {
     }
     load();
     return () => { mounted = false; };
-  }, [user]);
+  }, [user, location.key]);
 
   if (authLoading) return null;
 
@@ -220,10 +222,18 @@ export function ShelfPage() {
               <div
                 key={d.id}
                 className="shelf-draft-card"
-                onClick={() => navigate("/write", { state: { editId: d.id, editQuote: d.quote, editFeeling: d.feeling || "", editBookTitle: d.bookTitle, editBookAuthor: d.bookAuthor, editPage: d.page } })}
+                onClick={() => navigate("/write", { state: { editId: d.id, editQuote: d.quote, editFeeling: d.feeling || "", editBookTitle: d.bookTitle, editBookAuthor: d.bookAuthor, editPage: d.page, isDraft: true } })}
               >
                 <div className="shelf-draft-quote">{d.quote.length > 60 ? d.quote.slice(0, 60) + "…" : d.quote}</div>
-                {d.bookTitle ? <div className="shelf-draft-src">{d.bookTitle} · {d.bookAuthor}</div> : <div className="shelf-draft-src" style={{ opacity: 0.4 }}>출처 미입력</div>}
+                <div className="shelf-draft-bottom">
+                  {d.bookTitle ? <span className="shelf-draft-src">{d.bookTitle} · {d.bookAuthor}</span> : <span className="shelf-draft-src" style={{ opacity: 0.4 }}>출처 미입력</span>}
+                  <button className="shelf-draft-delete" onClick={async (e) => {
+                    e.stopPropagation();
+                    if (!window.confirm("정리 중인 문장을 삭제할까요?")) return;
+                    await deleteDraft(d.id);
+                    setDrafts(prev => prev.filter(dd => dd.id !== d.id));
+                  }}>삭제</button>
+                </div>
               </div>
             ))}
           </div>

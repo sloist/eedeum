@@ -944,7 +944,11 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .shelf-draft-card:last-child{border-bottom:none}
 .shelf-draft-card:hover{opacity:.7}
 .shelf-draft-quote{font-family:var(--sf);font-size:14px;color:var(--tq);line-height:1.6;letter-spacing:-.1px}
-.shelf-draft-src{font-size:11px;color:var(--t3);margin-top:4px}
+.shelf-draft-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+.shelf-draft-src{font-size:11px;color:var(--t3)}
+.shelf-draft-delete{background:none;border:none;font-size:11px;color:var(--t3);cursor:pointer;opacity:0;transition:opacity .15s;font-family:var(--sn);padding:2px 4px}
+.shelf-draft-card:hover .shelf-draft-delete{opacity:.5}
+.shelf-draft-delete:hover{opacity:1;color:#C44}
 .shelf-surface-summary{display:flex;align-items:center;gap:6px;padding:0 20px 20px;font-size:12px;color:var(--t3);flex-wrap:wrap}
 .shelf-section{padding-bottom:12px}
 .shelf-section-label{font-size:10px;font-weight:400;color:var(--t3);letter-spacing:.4px;padding:28px 20px 10px;text-transform:uppercase;opacity:.5}
