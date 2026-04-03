@@ -2,8 +2,8 @@ export const Icons = {
   Search: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="7.5"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>,
 
   // Tab icons — 쪽지 → 펜 → 묶음 → 책장
-  // 한줄: 한 줄의 밑줄 (문장 하나)
-  Discover: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="12" x2="4" y2="10" opacity=".4"/></svg>,
+  // 한줄: 세 줄 텍스트 (문장이 쌓인 느낌)
+  Discover: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="13" x2="16" y2="13" opacity=".6"/><line x1="4" y1="18" x2="12" y2="18" opacity=".35"/></svg>,
   // 기록: 사선 펜 + 밑줄 (쓰는 행위)
   Record: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/><line x1="4" y1="22" x2="20" y2="22" opacity=".4"/></svg>,
   // 노트: 작은 수첩 (엮인 묶음)

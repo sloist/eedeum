@@ -2,10 +2,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700&display=swap');
 
 :root{
-  --bg:#F9F8F5;--bgW:#F3F2EE;--bgC:#FEFEFE;--bgD:#EEEDEA;
+  --bg:#FBFBF9;--bgW:#F6F5F2;--bgC:#FFFFFF;--bgD:#F1F0ED;
   --t1:#1F1A15;--t2:#6B6259;--t3:#A09888;--tq:#2A2418;
   --ac:#7B6548;--acS:#B8A68E;
-  --bd:#E5E3DE;--bdL:#EEEDEA;
+  --bd:#E8E6E2;--bdL:#F0EEEA;
   --sf:'Noto Serif KR',Georgia,serif;--sn:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue','Segoe UI','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol',sans-serif;
   --shS:0 1px 2px rgba(42,35,29,.03);--shM:0 2px 8px rgba(42,35,29,.04);--shL:0 4px 16px rgba(42,35,29,.06);
 }
@@ -17,7 +17,7 @@
   --bd:#363230;--bdL:#2C2A28;
   --shS:0 1px 3px rgba(0,0,0,.18);--shM:0 4px 12px rgba(0,0,0,.22);--shL:0 8px 24px rgba(0,0,0,.28);
 }
-[data-theme="dark"] body{background:#151311}
+[data-theme="dark"] body{background:#151412}
 [data-theme="dark"] .fbc{background:rgba(37,35,32,0.6)}
 [data-theme="dark"] .fbc:hover{background:rgba(37,35,32,0.8)}
 [data-theme="dark"] .weave-booklet{background:var(--bgW);box-shadow:0 1px 4px rgba(0,0,0,.18)}
@@ -89,7 +89,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
     position:sticky;top:0;height:100vh;
     padding:16px 8px;
     background:transparent;
-    overflow-y:auto;scrollbar-width:none;
+    overflow:visible;
   }
   .left-sidebar::-webkit-scrollbar{display:none}
   .ls-logo{
@@ -288,7 +288,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   .rs-copyright{margin-top:4px;font-size:11px;color:var(--t3);opacity:0.6}
 }
 
-.hd{padding:max(12px,env(safe-area-inset-top)) 20px 8px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;background:rgba(249,248,245,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.hd{padding:max(12px,env(safe-area-inset-top)) 20px 8px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;background:rgba(251,251,249,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .hd-compact{padding-top:env(safe-area-inset-top);padding-bottom:0;min-height:auto}
 .logo{font-family:var(--sf);font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-.4px;cursor:pointer;position:relative}
 .logo-line{position:absolute;bottom:-1px;left:0;right:0;height:1.5px;background:var(--ac);opacity:.5}
@@ -515,7 +515,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .olinfo{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)}
 
 /* Bottom nav */
-.bnav{position:fixed;bottom:0;left:0;right:0;width:100%;background:rgba(249,248,245,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:0.5px solid rgba(0,0,0,0.04);display:flex;justify-content:space-around;align-items:center;padding:4px 0 calc(4px + env(safe-area-inset-bottom));z-index:200}
+.bnav{position:fixed;bottom:0;left:0;right:0;width:100%;background:rgba(251,251,249,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:0.5px solid rgba(0,0,0,0.04);display:flex;justify-content:space-around;align-items:center;padding:4px 0 calc(4px + env(safe-area-inset-bottom));z-index:200}
 /* ─── 하단 네비 마이크로 인터랙션 ─── */
 .nbtn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-height:42px;justify-content:center;padding:6px 0;cursor:pointer;background:none;border:none;position:relative;transition:color 0.18s ease}
 .nbtn svg{width:20px;height:20px;color:var(--t3);transition:color .18s ease,transform .18s ease}

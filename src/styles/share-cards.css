@@ -29,8 +29,8 @@
 
 /* ─── Paper: warm cream, quiet serif ─── */
 .sc-paper {
-  background: #F9F8F4;
-  border: 1px solid rgba(0,0,0,0.05);
+  background: #FBFAF7;
+  border: 1px solid rgba(0,0,0,0.04);
 }
 .sc-paper .sc-quote {
   font-size: 18px; line-height: 1.9; font-weight: 400;
