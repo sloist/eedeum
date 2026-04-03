@@ -919,9 +919,9 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .shelf-show-more:hover{color:var(--ac)}
 /* ─── Shelf surface — 한 사람의 독서 표면 ─── */
 .shelf-profile-area{padding-top:8px}
-.shelf-rank-row{padding:0 20px 12px;cursor:pointer}
-.shelf-rank-tier{font-family:var(--sn);font-size:11px;color:var(--t3);opacity:.6;letter-spacing:-.1px;border-bottom:1px dashed var(--bdL);padding-bottom:1px}
-.shelf-rank-tier:hover{opacity:.8}
+.shelf-rank-row{padding:0 20px 12px}
+.shelf-rank-tier{font-family:var(--sn);font-size:11px;color:var(--t3);opacity:.6;letter-spacing:-.1px;border:none;background:none;border-bottom:1px dashed var(--bdL);padding:0 0 1px;cursor:pointer}
+.shelf-rank-tier:hover{opacity:.8;color:var(--t2)}
 .shelf-surface-summary{display:flex;align-items:center;gap:6px;padding:0 20px 20px;font-size:12px;color:var(--t3);flex-wrap:wrap}
 .shelf-section{padding-bottom:12px}
 .shelf-section-label{font-size:10px;font-weight:400;color:var(--t3);letter-spacing:.4px;padding:28px 20px 10px;text-transform:uppercase;opacity:.5}
@@ -2457,7 +2457,8 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .feed-author-following{opacity:1;color:var(--t1);font-weight:500}
 
 /* ─── 등급 표시 ─── */
-.rank-badge{font-size:11px;color:var(--t3);opacity:.5;letter-spacing:-.1px}
+.rank-badge{font-size:11px;color:var(--t3);opacity:.5;letter-spacing:-.1px;border:none;background:none;padding:0;cursor:pointer;border-bottom:1px dashed var(--bdL);font-family:var(--sn)}
+.rank-badge:hover{opacity:.7;color:var(--t2)}
 
 /* ─── Route-aware sidebar hiding ─── */
 @media (min-width: 1280px) {

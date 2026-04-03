@@ -47,9 +47,10 @@ interface ProfileHeaderProps {
   onWeaveClick?: (id: string) => void;
   featuredQuoteId?: string;
   onQuoteClick?: (id: string) => void;
+  onRankClick?: () => void;
 }
 
-export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rightActions, featuredQuote, featuredWeave, onWeaveClick, featuredQuoteId, onQuoteClick }: ProfileHeaderProps) {
+export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rightActions, featuredQuote, featuredWeave, onWeaveClick, featuredQuoteId, onQuoteClick, onRankClick }: ProfileHeaderProps) {
   const { user: authUser } = useAuth();
   const isSelf = authUser && targetUserId && authUser.id === targetUserId;
   const [rank, setRank] = useState<{ tier: string; percentile: number } | null>(null);
@@ -70,7 +71,7 @@ export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rig
             {rightActions && <span className="prof-actions">{rightActions}</span>}
           </div>
           {profileUser.bio && <div className="prof-bio">{profileUser.bio}</div>}
-          {rank && <div className="rank-badge">{rank.tier}</div>}
+          {rank && <button className="rank-badge" onClick={onRankClick}>{rank.tier}</button>}
         </div>
       </div>
       {showFollow && !isSelf && <FollowBtn targetUserId={targetUserId} />}

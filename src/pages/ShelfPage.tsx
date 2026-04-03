@@ -122,6 +122,7 @@ export function ShelfPage() {
         <ProfileHeader
           user={profile}
           showFollow={false}
+          targetUserId={user?.id}
           featuredQuote={featuredQuote}
           featuredQuoteId={featuredLine?.shortId}
           onQuoteClick={(id) => navigate(`/@${profile.handle.replace(/^@/, "")}/lines/${id}`)}
@@ -136,14 +137,9 @@ export function ShelfPage() {
               <button className="hd-bell-btn" onClick={() => navigate("/settings")} aria-label="메뉴"><Icons.Menu /></button>
             </>
           }
+          onRankClick={() => setShowRankInfo(true)}
         />
       </div>
-
-      {rank && (
-        <div className="shelf-rank-row" onClick={() => setShowRankInfo(true)}>
-          <span className="shelf-rank-tier">{rank.tier}</span>
-        </div>
-      )}
 
       {/* ─── 1. 읽고 있는 책 ─── */}
       {shelf.length > 0 && (
