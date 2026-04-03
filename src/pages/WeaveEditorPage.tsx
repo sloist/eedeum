@@ -66,8 +66,9 @@ export function WeaveEditorPage() {
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState<WeaveBlock[]>([]);
   const [loading, setLoading] = useState(!!id);
-  const [saving, setSaving] = useState(false);
+  const [_saving, setSaving] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
+  const [showEditorMenu, setShowEditorMenu] = useState(false);
 
   // Insert menu
   const [insertAt, setInsertAt] = useState<number | null>(null);
@@ -516,9 +517,25 @@ export function WeaveEditorPage() {
           onBlur={handleSaveTitle}
           placeholder="노트 제목"
         />
-        <button className="weave-save-btn" onClick={() => navigate(`/@${myHandle}/notes/${weaveShortId || id}`, { state: { fromEditor: true } })} disabled={saving}>
-          미리보기
+        <button className="weave-save-btn" onClick={async () => {
+          if (!isPublic) {
+            await updateWeave(weaveId, { is_public: true });
+            setIsPublic(true);
+          }
+          navigate(`/@${myHandle}/notes/${weaveShortId || id}`, { replace: true });
+        }}>
+          등록
         </button>
+        <div className="we-more-wrap">
+          <button className="we-more-trigger" onClick={() => setShowEditorMenu(!showEditorMenu)}>···</button>
+          {showEditorMenu && (
+            <div className="we-more-dropdown">
+              <button onClick={() => { setShowEditorMenu(false); navigate(`/@${myHandle}/notes/${weaveShortId || id}`, { state: { fromEditor: true } }); }}>미리보기</button>
+              <button onClick={async () => { const next = !isPublic; await updateWeave(weaveId, { is_public: next }); setIsPublic(next); setShowEditorMenu(false); }}>{isPublic ? "비공개로 전환" : "공개하기"}</button>
+              <button className="danger" onClick={async () => { if (!window.confirm("이 노트를 삭제할까요?")) { setShowEditorMenu(false); return; } await deleteWeave(weaveId); navigate("/notes", { replace: true }); }}>삭제</button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="weave-blocks" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
@@ -549,7 +566,7 @@ export function WeaveEditorPage() {
                 className="weave-block-handle"
                 onMouseDown={e => handleMouseDown(index, e)}
               >
-                ≡
+                ⋮
               </div>
               <button className="weave-block-delete" onClick={() => handleDeleteBlock(block.id)}>×</button>
 
@@ -628,33 +645,6 @@ export function WeaveEditorPage() {
         {blocks.length === 0 && (
           <div className="empty-inline">첫 조각을 담아보세요</div>
         )}
-      </div>
-
-      {/* 하단 액션 */}
-      <div className="we-bottom-actions">
-        <button className="we-bottom-btn we-bottom-primary" onClick={async () => {
-          if (!isPublic) {
-            await updateWeave(weaveId, { is_public: true });
-            setIsPublic(true);
-          }
-          navigate(`/@${myHandle}/notes/${weaveShortId || id}`, { replace: true });
-        }}>
-          등록
-        </button>
-        <button className="we-bottom-btn" onClick={async () => {
-          const next = !isPublic;
-          await updateWeave(weaveId, { is_public: next });
-          setIsPublic(next);
-        }}>
-          {isPublic ? "비공개로 전환" : "공개하기"}
-        </button>
-        <button className="we-bottom-btn we-bottom-danger" onClick={async () => {
-          if (!window.confirm("이 노트를 삭제할까요?")) return;
-          await deleteWeave(weaveId);
-          navigate("/notes", { replace: true });
-        }}>
-          삭제
-        </button>
       </div>
 
       {/* Underline Picker Overlay */}
