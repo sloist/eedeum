@@ -69,6 +69,12 @@ export {
   fetchPrivateMemos,
   fetchPrivateMemosForLine,
   reportContent,
+  setLinePrivate,
+  blockUser,
+  blockBook,
+  blockUnderline,
+  fetchUserBlocks,
+  unblock,
 } from "./actions";
 
 // Weave

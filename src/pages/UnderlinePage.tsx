@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "../components/Icons";
 import { LoadingBar } from "../components/LoadingBar";
 import { Toast } from "../components/Toast";
 import { useAuth } from "../lib/AuthContext";
-import { fetchLineDetail, fetchSameQuoteLines, toggleSave, addEcho, deleteEcho, deleteUnderline, pinEcho, addReply, fetchPrivateMemosForLine, addPrivateMemo, deletePrivateMemo, reportContent } from "../lib/api";
+import { fetchLineDetail, fetchSameQuoteLines, toggleSave, addEcho, deleteEcho, deleteUnderline, pinEcho, addReply, fetchPrivateMemosForLine, addPrivateMemo, deletePrivateMemo, reportContent, setLinePrivate, blockUser, blockBook, blockUnderline } from "../lib/api";
 import { ShareModal } from "../components/ShareModal";
 import { useModal } from "../lib/ModalContext";
+import { trackEvent } from "../lib/tracking";
 import { EchoList, type Echo } from "../components/EchoList";
 import { EchoInput, ReplyInput } from "../components/EchoInput";
 import { LineActions } from "../components/LineActions";
@@ -15,8 +16,11 @@ import { OtherLines } from "../components/OtherLines";
 export function UnderlinePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const hasBackground = !!(location.state as any)?.backgroundLocation;
   const { user } = useAuth();
   const { requireAuth } = useModal();
+  const goBack = () => hasBackground ? navigate(-1) : navigate("/");
   const [toastMsg, setToastMsg] = useState("");
   const [showToast, setShowToast] = useState(false);
   const toast = useCallback((msg: string) => {
@@ -34,6 +38,7 @@ export function UnderlinePage() {
   const [confirmDelete, setConfirmDelete] = useState<{ type: "echo" | "line"; echoId?: string; echoIndex?: number; isReply?: boolean; parentIndex?: number } | null>(null);
   const [replyTo, setReplyTo] = useState<{ echoId: string; echoIndex: number; userName: string } | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -43,6 +48,14 @@ export function UnderlinePage() {
       if (!mounted) return;
       setData(result);
       if (result) {
+        setIsPrivate(result.isPrivate ?? false);
+        // 상세 진입 추적 (피드에서 이미 찍었으면 dedup됨)
+        if (user) {
+          trackEvent(user.id, {
+            eventType: "underline_detail_view", targetType: "underline", targetId: id!,
+            source: "detail", metadata: { book_id: result.bookId },
+          });
+        }
         const privateMemos = user ? await fetchPrivateMemosForLine(user.id, id!) : [];
         const privateEchoes = privateMemos.map((m: any) => ({
           id: m.id, userId: user!.id, userName: "나", text: m.text, isSameLine: false, isPrivate: true,
@@ -75,8 +88,8 @@ export function UnderlinePage() {
     return () => { mounted = false; };
   }, [id, user]);
 
-  if (loading) return <><button className="backbtn" onClick={() => navigate(-1)}><Icons.Back /> 뒤로</button><LoadingBar /></>;
-  if (!data) return <><button className="backbtn" onClick={() => navigate(-1)}><Icons.Back /> 뒤로</button><div className="empty-inline">기록을 찾을 수 없습니다</div></>;
+  if (loading) return <><button className="backbtn" onClick={goBack}><Icons.Back /> 뒤로</button><LoadingBar /></>;
+  if (!data) return <><button className="backbtn" onClick={goBack}><Icons.Back /> 뒤로</button><div className="empty-inline">기록을 찾을 수 없습니다</div></>;
 
   const isPostAuthor = user?.id === data.userId;
 
@@ -85,6 +98,12 @@ export function UnderlinePage() {
     const result = await toggleSave(user.id, data.id);
     if (result === null) return;
     setSaved(result);
+    if (result) {
+      trackEvent(user.id, {
+        eventType: "underline_save", targetType: "underline", targetId: data.id,
+        source: "detail", metadata: { book_id: data.bookId },
+      });
+    }
   };
 
   const handleAddEcho = async (text: string, isPrivate: boolean) => {
@@ -105,6 +124,10 @@ export function UnderlinePage() {
       toast(result.error);
     } else if (result) {
       setEchoes(prev => [...prev, { id: crypto.randomUUID(), userId: user.id, userName: "나", text: text.trim(), isSameLine: false, replies: [] }]);
+      trackEvent(user.id, {
+        eventType: "underline_echo_create", targetType: "underline", targetId: data.id,
+        source: "detail", metadata: { book_id: data.bookId },
+      });
     } else {
       toast("등록에 실패했습니다");
     }
@@ -160,7 +183,7 @@ export function UnderlinePage() {
   const handleDeleteLine = async () => {
     if (!confirmDelete || confirmDelete.type !== "line") return;
     const ok = await deleteUnderline(data.id);
-    if (ok) { toast("삭제되었습니다"); setConfirmDelete(null); navigate(-1); }
+    if (ok) { toast("삭제되었습니다"); setConfirmDelete(null); goBack(); }
     else toast("삭제에 실패했습니다");
   };
 
@@ -197,16 +220,37 @@ export function UnderlinePage() {
     toast(ok ? "신고되었습니다" : "신고에 실패했습니다");
   };
 
-  const handleHidePerson = () => {
-    toast("이 사람의 한줄이 더 이상 표시되지 않습니다");
+  const handleHidePerson = async () => {
+    if (!user) { requireAuth(); return; }
+    const ok = await blockUser(user.id, data.userId);
+    if (ok) { toast("이 사람의 한줄이 더 이상 표시되지 않습니다"); goBack(); }
+    else toast("처리에 실패했습니다");
   };
 
-  const handleHideBook = () => {
-    toast("이 책의 한줄이 더 이상 표시되지 않습니다");
+  const handleHideBook = async () => {
+    if (!user) { requireAuth(); return; }
+    const ok = await blockBook(user.id, data.bookId);
+    if (ok) { toast("이 책의 한줄이 더 이상 표시되지 않습니다"); goBack(); }
+    else toast("처리에 실패했습니다");
   };
 
-  const handleNotInterested = () => {
-    toast("관심 없음으로 표시했습니다");
+  const handleNotInterested = async () => {
+    if (!user) { requireAuth(); return; }
+    const ok = await blockUnderline(user.id, data.id);
+    if (ok) { toast("관심 없음으로 표시했습니다"); goBack(); }
+    else toast("처리에 실패했습니다");
+  };
+
+  const handleSetPrivate = async () => {
+    if (!user) { requireAuth(); return; }
+    const newPrivate = !isPrivate;
+    const ok = await setLinePrivate(data.id, newPrivate);
+    if (ok) {
+      setIsPrivate(newPrivate);
+      toast(newPrivate ? "나만 보기로 변경했습니다" : "공개로 전환했습니다");
+    } else {
+      toast("처리에 실패했습니다");
+    }
   };
 
   const timeAgo = (dateStr: string) => {
@@ -220,7 +264,7 @@ export function UnderlinePage() {
 
   return (
     <div className="content-fade-in">
-      <button className="backbtn" onClick={() => navigate(-1)}><Icons.Back /> 뒤로</button>
+      <button className="backbtn" onClick={goBack}><Icons.Back /> 뒤로</button>
 
       <div style={{ padding: "8px 20px 20px" }}>
         <div className="ptop">
@@ -233,7 +277,10 @@ export function UnderlinePage() {
               {data.bookTitle} · {data.bookAuthor}
             </div>
           </div>
-          <span className="ptime">{timeAgo(data.createdAt)}</span>
+          <span className="ptime">
+            {isPrivate && isPostAuthor && <span className="private-badge">🔒</span>}
+            {timeAgo(data.createdAt)}
+          </span>
         </div>
 
         <div className="qwrap">
@@ -263,7 +310,8 @@ export function UnderlinePage() {
           onHidePerson={isPostAuthor ? undefined : handleHidePerson}
           onHideBook={isPostAuthor ? undefined : handleHideBook}
           onNotInterested={isPostAuthor ? undefined : handleNotInterested}
-          onSetPrivate={isPostAuthor ? () => toast("나만 보기로 변경했습니다") : undefined}
+          onSetPrivate={isPostAuthor ? handleSetPrivate : undefined}
+          isPrivate={isPrivate}
           onEdit={isPostAuthor ? () => navigate(`/write`, { state: { editId: data.id, editQuote: data.quote, editFeeling: data.feeling, editBookTitle: data.bookTitle, editBookAuthor: data.bookAuthor, editPage: data.page } }) : undefined}
         />
 
@@ -304,8 +352,11 @@ export function UnderlinePage() {
             </button>
             {showSameQuote && sameQuoteLines.map((sl) => (
               <div key={sl.id} className="detail-other-card" onClick={() => navigate(`/line/${sl.id}`)}>
+                {sl.feeling
+                  ? <div className="detail-other-feeling">{sl.feeling}</div>
+                  : <div className="detail-other-feeling" style={{ opacity: 0.5 }}>같은 문장, 다른 시선</div>
+                }
                 <div className="detail-other-meta"><span>{sl.userName}</span></div>
-                {sl.feeling && <div className="detail-other-feeling">{sl.feeling}</div>}
               </div>
             ))}
           </div>

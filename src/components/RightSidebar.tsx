@@ -1,81 +1,131 @@
-import { useNavigate } from "react-router-dom";
-import { ALL_BOOKS, TOPICS, USERS } from "../data";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "./Icons";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { fetchBooks, fetchPublicWeaves } from "../lib/api";
 
-interface RightSidebarProps {
-  onSearch: () => void;
-}
-
-export function RightSidebar({ onSearch }: RightSidebarProps) {
+export function RightSidebar() {
   const navigate = useNavigate();
-  const [topicFilter, setTopicFilter] = useState<string | null>(null);
+  const location = useLocation();
+  const isWeaves = location.pathname.startsWith("/weaves") || location.pathname.startsWith("/weave/");
 
-  const trendingBooks = ALL_BOOKS.slice(0, 5);
-  const recommendedUsers = [
-    USERS.yoonseo,
-    USERS.jaehyun,
-    USERS.soyul,
-  ];
-  const recommendedIds = ["yoonseo", "jaehyun", "soyul"];
+  const [searchQ, setSearchQ] = useState("");
+  const [searchResults, setSearchResults] = useState<{ title: string; author: string }[]>([]);
+  const [noteResults, setNoteResults] = useState<{ id: string; title: string; userName: string }[]>([]);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // 탭 변경 시 검색 초기화
+  useEffect(() => {
+    setSearchQ("");
+    setSearchResults([]);
+    setNoteResults([]);
+  }, [isWeaves]);
+
+  // 책/문장 검색 (한줄 탭 등)
+  useEffect(() => {
+    if (isWeaves) return;
+    if (!searchQ.trim()) { setSearchResults([]); return; }
+    const timer = setTimeout(async () => {
+      const books = await fetchBooks();
+      const q = searchQ.toLowerCase();
+      setSearchResults(
+        books
+          .filter(b => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q))
+          .slice(0, 5)
+          .map(b => ({ title: b.title, author: b.author }))
+      );
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQ, isWeaves]);
+
+  // 노트 검색 (노트 탭)
+  useEffect(() => {
+    if (!isWeaves) return;
+    if (!searchQ.trim()) { setNoteResults([]); return; }
+    const timer = setTimeout(async () => {
+      const weaves = await fetchPublicWeaves();
+      const q = searchQ.trim().toLowerCase();
+      setNoteResults(
+        weaves
+          .filter((w: any) =>
+            w.title.toLowerCase().includes(q) ||
+            (w.description ?? "").toLowerCase().includes(q) ||
+            (w.userName ?? "").toLowerCase().includes(q)
+          )
+          .slice(0, 6)
+          .map((w: any) => ({ id: w.id, title: w.title, userName: w.userName }))
+      );
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQ, isWeaves]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchFocused(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const showBookDropdown = !isWeaves && searchFocused && searchResults.length > 0;
+  const showNoteDropdown = isWeaves && searchFocused && noteResults.length > 0;
 
   return (
     <aside className="right-sidebar">
-      <div className="rs-search" onClick={onSearch}>
+      <div className="rs-search" ref={searchRef}>
         <Icons.Search />
-        <span>책, 작가, 문장 검색</span>
-      </div>
-
-      <div className="rs-section">
-        <div className="rs-title">지금 많이 밑줄 긋는 책</div>
-        {trendingBooks.map((b, i) => (
-          <div
-            key={i}
-            className="rs-book-row"
-            onClick={() => navigate(`/book/${encodeURIComponent(b.title)}`, { state: { author: b.author } })}
-          >
-            <div className="rs-book-cover" style={{ background: b.color }}>
-              <span>{b.title.slice(0, 2)}</span>
-            </div>
-            <div className="rs-book-info">
-              <div className="rs-book-title">{b.title}</div>
-              <div className="rs-book-author">{b.author}</div>
-            </div>
-            <div className="rs-book-count">{(b.lines ?? 0).toLocaleString()}</div>
+        <input
+          className="rs-search-input"
+          type="text"
+          placeholder={isWeaves ? "노트 검색" : "책, 작가, 문장 검색"}
+          value={searchQ}
+          onChange={e => setSearchQ(e.target.value)}
+          onFocus={() => setSearchFocused(true)}
+        />
+        {showBookDropdown && (
+          <div className="rs-search-dropdown">
+            {searchResults.map((b, i) => (
+              <div
+                key={i}
+                className="rs-search-item"
+                onClick={() => {
+                  navigate(`/book/${encodeURIComponent(b.title)}`, { state: { author: b.author } });
+                  setSearchQ("");
+                  setSearchFocused(false);
+                }}
+              >
+                <span className="rs-search-item-title">{b.title}</span>
+                <span className="rs-search-item-author">{b.author}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
+        {showNoteDropdown && (
+          <div className="rs-search-dropdown">
+            {noteResults.map((n) => (
+              <div
+                key={n.id}
+                className="rs-search-item"
+                onClick={() => {
+                  navigate(`/weave/${n.id}`);
+                  setSearchQ("");
+                  setSearchFocused(false);
+                }}
+              >
+                <span className="rs-search-item-title">{n.title}</span>
+                <span className="rs-search-item-author">{n.userName}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className="rs-section">
-        <div className="rs-title">주제로 찾기</div>
-        <div className="rs-topics">
-          {TOPICS.map((t, i) => (
-            <button
-              key={i}
-              className={`rs-topic ${topicFilter === t.label ? "on" : ""}`}
-              onClick={() => setTopicFilter(topicFilter === t.label ? null : t.label)}
-            >
-              <span>{t.emoji}</span> {t.label}
-            </button>
-          ))}
+      <div className="rs-footer">
+        <div className="rs-copyright">
+          © 2026 이듬
         </div>
-      </div>
-
-      <div className="rs-section">
-        <div className="rs-title">추천 유저</div>
-        {recommendedUsers.map((u, i) => (
-          <div
-            key={i}
-            className="rs-user-row"
-            onClick={() => navigate(`/user/${recommendedIds[i]}`)}
-          >
-            <div className="rs-user-avatar">{u.avatar}</div>
-            <div className="rs-user-info">
-              <div className="rs-user-name">{u.name}</div>
-              <div className="rs-user-handle">{u.handle}</div>
-            </div>
-          </div>
-        ))}
       </div>
     </aside>
   );

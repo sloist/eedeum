@@ -301,6 +301,97 @@ export async function createLine(userId: string, bookId: string, quote: string, 
     console.error("createLine error:", error);
     return null;
   }
+
+  // 한줄 기록 시 자동으로 서재(user_books)에 책 추가
+  await supabase.from("user_books").upsert(
+    { user_id: userId, book_id: bookId, status: "reading" },
+    { onConflict: "user_id,book_id" }
+  );
+
   invalidateCache("feed");
   return data;
+}
+
+// ─── 나만 보기 (비공개) ───
+
+export async function setLinePrivate(lineId: string, isPrivate: boolean): Promise<boolean> {
+  const { error } = await supabase.from("underlines").update({ is_private: isPrivate }).eq("id", lineId);
+  if (!error) invalidateCache("feed");
+  return !error;
+}
+
+// ─── 차단 (안 보기) ───
+
+export async function blockUser(userId: string, targetUserId: string): Promise<boolean> {
+  // 이미 차단한 경우 무시
+  const { data: existing } = await supabase.from("user_blocks")
+    .select("id").eq("user_id", userId).eq("block_type", "user").eq("target_id", targetUserId).maybeSingle();
+  if (existing) { invalidateCache("feed"); return true; }
+  const { error } = await supabase.from("user_blocks").insert({ user_id: userId, block_type: "user", target_id: targetUserId });
+  if (error) console.error("blockUser error:", error);
+  if (!error) invalidateCache("feed");
+  return !error;
+}
+
+export async function blockBook(userId: string, bookId: string): Promise<boolean> {
+  const { data: existing } = await supabase.from("user_blocks")
+    .select("id").eq("user_id", userId).eq("block_type", "book").eq("target_id", bookId).maybeSingle();
+  if (existing) { invalidateCache("feed"); return true; }
+  const { error } = await supabase.from("user_blocks").insert({ user_id: userId, block_type: "book", target_id: bookId });
+  if (error) console.error("blockBook error:", error);
+  if (!error) invalidateCache("feed");
+  return !error;
+}
+
+export async function blockUnderline(userId: string, underlineId: string): Promise<boolean> {
+  const { data: existing } = await supabase.from("user_blocks")
+    .select("id").eq("user_id", userId).eq("block_type", "underline").eq("target_id", underlineId).maybeSingle();
+  if (existing) { invalidateCache("feed"); return true; }
+  const { error } = await supabase.from("user_blocks").insert({ user_id: userId, block_type: "underline", target_id: underlineId });
+  if (error) console.error("blockUnderline error:", error);
+  if (!error) invalidateCache("feed");
+  return !error;
+}
+
+export async function fetchUserBlocks(userId: string): Promise<{ blockType: string; targetId: string; label: string }[]> {
+  const { data } = await supabase.from("user_blocks").select("block_type, target_id").eq("user_id", userId);
+  if (!data || data.length === 0) return [];
+
+  const blocks = data.map((b: any) => ({ blockType: b.block_type as string, targetId: b.target_id as string, label: "" }));
+
+  // 사람 이름 조회
+  const userIds = blocks.filter(b => b.blockType === "user").map(b => b.targetId);
+  if (userIds.length > 0) {
+    const { data: users } = await supabase.from("users").select("id, name").in("id", userIds);
+    const userMap = new Map((users ?? []).map((u: any) => [u.id, u.name]));
+    blocks.forEach(b => { if (b.blockType === "user") b.label = userMap.get(b.targetId) || "알 수 없음"; });
+  }
+
+  // 책 제목 조회
+  const bookIds = blocks.filter(b => b.blockType === "book").map(b => b.targetId);
+  if (bookIds.length > 0) {
+    const { data: books } = await supabase.from("books").select("id, title, author").in("id", bookIds);
+    const bookMap = new Map((books ?? []).map((b: any) => [b.id, `${b.title} · ${b.author}`]));
+    blocks.forEach(b => { if (b.blockType === "book") b.label = bookMap.get(b.targetId) || "알 수 없음"; });
+  }
+
+  // 글 인용문 조회
+  const lineIds = blocks.filter(b => b.blockType === "underline").map(b => b.targetId);
+  if (lineIds.length > 0) {
+    const { data: lines } = await supabase.from("underlines").select("id, quote").in("id", lineIds);
+    const lineMap = new Map((lines ?? []).map((l: any) => [l.id, l.quote?.slice(0, 30) + (l.quote?.length > 30 ? "…" : "")]));
+    blocks.forEach(b => { if (b.blockType === "underline") b.label = lineMap.get(b.targetId) || "알 수 없음"; });
+  }
+
+  return blocks;
+}
+
+export async function unblock(userId: string, blockType: string, targetId: string): Promise<boolean> {
+  const { error } = await supabase.from("user_blocks")
+    .delete()
+    .eq("user_id", userId)
+    .eq("block_type", blockType)
+    .eq("target_id", targetId);
+  if (!error) invalidateCache("feed");
+  return !error;
 }

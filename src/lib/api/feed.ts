@@ -38,6 +38,7 @@ export async function fetchFeedPosts(): Promise<FeedPost[]> {
     `)
     .neq("user_id", EDITOR_USER_ID)
     .neq("hidden", true)
+    .neq("is_private", true)
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -82,6 +83,7 @@ export async function fetchBookPosts(bookTitle: string): Promise<FeedPost[]> {
       likes(count)
     `)
     .eq("books.title", bookTitle)
+    .neq("is_private", true)
     .order("created_at", { ascending: false });
 
   return (data ?? []).map(u => mapLineToFeedPost(u as DbUnderline));
@@ -222,6 +224,7 @@ export async function fetchLineDetail(lineId: string): Promise<any | null> {
     bookAuthor: book?.author ?? "",
     coverColor: book?.cover_color ?? "#8B7355",
     feelingPrivate: line.feeling_private ?? false,
+    isPrivate: line.is_private ?? false,
     likes: likeCount ?? 0,
     createdAt: line.created_at,
     echoes: (echoes ?? []).map(e => ({
@@ -268,6 +271,7 @@ export async function fetchDiscoverQuotes(topic?: string) {
   let query = supabase
     .from("underlines")
     .select(`*, users!underlines_user_id_fkey(*), books(*)`)
+    .neq("is_private", true)
     .order("created_at", { ascending: false })
     .limit(30);
 

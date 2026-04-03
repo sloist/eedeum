@@ -1,7 +1,6 @@
 export function CommunityGuidePage() {
   return (
     <div className="settings-sub-page">
-      <h2 className="settings-sub-title">커뮤니티 가이드</h2>
 
       <div className="guide-section">
         <h3 className="guide-heading">이듬은 이런 공간입니다</h3>

@@ -37,7 +37,7 @@ export function EchoInput({ isLoggedIn, onAddEcho, onToast, onAuthRequired }: Pr
           </button>
         </div>
       ) : (
-        <input className="einput einput-locked" placeholder="로그인하면 쓸 수 있어요" readOnly onClick={() => onAuthRequired ? onAuthRequired() : onToast("로그인하면 남길 수 있어요")} />
+        <input className="einput einput-locked" placeholder="이 문장 앞에서 떠오른 생각을 남겨보세요" readOnly onClick={() => onAuthRequired ? onAuthRequired() : onToast("로그인하면 남길 수 있어요")} />
       )}
     </div>
   );

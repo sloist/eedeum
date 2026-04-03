@@ -101,7 +101,7 @@ export function SettingsPage({ requireAuth }: SettingsPageProps) {
           <button className="settings-item" onClick={() => navigate("/settings/help")}><span>도움말</span><Icons.Back /></button>
           <button className="settings-item" onClick={() => navigate("/settings/privacy")}><span>개인정보처리방침</span><Icons.Back /></button>
           <button className="settings-item" onClick={() => navigate("/settings/terms")}><span>이용약관</span><Icons.Back /></button>
-          <button className="settings-item" onClick={() => window.open("mailto:hello@eedeum.com?subject=버그 제보", "_blank")}><span>버그 제보</span><Icons.Back /></button>
+          <button className="settings-item" onClick={() => navigate("/settings/feedback")}><span>버그 제보</span><Icons.Back /></button>
         </div>
 
         {/* 로그인/로그아웃 */}
@@ -121,7 +121,7 @@ export function SettingsPage({ requireAuth }: SettingsPageProps) {
           )}
         </div>
         <div className="settings-footer">
-          2026 eedeum from <a href="https://iroun.com" target="_blank" rel="noopener noreferrer">iroun</a>
+          &copy; 2026 EEDEUM, From <a href="https://iroun.kr" target="_blank" rel="noopener noreferrer">IROUN</a>
         </div>
       </div>
       {showToast && <Toast message={toastMsg} />}

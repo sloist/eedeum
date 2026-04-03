@@ -3,5 +3,5 @@ interface ToastProps {
 }
 
 export function Toast({ message }: ToastProps) {
-  return <div className="toast">✨ {message}</div>;
+  return <div className="toast">{message}</div>;
 }

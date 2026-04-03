@@ -4,52 +4,55 @@ import { Icons } from "./Icons";
 // 한줄/노트 탭은 스크롤 위치를 기억합니다
 const scrollPositions: Record<string, number> = {};
 
+// 현재 경로가 어떤 탭 루트에 속하는지
+function getTabRoot(path: string): string | null {
+  if (path === "/" || path.startsWith("/line/") || path.startsWith("/book/") || path.startsWith("/user/")) return "/";
+  if (path.startsWith("/weaves") || path.startsWith("/weave/")) return "/weaves";
+  return null;
+}
+
 export function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
 
-  // Hide on write page
-  if (path === "/write") return null;
-
   const isActive = (p: string) => {
     if (p === "/") return path === "/" || path.startsWith("/line/") || path.startsWith("/book/") || path.startsWith("/user/");
     if (p === "/weaves") return path.startsWith("/weaves") || path.startsWith("/weave/");
     if (p === "/shelf") return path.startsWith("/shelf") || path === "/notifications" || path.startsWith("/settings");
-    if (p === "/my") return path.startsWith("/my");
+    if (p === "/my") return path === "/my" || path === "/write";
     return path.startsWith(p);
   };
 
-  // 스크롤 위치를 기억할 탭들
   const remembersScroll = (p: string) => p === "/" || p === "/weaves";
 
   const go = (p: string) => {
     const currentActive = isActive(p);
 
-    // 현재 탭의 루트 경로에 스크롤 위치 저장
-    const currentRoot = path === "/" ? "/" : "/weaves";
-    if (path === "/" || path === "/weaves") {
+    // 현재 탭 루트의 스크롤 위치 저장
+    const currentRoot = getTabRoot(path);
+    if (currentRoot) {
       scrollPositions[currentRoot] = window.scrollY;
     }
 
     if (currentActive && path === p) {
-      // 같은 탭 재탭 → 최상단으로
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
     navigate(p);
 
-    // 기록/서재는 항상 최상단, 한줄/노트는 위치 복원
+    // 한줄/노트는 위치 복원, 나머지는 최상단
     if (remembersScroll(p) && scrollPositions[p]) {
+      // 여러 프레임 기다려서 React 렌더 후 복원
+      const savedY = scrollPositions[p];
       requestAnimationFrame(() => {
-        window.scrollTo(0, scrollPositions[p]);
+        requestAnimationFrame(() => {
+          window.scrollTo(0, savedY);
+        });
       });
     } else {
       window.scrollTo(0, 0);
-      requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
-      });
     }
   };
 

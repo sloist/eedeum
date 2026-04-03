@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>밑줄 Icon Generator</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f5f0e8; }
+    canvas { border: 1px solid #ccc; margin: 1rem; }
+    button { padding: 0.5rem 1rem; margin: 0.5rem; cursor: pointer; }
+    h1 { color: #2A231D; }
+  </style>
+</head>
+<body>
+  <h1>밑줄 Icon Generator</h1>
+  <p>Click the buttons to download PNG icons for PWA.</p>
+
+  <div>
+    <h2>192x192</h2>
+    <canvas id="c192" width="192" height="192"></canvas>
+    <br><button onclick="download('c192', 'icon-192.png')">Download 192x192</button>
+  </div>
+
+  <div>
+    <h2>512x512</h2>
+    <canvas id="c512" width="512" height="512"></canvas>
+    <br><button onclick="download('c512', 'icon-512.png')">Download 512x512</button>
+  </div>
+
+  <script>
+    function drawIcon(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const size = canvas.width;
+      const scale = size / 512;
+
+      // Background
+      ctx.fillStyle = '#F5F0E8';
+      ctx.fillRect(0, 0, size, size);
+
+      // Text
+      ctx.fillStyle = '#2A231D';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = `bold ${Math.round(180 * scale)}px "Noto Serif KR", "Batang", serif`;
+      ctx.fillText('밑줄', size / 2, size * 0.48);
+
+      // Underline bar
+      const barWidth = 352 * scale;
+      const barHeight = 24 * scale;
+      const barRadius = 12 * scale;
+      const barX = (size - barWidth) / 2;
+      const barY = size * 0.72;
+
+      ctx.fillStyle = '#2A231D';
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, barWidth, barHeight, barRadius);
+      ctx.fill();
+    }
+
+    function download(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Load the Korean font first, then draw
+    document.fonts.ready.then(() => {
+      drawIcon('c192');
+      drawIcon('c512');
+    });
+
+    // Also try loading the font explicitly
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    // Redraw after font loads
+    link.onload = () => {
+      setTimeout(() => {
+        drawIcon('c192');
+        drawIcon('c512');
+      }, 1000);
+    };
+  </script>
+</body>
+</html>

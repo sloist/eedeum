@@ -2,12 +2,12 @@ export const Icons = {
   Search: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="7.5"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>,
 
   // Tab icons — 쪽지 → 펜 → 묶음 → 책장
-  // 한줄: 우하단이 접힌 종이 (문장이 담긴 쪽지)
-  Discover: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13" opacity=".5"/><line x1="8" y1="17" x2="13" y2="17" opacity=".5"/></svg>,
+  // 한줄: 한 줄의 밑줄 (문장 하나)
+  Discover: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="12" x2="4" y2="10" opacity=".4"/></svg>,
   // 기록: 사선 펜 + 밑줄 (쓰는 행위)
   Record: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.85 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/><line x1="4" y1="22" x2="20" y2="22" opacity=".4"/></svg>,
-  // 노트: 겹친 네모 두 장 (묶인 결과물)
-  Note: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="2" width="12" height="16" rx="1.5"/><path d="M4 6v14a2 2 0 002 2h10"/></svg>,
+  // 노트: 작은 수첩 (엮인 묶음)
+  Note: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="5" y1="3" x2="5" y2="21"/><line x1="9" y1="8" x2="15" y2="8" opacity=".4"/><line x1="9" y1="12" x2="14" y2="12" opacity=".4"/></svg>,
   // 서재: 세로 책등 3권 (축적)
   Shelf: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="4.5" height="18" rx="1"/><rect x="9.75" y="2" width="4.5" height="20" rx="1"/><rect x="16.5" y="6" width="4.5" height="16" rx="1"/></svg>,
   // 더보기: 가로 점 3개

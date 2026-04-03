@@ -55,6 +55,11 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
       </nav>
 
 
+      {/* 검색 — 중간 너비에서 우측 사이드바 없을 때 사용 */}
+      <button className="ls-nav-item ls-search-btn" onClick={() => navigate("/search")}>
+        <Icons.Search /><span>검색</span>
+      </button>
+
       {/* More — settings/info/account */}
       <div className="ls-more-wrap" ref={moreRef}>
         {showMore && (
