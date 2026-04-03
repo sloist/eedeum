@@ -133,7 +133,7 @@ export function AuthPage({ onSuccess, isModal }: AuthPageProps = {}) {
               <div className="auth-title">로그인</div>
               <button className="auth-google-btn" type="button" onClick={handleGoogleLogin}>
                 <GoogleIcon />
-                Google로 계속하기
+                구글로 계속하기
               </button>
               <div className="auth-divider"><span>또는</span></div>
               <form className="auth-form" onSubmit={handleLogin}>
@@ -175,7 +175,7 @@ export function AuthPage({ onSuccess, isModal }: AuthPageProps = {}) {
               <div className="auth-title">가입하기</div>
               <button className="auth-google-btn" type="button" onClick={handleGoogleLogin}>
                 <GoogleIcon />
-                Google로 계속하기
+                구글로 계속하기
               </button>
               <div className="auth-divider"><span>또는</span></div>
               <form className="auth-form" onSubmit={handleSignup}>
