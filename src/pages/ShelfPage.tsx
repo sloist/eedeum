@@ -15,7 +15,6 @@ import {
   fetchPrivateMemos,
   fetchUserBlocks,
   fetchUserDbProfile,
-  fetchUserRank,
   unblock,
 } from "../lib/api";
 
@@ -36,7 +35,6 @@ export function ShelfPage() {
   const [showBlocks, setShowBlocks] = useState(false);
   const [dbFeaturedLineId, setDbFeaturedLineId] = useState<string | null>(null);
   const [dbFeaturedWeaveId, setDbFeaturedWeaveId] = useState<string | null>(null);
-  const [rank, setRank] = useState<{ tier: string; percentile: number } | null>(null);
   const [showRankInfo, setShowRankInfo] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -82,9 +80,6 @@ export function ShelfPage() {
       }
 
       setLoading(false);
-      // Rank 별도 로드
-      const rankData = await fetchUserRank(user!.id);
-      if (mounted) setRank(rankData);
     }
     load();
     return () => { mounted = false; };
