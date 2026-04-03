@@ -109,11 +109,6 @@ export function ShelfPage() {
     ? weaves.find(w => w.id === dbFeaturedWeaveId) || weaves.find(w => w.isPublic) || null
     : weaves.find(w => w.isPublic) ?? null;
 
-  // 서재 전체 요약
-  const totalBooks = shelf.length;
-  const totalLines = userLines.length;
-  const totalWeaves = weaves.length;
-
   return (
     <div className="content-fade-in" ref={topRef}>
       {/* ─── 프로필 + 액션 ─── */}
@@ -134,17 +129,6 @@ export function ShelfPage() {
           }
         />
       </div>
-
-      {/* ─── 서재 요약 — 숫자가 아니라 결로 보여주기 ─── */}
-      {(totalBooks > 0 || totalLines > 0 || totalWeaves > 0) && (
-        <div className="shelf-surface-summary">
-          {totalBooks > 0 && <span>{totalBooks}권의 책</span>}
-          {totalBooks > 0 && totalLines > 0 && <span className="qdot" />}
-          {totalLines > 0 && <span>{totalLines}개의 문장</span>}
-          {totalLines > 0 && totalWeaves > 0 && <span className="qdot" />}
-          {totalWeaves > 0 && <span>{totalWeaves}편의 노트</span>}
-        </div>
-      )}
 
       {/* ─── 1. 읽고 있는 책 ─── */}
       {shelf.length > 0 && (
