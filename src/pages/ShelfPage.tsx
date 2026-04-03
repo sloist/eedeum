@@ -142,9 +142,14 @@ export function ShelfPage() {
       </div>
 
       {/* ─── 축적 요약 ─── */}
-      {userLines.length > 0 && (
+      {(shelf.length > 0 || userLines.length > 0) && (
         <div className="shelf-accumulation">
-          이번 달 당신의 서재에 {userLines.length}개의 문장이 더해졌습니다
+          {shelf.length > 0 && userLines.length > 0
+            ? `${shelf.length}권의 책에서 ${userLines.length}개의 문장을 남겼습니다`
+            : userLines.length > 0
+              ? `${userLines.length}개의 문장을 남겼습니다`
+              : `${shelf.length}권의 책을 읽고 있습니다`
+          }
         </div>
       )}
 

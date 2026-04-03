@@ -80,7 +80,7 @@ export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rig
         </div>
       </div>
       {showFollow && !isSelf && <FollowBtn targetUserId={targetUserId} />}
-      {isSelf && <button className="prof-edit-link" onClick={() => navigate("/settings")} style={{ border: "none", background: "none", padding: "4px 0 0", fontSize: 12, color: "var(--t3)", cursor: "pointer", fontFamily: "var(--sn)" }}>프로필 편집</button>}
+      {isSelf && <button className="prof-edit-link" onClick={() => navigate("/settings")}>프로필 편집</button>}
 
       {/* 대표 문장 + 대표 노트 */}
       {(featuredQuote || featuredWeave) && (
@@ -97,10 +97,12 @@ export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rig
       )}
 
       <div className="prof-stats-sub">
-        {profileUser.books > 0 && <><span>{profileUser.books}권의 책</span><span className="qdot" /></>}
-        {profileUser.lines > 0 && <><span>{profileUser.lines}개의 기록</span><span className="qdot" /></>}
+        {profileUser.books > 0 && <span>{profileUser.books}권의 책</span>}
+        {profileUser.books > 0 && profileUser.lines > 0 && <span className="prof-stats-dot">·</span>}
+        {profileUser.lines > 0 && <span>{profileUser.lines}개의 문장</span>}
+        {(profileUser.books > 0 || profileUser.lines > 0) && <span className="prof-stats-dot">·</span>}
         <span>구독자 {profileUser.followers}</span>
-        <span className="qdot" />
+        <span className="prof-stats-dot">·</span>
         <span>구독 중 {profileUser.following}</span>
       </div>
     </>
