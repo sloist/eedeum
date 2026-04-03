@@ -38,12 +38,11 @@ export function UserPage() {
       ]);
       if (!mounted) return;
       if (profileData) {
-        const rawHandle = profileData.handle;
-        const cleanHandle = rawHandle.startsWith("@") ? rawHandle : `@${rawHandle}`;
+        const rawHandle = profileData.handle.replace(/^@/, "");
         setProfile({
           name: profileData.name,
           avatar: profileData.avatar_emoji ?? "📖",
-          handle: cleanHandle,
+          handle: rawHandle,
           bio: profileData.bio ?? "",
           books: profileData.books,
           lines: profileData.lines,

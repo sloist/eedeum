@@ -55,12 +55,11 @@ export function ShelfPage() {
       ]);
       if (!mounted) return;
       if (profileData) {
-        const rawHandle = profileData.handle;
-        const cleanHandle = rawHandle.startsWith("@") ? rawHandle : `@${rawHandle}`;
+        const rawHandle = profileData.handle.replace(/^@/, "");
         setProfile({
           name: profileData.name,
           avatar: profileData.avatar_emoji ?? "📖",
-          handle: cleanHandle,
+          handle: rawHandle,
           bio: profileData.bio ?? "",
           books: profileData.books,
           lines: profileData.lines,
@@ -120,11 +119,11 @@ export function ShelfPage() {
           targetUserId={user?.id}
           featuredQuote={featuredQuote}
           featuredQuoteId={featuredLine?.shortId}
-          onQuoteClick={(id) => navigate(`/@${profile.handle.replace(/^@/, "")}/lines/${id}`)}
+          onQuoteClick={(id) => navigate(`/@${profile.handle}/lines/${id}`)}
           featuredWeave={featuredWeave ? { id: featuredWeave.id, title: featuredWeave.title, coverColor: featuredWeave.coverColor } : null}
           onWeaveClick={(id) => {
             const w = weaves.find(wv => wv.id === id);
-            navigate(`/@${profile.handle.replace(/^@/, "")}/notes/${w?.shortId ?? id}`);
+            navigate(`/@${profile.handle}/notes/${w?.shortId ?? id}`);
           }}
           rightActions={
             <>
@@ -179,7 +178,7 @@ export function ShelfPage() {
           <div className="shelf-section-label">기록</div>
           <div className="shelf-lines">
             {userLines.slice(0, showMore ? userLines.length : 5).map(l => (
-              <div key={l.id} className="shelf-line-card" onClick={() => navigate(`/@${profile.handle.replace(/^@/, "")}/lines/${l.shortId}`)}>
+              <div key={l.id} className="shelf-line-card" onClick={() => navigate(`/@${profile.handle}/lines/${l.shortId}`)}>
                 <div className="shelf-line-quote">{l.quote}</div>
                 <div className="shelf-line-src">{l.bookTitle} · {l.bookAuthor}</div>
               </div>

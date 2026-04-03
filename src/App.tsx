@@ -2,7 +2,7 @@ import { Component, useEffect, useRef, useState, lazy, Suspense, type ReactNode,
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "./lib/AuthContext";
 import { ModalProvider, useModal } from "./lib/ModalContext";
-import { BottomNav } from "./components/BottomNav";
+import { BottomNav, scrollPositions } from "./components/BottomNav";
 import { LeftSidebar } from "./components/LeftSidebar";
 import { Icons } from "./components/Icons";
 import { RightSidebar } from "./components/RightSidebar";
@@ -188,11 +188,25 @@ function AppLayout() {
     }
   }, [backgroundLocation]);
 
-  // 서브페이지 진입 시 top으로 (backgroundLocation이 있으면 스크롤 안 건드림)
+  // 서브페이지 진입 시: 이전 탭 스크롤 저장 + 서브페이지는 top으로
+  const prevPathRef = useRef(location.pathname);
   useEffect(() => {
     if (backgroundLocation) return; // 오버레이 열릴 때 스크롤 유지
-    const keepScroll = ["/", "/write", "/notes", "/shelf"];
-    if (!keepScroll.includes(location.pathname)) {
+
+    const prev = prevPathRef.current;
+    prevPathRef.current = location.pathname;
+
+    // 이전 경로가 탭 루트면 스크롤 위치 저장
+    const tabRoots = ["/", "/notes"];
+    if (tabRoots.includes(prev)) {
+      scrollPositions[prev] = window.scrollY;
+    }
+
+    // 탭 루트로 돌아오면 스크롤 복원, 아니면 top으로
+    if (tabRoots.includes(location.pathname) && scrollPositions[location.pathname]) {
+      const savedY = scrollPositions[location.pathname];
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, savedY)));
+    } else if (!["/", "/write", "/notes", "/shelf"].includes(location.pathname)) {
       window.scrollTo(0, 0);
     }
   }, [location.pathname, backgroundLocation]);

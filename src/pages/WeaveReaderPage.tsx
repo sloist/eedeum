@@ -245,19 +245,21 @@ export function WeaveReaderPage() {
         <button className="weave-back-btn" onClick={() => navigate(-1)} style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <Icons.Back />
         </button>
-        <span className="wr-page-indicator">{currentPage + 1} / {totalPages}</span>
-        <span style={{ flex: 1 }} />
-        {isOwner && (
-          <div className="wr-menu-wrap">
-            <button className="wr-menu-trigger" onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}>···</button>
-            {showMenu && (
-              <div className="wr-menu-dropdown">
-                <button className="wr-menu-item" onClick={() => { setShowMenu(false); navigate(`/@${handle}/notes/${id}/edit`); }}>편집하기</button>
-                <button className="wr-menu-item danger" onClick={() => { setShowMenu(false); handleDelete(); }}>삭제하기</button>
-              </div>
-            )}
-          </div>
-        )}
+        <span className="wr-header-title">{weave.title}</span>
+        <div className="wr-header-right">
+          <span className="wr-page-indicator">{currentPage + 1} / {totalPages}</span>
+          {isOwner && (
+            <div className="wr-menu-wrap">
+              <button className="wr-menu-trigger" onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}>···</button>
+              {showMenu && (
+                <div className="wr-menu-dropdown">
+                  <button className="wr-menu-item" onClick={() => { setShowMenu(false); navigate(`/@${handle}/notes/${id}/edit`); }}>편집하기</button>
+                  <button className="wr-menu-item danger" onClick={() => { setShowMenu(false); handleDelete(); }}>삭제하기</button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 페이드 전환 페이지 */}

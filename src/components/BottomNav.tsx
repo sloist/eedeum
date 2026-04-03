@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "./Icons";
 
 // 한줄/노트 탭은 스크롤 위치를 기억합니다
-const scrollPositions: Record<string, number> = {};
+export const scrollPositions: Record<string, number> = {};
 
 // 현재 경로가 어떤 탭 루트에 속하는지
 function getTabRoot(path: string): string | null {

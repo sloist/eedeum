@@ -67,7 +67,7 @@ export function ProfileHeader({ user: profileUser, showFollow, targetUserId, rig
         <div className="prof-right">
           <div className="prof-name-row">
             <span className="prof-nm">{profileUser.name}</span>
-            <span className="prof-hdl">{profileUser.handle}</span>
+            <span className="prof-hdl">@{profileUser.handle.replace(/^@/, "")}</span>
             {rightActions && <span className="prof-actions">{rightActions}</span>}
           </div>
           {profileUser.bio && <div className="prof-bio">{profileUser.bio}</div>}
