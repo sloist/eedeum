@@ -395,6 +395,83 @@ export async function updateLineFeeling(lineId: string, feeling: string): Promis
   return !error;
 }
 
+// ─── 임시 보관함 ───
+
+export async function saveDraft(userId: string, quote: string, feeling?: string, title?: string, bookTitle?: string, bookAuthor?: string, page?: number): Promise<any | { error: string }> {
+  // 출처 없이도 저장 가능 — 나중에 보완
+  let bookId: string | null = null;
+  if (bookTitle?.trim() && bookAuthor?.trim()) {
+    const { data: existingBook } = await supabase
+      .from("books")
+      .select("id")
+      .eq("title", bookTitle.trim())
+      .eq("author", bookAuthor.trim())
+      .single();
+    if (existingBook) {
+      bookId = existingBook.id;
+    }
+  }
+
+  const insertData: any = {
+    user_id: userId,
+    quote: quote.trim(),
+    feeling: feeling?.trim() || null,
+    title: title?.trim() || null,
+    page: page || 0,
+    is_draft: true,
+    is_private: true,
+    book_id: bookId,
+  };
+
+  const { data, error } = await supabase
+    .from("underlines")
+    .insert(insertData)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("saveDraft error:", error);
+    return { error: "임시 저장에 실패했습니다" };
+  }
+  return data;
+}
+
+export async function fetchDrafts(userId: string) {
+  const { data } = await supabase
+    .from("underlines")
+    .select("*, books(*)")
+    .eq("user_id", userId)
+    .eq("is_draft", true)
+    .order("created_at", { ascending: false });
+
+  return (data ?? []).map((d: any) => ({
+    id: d.id,
+    shortId: d.short_id,
+    quote: d.quote,
+    feeling: d.feeling,
+    title: d.title,
+    page: d.page,
+    bookTitle: d.books?.title ?? "",
+    bookAuthor: d.books?.author ?? "",
+    createdAt: d.created_at,
+  }));
+}
+
+export async function publishDraft(lineId: string, bookId: string): Promise<boolean> {
+  const { error } = await supabase.from("underlines").update({
+    is_draft: false,
+    is_private: false,
+    book_id: bookId,
+  }).eq("id", lineId);
+  if (!error) invalidateCache("feed");
+  return !error;
+}
+
+export async function deleteDraft(lineId: string): Promise<boolean> {
+  const { error } = await supabase.from("underlines").delete().eq("id", lineId).eq("is_draft", true);
+  return !error;
+}
+
 // ─── 나만 보기 (비공개) ───
 
 export async function setLinePrivate(lineId: string, isPrivate: boolean): Promise<boolean> {

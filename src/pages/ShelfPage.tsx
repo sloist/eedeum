@@ -15,6 +15,8 @@ import {
   fetchPrivateMemos,
   fetchUserBlocks,
   fetchUserDbProfile,
+  fetchDrafts,
+  deleteDraft,
   unblock,
 } from "../lib/api";
 
@@ -31,6 +33,7 @@ export function ShelfPage() {
   const [savedItems, setSavedItems] = useState<{ id: string; shortId: string; userHandle: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
   const [privateMemos, setPrivateMemos] = useState<{ lineId: string; lineHandle: string; text: string; date: string }[]>([]);
   const [showMore, setShowMore] = useState(false);
+  const [drafts, setDrafts] = useState<{ id: string; shortId: string; quote: string; feeling: string | null; title: string | null; bookTitle: string; bookAuthor: string; createdAt: string }[]>([]);
   const [blocks, setBlocks] = useState<{ blockType: string; targetId: string; label: string }[]>([]);
   const [showBlocks, setShowBlocks] = useState(false);
   const [dbFeaturedLineId, setDbFeaturedLineId] = useState<string | null>(null);
@@ -43,7 +46,7 @@ export function ShelfPage() {
     let mounted = true;
 
     async function load() {
-      const [profileData, shelfData, weavesData, lines, saved, memos, userBlocks, dbProfile] = await Promise.all([
+      const [profileData, shelfData, weavesData, lines, saved, memos, userBlocks, dbProfile, draftsData] = await Promise.all([
         fetchUserProfile(user!.id),
         fetchUserShelf(user!.id),
         fetchUserWeaves(user!.id),
@@ -52,8 +55,10 @@ export function ShelfPage() {
         fetchPrivateMemos(user!.id),
         fetchUserBlocks(user!.id),
         fetchUserDbProfile(user!.id),
+        fetchDrafts(user!.id),
       ]);
       if (!mounted) return;
+      setDrafts(draftsData);
       if (profileData) {
         const rawHandle = profileData.handle.replace(/^@/, "");
         setProfile({
@@ -134,6 +139,26 @@ export function ShelfPage() {
           onRankClick={() => setShowRankInfo(true)}
         />
       </div>
+
+      {/* ─── 임시 보관함 ─── */}
+      {drafts.length > 0 && (
+        <div className="shelf-section">
+          <div className="shelf-section-label">아직 정리 중</div>
+          <div className="shelf-drafts">
+            {drafts.slice(0, 5).map(d => (
+              <div
+                key={d.id}
+                className="shelf-draft-card"
+                onClick={() => navigate("/write", { state: { editId: d.id, editQuote: d.quote, editFeeling: d.feeling || "", editBookTitle: d.bookTitle, editBookAuthor: d.bookAuthor, editPage: d.page } })}
+              >
+                <div className="shelf-draft-quote">{d.quote.length > 60 ? d.quote.slice(0, 60) + "…" : d.quote}</div>
+                {d.bookTitle && <div className="shelf-draft-src">{d.bookTitle} · {d.bookAuthor}</div>}
+                {!d.bookTitle && <div className="shelf-draft-src" style={{ opacity: 0.4 }}>출처 미입력</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ─── 1. 읽고 있는 책 ─── */}
       {shelf.length > 0 && (

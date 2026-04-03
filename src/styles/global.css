@@ -927,6 +927,12 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .shelf-rank-row{padding:0 20px 12px}
 .shelf-rank-tier{font-family:var(--sn);font-size:11px;color:var(--t3);opacity:.6;letter-spacing:-.1px;border:none;background:none;border-bottom:1px dashed var(--bdL);padding:0 0 1px;cursor:pointer}
 .shelf-rank-tier:hover{opacity:.8;color:var(--t2)}
+.shelf-drafts{display:flex;flex-direction:column;gap:2px;padding:0 20px}
+.shelf-draft-card{padding:14px 0;border-bottom:0.5px solid var(--bdL);cursor:pointer;transition:opacity .15s}
+.shelf-draft-card:last-child{border-bottom:none}
+.shelf-draft-card:hover{opacity:.7}
+.shelf-draft-quote{font-family:var(--sf);font-size:14px;color:var(--tq);line-height:1.6;letter-spacing:-.1px}
+.shelf-draft-src{font-size:11px;color:var(--t3);margin-top:4px}
 .shelf-surface-summary{display:flex;align-items:center;gap:6px;padding:0 20px 20px;font-size:12px;color:var(--t3);flex-wrap:wrap}
 .shelf-section{padding-bottom:12px}
 .shelf-section-label{font-size:10px;font-weight:400;color:var(--t3);letter-spacing:.4px;padding:28px 20px 10px;text-transform:uppercase;opacity:.5}
@@ -1390,6 +1396,8 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .write-page{min-height:100vh;background:var(--bg);display:flex;flex-direction:column}
 .write-header{display:flex;justify-content:space-between;align-items:center;padding:max(12px,env(safe-area-inset-top)) 20px 10px;position:sticky;top:0;z-index:10;background:var(--bg)}
 .write-cancel{background:none;border:none;font-size:14px;color:var(--t3);cursor:pointer;font-family:var(--sn);padding:4px 0}
+.write-draft-btn{background:none;border:none;font-size:13px;color:var(--t3);cursor:pointer;font-family:var(--sn);font-weight:400;padding:4px 0;opacity:.6;transition:opacity .18s ease}
+.write-draft-btn:hover{opacity:.8}
 .write-submit{background:none;border:none;font-size:14px;color:var(--t3);cursor:pointer;font-family:var(--sn);font-weight:500;padding:4px 0;opacity:.35;transition:opacity .18s ease,color .18s ease,transform .15s ease}
 .write-submit-active{color:var(--ac);opacity:1;font-weight:600}
 .write-submit-active:active{transform:translateY(1px);opacity:.7;transition:transform .1s ease,opacity .1s ease}

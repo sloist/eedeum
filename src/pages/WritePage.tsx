@@ -4,7 +4,7 @@ import { useAuth } from "../lib/AuthContext";
 import { useModal } from "../lib/ModalContext";
 import { Toast } from "../components/Toast";
 import { Icons } from "../components/Icons";
-import { findOrCreateBook, createLine, fetchBooks } from "../lib/api";
+import { findOrCreateBook, createLine, saveDraft, fetchBooks } from "../lib/api";
 import { searchBooks } from "../lib/bookSearch";
 import { createWorker } from "tesseract.js";
 
@@ -161,6 +161,19 @@ export function WritePage() {
     }
   };
 
+  const handleSaveDraft = async () => {
+    if (!user || !quote.trim()) return;
+    setSubmitting(true);
+    const result = await saveDraft(user.id, quote, feeling, title, bookTitle, bookAuthor, parseInt(page) || 0);
+    setSubmitting(false);
+    if (result && "error" in result) {
+      toast(result.error);
+    } else {
+      toast("임시로 남겨두었습니다");
+      setTimeout(() => navigate("/shelf", { replace: true }), 300);
+    }
+  };
+
   if (authLoading) return null;
 
   if (!user) {
@@ -185,6 +198,15 @@ export function WritePage() {
           if (location.pathname === "/write") navigate("/");
           else navigate(-1);
         }}>취소</button>
+        {quote.trim() && !hasSource && (
+          <button
+            className="write-draft-btn"
+            onClick={handleSaveDraft}
+            disabled={submitting}
+          >
+            {submitting ? "저장 중..." : "임시로 남기기"}
+          </button>
+        )}
         <button
           className={`write-submit ${quote.trim() && hasSource ? "write-submit-active" : ""}`}
           onClick={handleSubmit}
