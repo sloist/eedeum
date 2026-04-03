@@ -15,6 +15,8 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
   const { user, loading: authLoading } = useAuth();
   const [showMore, setShowMore] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [popPos, setPopPos] = useState<{ bottom: number; left: number } | null>(null);
 
   const isActive = (p: string) => {
     if (p === "/") return path === "/";
@@ -23,11 +25,16 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
 
   useEffect(() => {
     if (!showMore) return;
-    const handle = (e: MouseEvent) => {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setPopPos({ bottom: window.innerHeight - rect.top + 8, left: rect.left });
+    }
+    const handle = (e: Event) => {
       if (moreRef.current && !moreRef.current.contains(e.target as Node)) setShowMore(false);
     };
     document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
+    document.addEventListener("touchstart", handle);
+    return () => { document.removeEventListener("mousedown", handle); document.removeEventListener("touchstart", handle); };
   }, [showMore]);
 
   const go = (p: string) => { setShowMore(false); navigate(p); };
@@ -62,8 +69,8 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
 
       {/* More — settings/info/account */}
       <div className="ls-more-wrap" ref={moreRef}>
-        {showMore && (
-          <div className="ls-popover">
+        {showMore && popPos && (
+          <div className="ls-popover" style={{ position: "fixed", bottom: popPos.bottom, left: popPos.left, right: "auto", top: "auto" }}>
             <button className="ls-pop-item" onClick={() => go("/settings")}>설정</button>
             <div className="ls-pop-divider" />
             <button className="ls-pop-item" onClick={() => go("/settings/about")}>소개</button>
@@ -82,7 +89,7 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
             )}
           </div>
         )}
-        <button className="ls-nav-item ls-more-btn" onClick={() => setShowMore(!showMore)}>
+        <button ref={btnRef} className="ls-nav-item ls-more-btn" onClick={() => setShowMore(!showMore)}>
           <Icons.More /><span>더보기</span>
         </button>
       </div>

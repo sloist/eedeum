@@ -128,14 +128,14 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 
   /* Popover */
   .ls-popover{
-    position:absolute;bottom:100%;left:0;right:0;
-    margin-bottom:8px;
+    /* position/bottom/left set inline via JS */
+    width:200px;
     background:var(--bgC);
     border:0.5px solid var(--bdL);
     border-radius:8px;
-    box-shadow:0 8px 32px rgba(31,26,21,0.04),0 1px 4px rgba(31,26,21,0.03);
+    box-shadow:0 8px 32px rgba(31,26,21,0.08),0 1px 4px rgba(31,26,21,0.04);
     padding:6px 0;
-    z-index:50;
+    z-index:999;
     animation:rise .15s ease;
   }
   .ls-pop-item{
@@ -174,7 +174,6 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   .ls-nav-item span{display:none}
   .ls-nav-item svg{width:20px;height:20px}
   .ls-more-btn span{display:none}
-  .ls-popover{left:60px;right:auto;bottom:0;width:200px}
   .app{max-width:none;flex:1}
 }
 
