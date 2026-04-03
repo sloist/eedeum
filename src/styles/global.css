@@ -1233,9 +1233,10 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .wr-fade-out{opacity:0}
 /* 좌우 클릭 네비 영역 */
 .wr-nav-zones{position:fixed;top:50px;bottom:0;left:0;right:0;pointer-events:none;z-index:10}
-.wr-nav-left,.wr-nav-right{position:absolute;top:0;bottom:0;width:25%;pointer-events:auto;cursor:pointer}
-.wr-nav-left{left:0}
-.wr-nav-right{right:0}
+.wr-nav-left,.wr-nav-right,.wr-nav-center{position:absolute;top:0;bottom:0;pointer-events:auto;cursor:pointer}
+.wr-nav-left{left:0;width:25%}
+.wr-nav-right{right:0;width:25%}
+.wr-nav-center{left:25%;right:25%}
 /* Page indicator */
 .wr-page-indicator{font-size:11px;color:var(--t3);letter-spacing:.1px}
 /* Weave reader blocks — flowing text on each page */
@@ -1350,7 +1351,11 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 /* ─── Weave reader header ─── */
 .wr-header-bar{
   display:flex;align-items:center;padding:12px 20px;gap:8px;
+  transition:opacity .25s ease,transform .25s ease;
+  z-index:20;
 }
+.wr-ui-hidden{opacity:0;pointer-events:none;transform:translateY(-8px)}
+.wr-ui-visible{opacity:1;pointer-events:auto;transform:translateY(0)}
 .wr-header-title{
   flex:1;text-align:center;font-family:var(--sn);font-size:12px;
   color:var(--t3);letter-spacing:-.1px;
@@ -2109,7 +2114,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 }
 
 /* ─── Weave reader enhanced ─── */
-.wr-progress{position:fixed;top:0;left:0;height:2px;background:var(--ac);z-index:999;transition:width .1s linear}
+.wr-progress{position:fixed;top:0;left:0;height:2px;background:var(--ac);z-index:999;transition:width .1s linear,opacity .25s ease}
 .wr-cover{
   padding:56px 28px 44px;text-align:left;
   border-radius:0;margin:auto 0;

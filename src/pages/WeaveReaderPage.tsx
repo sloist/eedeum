@@ -42,6 +42,7 @@ export function WeaveReaderPage() {
   const [blocks, setBlocks] = useState<WeaveBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
+  const [showUI, setShowUI] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [otherWeaves, setOtherWeaves] = useState<{ id: string; shortId: string; title: string; coverColor: string; blockCount: number; userHandle: string }[]>([]);
   const [fadeState, setFadeState] = useState<"in" | "out">("in");
@@ -239,10 +240,10 @@ export function WeaveReaderPage() {
 
   return (
     <div className="weave-reader">
-      <div className="wr-progress" style={{ width: `${progress}%` }} />
+      <div className={`wr-progress ${showUI ? "wr-ui-visible" : "wr-ui-hidden"}`} style={{ width: `${progress}%` }} />
 
-      <div className="wr-header-bar">
-        <button className="weave-back-btn" onClick={() => navigate(-1)} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      <div className={`wr-header-bar ${showUI ? "wr-ui-visible" : "wr-ui-hidden"}`}>
+        <button className="weave-back-btn" onClick={() => navigate(-1)}>
           <Icons.Back />
         </button>
         <span className="wr-header-title">{weave.title}</span>
@@ -267,9 +268,10 @@ export function WeaveReaderPage() {
         {renderPage()}
       </div>
 
-      {/* 좌우 터치 영역 (데스크톱 클릭) */}
+      {/* 좌우 터치 + 중앙 탭 영역 */}
       <div className="wr-nav-zones">
         {currentPage > 0 && <div className="wr-nav-left" onClick={goPrev} />}
+        <div className="wr-nav-center" onClick={() => { setShowUI(v => !v); setShowMenu(false); }} />
         {currentPage < totalPages - 1 && <div className="wr-nav-right" onClick={goNext} />}
       </div>
     </div>
