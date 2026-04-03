@@ -164,23 +164,24 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   .ls-search-btn{display:flex!important}
 }
 
-/* ─── Tablet: compact sidebar (768–1099) ─── */
-@media(min-width:768px) and (max-width:1099px){
-  :root{--sidebar-width:60px;--rightsidebar-width:0px}
+/* ─── Tablet narrow: icon-only sidebar (768–899) ─── */
+@media(min-width:768px) and (max-width:899px){
+  :root{--sidebar-width:52px;--rightsidebar-width:0px}
   .app-shell{max-width:100%}
-  .left-sidebar{width:60px;padding:16px 8px;align-items:flex-end}
-  .ls-logo{font-size:14px;margin-bottom:20px;padding-left:0;padding-right:2px;text-align:right}
+  .left-sidebar{width:52px;padding:16px 4px 16px 0;align-items:flex-end}
+  .ls-logo{font-size:14px;margin-bottom:20px;padding:0;text-align:right;padding-right:6px}
   .ls-nav-item{font-size:0;padding:10px;gap:0;justify-content:center;width:40px;height:40px}
   .ls-nav-item span{display:none}
   .ls-nav-item svg{width:20px;height:20px}
   .ls-more-btn span{display:none}
   .app{flex:1;max-width:680px;margin:0 auto}
 }
-/* ─── Tablet wide: text sidebar, no right panel (1100–1279) ─── */
-@media(min-width:1100px) and (max-width:1279px){
+/* ─── Tablet: text sidebar, no right panel (900–1279) ─── */
+@media(min-width:900px) and (max-width:1279px){
+  :root{--sidebar-width:140px;--rightsidebar-width:0px}
   .right-sidebar{display:none!important}
   .app-shell{max-width:100%}
-  .left-sidebar{width:150px}
+  .left-sidebar{width:140px}
   .app{max-width:680px}
 }
 
