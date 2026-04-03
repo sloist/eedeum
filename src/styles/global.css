@@ -372,7 +372,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   font-size:11px;color:var(--t3);opacity:.6;letter-spacing:.05px;
 }
 .feed-author{
-  font-size:11px;color:var(--t3);opacity:.5;
+  font-size:11px;color:var(--t3);opacity:.55;
 }
 .feed-meta-right{display:flex;align-items:center;gap:6px}
 .feed-more-wrap{position:relative}
@@ -2489,7 +2489,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .note-sheet-new-input{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:var(--sn);background:var(--bgW);color:var(--t1);outline:none;margin-top:8px}
 
 /* ─── 구독 작가: 이름만 짙게 ─── */
-.feed-author-following{opacity:1;color:var(--t1);font-weight:500}
+.feed-author-following{opacity:.75;color:var(--t2)}
 
 /* ─── 등급 표시 ─── */
 .rank-badge{font-size:11px;color:var(--t3);opacity:.5;letter-spacing:-.1px;border:none;background:none;padding:0;cursor:pointer;border-bottom:1px dashed var(--bdL);font-family:var(--sn)}
