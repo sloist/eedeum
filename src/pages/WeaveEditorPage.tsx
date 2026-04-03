@@ -516,25 +516,9 @@ export function WeaveEditorPage() {
           onBlur={handleSaveTitle}
           placeholder="노트 제목"
         />
-        <div className="we-actions">
-          <button className="we-action-btn" onClick={async () => {
-            const next = !isPublic;
-            await updateWeave(weaveId, { is_public: next });
-            setIsPublic(next);
-          }}>
-            {isPublic ? "비공개로 전환" : "등록"}
-          </button>
-          <button className="weave-save-btn" onClick={() => navigate(`/@${myHandle}/notes/${weaveShortId || id}`, { state: { fromEditor: true } })} disabled={saving}>
-            미리보기
-          </button>
-          <button className="we-action-btn we-action-danger" onClick={async () => {
-            if (!window.confirm("이 노트를 삭제할까요?")) return;
-            await deleteWeave(weaveId);
-            navigate("/notes", { replace: true });
-          }}>
-            삭제
-          </button>
-        </div>
+        <button className="weave-save-btn" onClick={() => navigate(`/@${myHandle}/notes/${weaveShortId || id}`, { state: { fromEditor: true } })} disabled={saving}>
+          미리보기
+        </button>
       </div>
 
       <div className="weave-blocks" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
@@ -640,6 +624,24 @@ export function WeaveEditorPage() {
         {blocks.length === 0 && (
           <div className="empty-inline">첫 조각을 담아보세요</div>
         )}
+      </div>
+
+      {/* 하단 액션 */}
+      <div className="we-bottom-actions">
+        <button className="we-bottom-btn" onClick={async () => {
+          const next = !isPublic;
+          await updateWeave(weaveId, { is_public: next });
+          setIsPublic(next);
+        }}>
+          {isPublic ? "비공개로 전환" : "등록"}
+        </button>
+        <button className="we-bottom-btn we-bottom-danger" onClick={async () => {
+          if (!window.confirm("이 노트를 삭제할까요?")) return;
+          await deleteWeave(weaveId);
+          navigate("/notes", { replace: true });
+        }}>
+          삭제
+        </button>
       </div>
 
       {/* Underline Picker Overlay */}
