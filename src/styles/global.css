@@ -55,7 +55,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 
 /* ─── App Shell: 3-column desktop layout ─── */
 .app-shell{display:flex;justify-content:center;min-height:100vh}
-.app{width:100%;min-height:100vh;background:var(--bg);position:relative;overflow-x:hidden;flex:1;max-width:520px}
+.app{width:100%;min-height:100vh;background:var(--bg);position:relative;overflow-x:hidden;flex:1}
 
 /* ─── Left Sidebar ─── */
 .left-sidebar{display:none}
@@ -174,7 +174,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   .ls-nav-item span{display:none}
   .ls-nav-item svg{width:20px;height:20px}
   .ls-more-btn span{display:none}
-  .app{max-width:520px;flex:1}
+  .app{flex:1}
 }
 
 /* ─── Right sidebar: hidden by default, shown on wide screens ─── */
