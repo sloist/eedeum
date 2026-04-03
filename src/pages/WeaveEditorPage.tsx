@@ -68,7 +68,6 @@ export function WeaveEditorPage() {
   const [loading, setLoading] = useState(!!id);
   const [saving, setSaving] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
-  const [showEditorMenu, setShowEditorMenu] = useState(false);
 
   // Insert menu
   const [insertAt, setInsertAt] = useState<number | null>(null);
@@ -517,34 +516,24 @@ export function WeaveEditorPage() {
           onBlur={handleSaveTitle}
           placeholder="노트 제목"
         />
-        <button
-          className="weave-save-btn"
-          onClick={() => navigate(`/@${myHandle}/notes/${weaveShortId || id}`)}
-          disabled={saving}
-        >
-          미리보기
-        </button>
-        <div className="we-menu-wrap">
-          <button className="we-menu-trigger" onClick={() => setShowEditorMenu(!showEditorMenu)}>···</button>
-          {showEditorMenu && (
-            <div className="we-menu-dropdown">
-              <button onClick={async () => {
-                const next = !isPublic;
-                await updateWeave(weaveId, { is_public: next });
-                setIsPublic(next);
-                setShowEditorMenu(false);
-              }}>
-                {isPublic ? "비공개로 전환" : "공개하기"}
-              </button>
-              <button className="danger" onClick={async () => {
-                if (!window.confirm("이 노트를 삭제할까요?")) { setShowEditorMenu(false); return; }
-                await deleteWeave(weaveId);
-                navigate("/notes", { replace: true });
-              }}>
-                삭제
-              </button>
-            </div>
-          )}
+        <div className="we-actions">
+          <button className="we-action-btn" onClick={async () => {
+            const next = !isPublic;
+            await updateWeave(weaveId, { is_public: next });
+            setIsPublic(next);
+          }}>
+            {isPublic ? "비공개로 전환" : "등록"}
+          </button>
+          <button className="weave-save-btn" onClick={() => navigate(`/@${myHandle}/notes/${weaveShortId || id}`, { state: { fromEditor: true } })} disabled={saving}>
+            미리보기
+          </button>
+          <button className="we-action-btn we-action-danger" onClick={async () => {
+            if (!window.confirm("이 노트를 삭제할까요?")) return;
+            await deleteWeave(weaveId);
+            navigate("/notes", { replace: true });
+          }}>
+            삭제
+          </button>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
 import { fetchWeaveDetail, fetchWeaveBlocks, deleteWeave, fetchUserWeaves } from "../lib/api";
 import { Icons } from "../components/Icons";
@@ -35,6 +35,7 @@ interface WeaveInfo {
 
 export function WeaveReaderPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { handle, id } = useParams<{ handle: string; id: string }>();
   const { user } = useAuth();
 
@@ -42,6 +43,7 @@ export function WeaveReaderPage() {
   const [blocks, setBlocks] = useState<WeaveBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
+  const isFromEditor = !!(location.state as any)?.fromEditor;
   const [showUI, setShowUI] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [otherWeaves, setOtherWeaves] = useState<{ id: string; shortId: string; title: string; coverColor: string; blockCount: number; userHandle: string }[]>([]);
@@ -137,7 +139,7 @@ export function WeaveReaderPage() {
   const pageRef = useRef<HTMLDivElement>(null);
   const goToPage = useCallback((target: number) => {
     if (target < 0 || target >= totalPages || target === currentPage) return;
-    setShowUI(false);
+    if (!isFromEditor) setShowUI(false);
     setFadeState("out");
     setTimeout(() => {
       setCurrentPage(target);
