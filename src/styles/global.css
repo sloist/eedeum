@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700&display=swap');
 
 :root{
-  --bg:#FBFBF9;--bgW:#F6F5F2;--bgC:#FFFFFF;--bgD:#F1F0ED;
+  --bg:#FBFBF9;--bgW:#F6F5F2;--bgC:#FBFBF9;--bgD:#F6F5F2;
   --t1:#1F1A15;--t2:#6B6259;--t3:#A09888;--tq:#2A2418;
   --ac:#7B6548;--acS:#B8A68E;
   --bd:#E8E6E2;--bdL:#F0EEEA;
@@ -11,7 +11,7 @@
 }
 /* ─── Dark mode ─── */
 [data-theme="dark"]{
-  --bg:#1C1A17;--bgW:#252320;--bgC:#201E1B;--bgD:#151311;
+  --bg:#1C1A17;--bgW:#252320;--bgC:#1C1A17;--bgD:#161412;
   --t1:#E6E0D6;--t2:#9E9486;--t3:#6E665C;--tq:#D6CEC2;
   --ac:#B8A68E;--acS:#7B6548;
   --bd:#363230;--bdL:#2C2A28;
@@ -197,7 +197,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
     position:sticky;top:0;height:100vh;
     overflow-y:auto;
     padding:24px 16px;padding-bottom:40px;
-    background:var(--bgC);
+    background:transparent;
     scrollbar-width:none;
   }
   .right-sidebar::-webkit-scrollbar{display:none}
