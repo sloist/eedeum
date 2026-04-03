@@ -214,10 +214,12 @@ export function WeaveReaderPage() {
     if (currentPage === totalPages - 1 && weave) {
       return (
         <div className="wr-end">
-          <div className="wr-end-count">{blocks.length}개의 조각</div>
+          <div className="wr-end-title">{weave.title}</div>
+          <div className="wr-end-meta">{blocks.length}개의 조각 · {weave.userName}</div>
+          <div className="wr-end-divider" />
           <div className="wr-end-author-card" onClick={() => navigate(`/@${weave.userHandle}`)}>
             <span className="wr-end-author-name">{weave.userName}</span>
-            <span className="wr-end-author-action">가 남긴 문장 더 보기</span>
+            <span className="wr-end-author-action">의 서재 보기</span>
           </div>
           {otherWeaves.length > 0 && (
             <div className="wr-end-more">
@@ -339,17 +341,25 @@ export function WeaveReaderPage() {
         <span className="wr-header-title">{weave.title}</span>
         <div className="wr-header-right">
           <span className="wr-page-indicator">{currentPage + 1} / {totalPages}</span>
-          {isOwner && (
-            <div className="wr-menu-wrap">
-              <button className="wr-menu-trigger" onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}>···</button>
-              {showMenu && (
-                <div className="wr-menu-dropdown">
-                  <button className="wr-menu-item" onClick={() => { setShowMenu(false); navigate(`/@${handle}/notes/${id}/edit`); }}>편집하기</button>
-                  <button className="wr-menu-item danger" onClick={() => { setShowMenu(false); handleDelete(); }}>삭제하기</button>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="wr-menu-wrap">
+            <button className="wr-menu-trigger" onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}>···</button>
+            {showMenu && (
+              <div className="wr-menu-dropdown">
+                <button className="wr-menu-item" onClick={() => {
+                  setShowMenu(false);
+                  navigator.clipboard.writeText(window.location.href);
+                  // toast via simple alert-like feedback
+                  const el = document.createElement("div");
+                  el.className = "toast";
+                  el.textContent = "링크가 복사되었습니다";
+                  document.body.appendChild(el);
+                  setTimeout(() => el.remove(), 2500);
+                }}>링크 복사</button>
+                {isOwner && <button className="wr-menu-item" onClick={() => { setShowMenu(false); navigate(`/@${handle}/notes/${id}/edit`); }}>편집하기</button>}
+                {isOwner && <button className="wr-menu-item danger" onClick={() => { setShowMenu(false); handleDelete(); }}>삭제하기</button>}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
