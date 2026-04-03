@@ -56,6 +56,17 @@ export function BookPage() {
         <div className="cmpsub">{bookAuthor}</div>
       </div>
 
+      {user && (
+        <div style={{ padding: "0 24px 16px" }}>
+          <button
+            className="book-add-line-btn"
+            onClick={() => navigate("/write", { state: { editBookTitle: bookTitle, editBookAuthor: bookAuthor } })}
+          >
+            + 이 책에서 한줄 남기기
+          </button>
+        </div>
+      )}
+
       {/* Filter toggle */}
       {user && allLines.some(l => l.userId === user.id) && (
         <div className="book-filter">

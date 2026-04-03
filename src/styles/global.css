@@ -2342,6 +2342,8 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .user-weave-count{font-size:11px;color:var(--t3)}
 
 /* ─── Book page filter ─── */
+.book-add-line-btn{background:none;border:1px solid var(--bdL);border-radius:8px;padding:10px 16px;font-family:var(--sn);font-size:13px;color:var(--t2);cursor:pointer;width:100%;transition:all .15s}
+.book-add-line-btn:hover{border-color:var(--ac);color:var(--ac)}
 .book-filter{display:flex;gap:4px;padding:8px 24px 12px}
 .book-filter-btn{
   padding:6px 14px;border-radius:4px;
