@@ -1118,7 +1118,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 .weave-editor{min-height:100vh;background:var(--bg)}
 .weave-editor-header{
   display:flex;align-items:center;gap:8px;
-  padding:12px 20px;position:fixed;top:0;left:0;right:0;
+  padding:max(12px,env(safe-area-inset-top)) 20px 12px;position:fixed;top:0;left:var(--sidebar-width,0px);right:0;
   background:rgba(251,251,249,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   z-index:10;border-bottom:0.5px solid rgba(229,229,229,0.5);
 }

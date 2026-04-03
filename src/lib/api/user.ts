@@ -112,6 +112,8 @@ export async function fetchUserLines(userId: string): Promise<FeedPost[]> {
       saves(count)
     `)
     .eq("user_id", userId)
+    .neq("is_draft", true)
+    .neq("is_private", true)
     .order("created_at", { ascending: false });
 
   return (data ?? []).map(u => mapLineToFeedPost(u as DbUnderline));

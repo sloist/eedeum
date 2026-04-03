@@ -389,7 +389,7 @@ export async function repostLine(
 
 // ─── 한줄 수정 ───
 
-export async function updateLine(lineId: string, updates: { quote?: string; feeling?: string; title?: string; page?: number; book_id?: string; feeling_private?: boolean }): Promise<boolean> {
+export async function updateLine(lineId: string, updates: { quote?: string; feeling?: string; title?: string; page?: number; book_id?: string; feeling_private?: boolean; is_draft?: boolean; is_private?: boolean }): Promise<boolean> {
   const clean: any = {};
   if (updates.quote !== undefined) clean.quote = updates.quote;
   if (updates.feeling !== undefined) clean.feeling = updates.feeling || null;
@@ -397,6 +397,8 @@ export async function updateLine(lineId: string, updates: { quote?: string; feel
   if (updates.page !== undefined) clean.page = updates.page;
   if (updates.book_id !== undefined) clean.book_id = updates.book_id;
   if (updates.feeling_private !== undefined) clean.feeling_private = updates.feeling_private;
+  if (updates.is_draft !== undefined) clean.is_draft = updates.is_draft;
+  if (updates.is_private !== undefined) clean.is_private = updates.is_private;
   const { error } = await supabase.from("underlines").update(clean).eq("id", lineId);
   if (!error) invalidateCache("feed");
   return !error;

@@ -112,7 +112,7 @@ export function WeaveReaderPage() {
         setBlocks(blockData);
         setOtherWeaves(
           authorWeaves
-            .filter(w => w.id !== id && w.isPublic)
+            .filter(w => w.shortId !== id && w.id !== detail.id && w.isPublic)
             .map(w => ({ id: w.id, shortId: w.shortId, title: w.title, coverColor: w.coverColor, blockCount: w.blockCount, userHandle: w.userHandle }))
         );
         trackEvent(user?.id ?? "", {
@@ -129,9 +129,9 @@ export function WeaveReaderPage() {
   const isOwner = user && weave && user.id === weave.userId;
 
   const handleDelete = async () => {
-    if (!id) return;
+    if (!weave) return;
     if (!window.confirm("이 노트를 삭제하시겠습니까?")) return;
-    await deleteWeave(id);
+    await deleteWeave(weave.id);
     navigate("/notes", { replace: true });
   };
 

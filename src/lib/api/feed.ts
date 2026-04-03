@@ -41,6 +41,7 @@ export async function fetchFeedPosts(): Promise<FeedPost[]> {
     .neq("user_id", EDITOR_USER_ID)
     .neq("hidden", true)
     .neq("is_private", true)
+    .neq("is_draft", true)
     .order("created_at", { ascending: false })
     .limit(50);
 

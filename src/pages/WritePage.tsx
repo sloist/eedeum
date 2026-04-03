@@ -161,6 +161,8 @@ export function WritePage() {
         page: parseInt(page) || 0,
         book_id: bookId,
         feeling_private: feelingPrivate,
+        is_draft: false,
+        is_private: false,
       });
       setSubmitting(false);
       if (ok) {
