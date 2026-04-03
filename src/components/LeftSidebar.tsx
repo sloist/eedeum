@@ -70,7 +70,7 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
       {/* More — settings/info/account */}
       <div className="ls-more-wrap" ref={moreRef}>
         {showMore && popPos && (
-          <div className="ls-popover" style={{ position: "fixed", bottom: popPos.bottom, left: popPos.left, right: "auto", top: "auto" }}>
+          <div className="ls-popover" style={{ position: "fixed", bottom: popPos.bottom, left: popPos.left, width: 200, background: "var(--bgC)", borderRadius: 8, border: "0.5px solid var(--bdL)", boxShadow: "0 8px 32px rgba(31,26,21,0.1)", zIndex: 9999 }}>
             <button className="ls-pop-item" onClick={() => go("/settings")}>설정</button>
             <div className="ls-pop-divider" />
             <button className="ls-pop-item" onClick={() => go("/settings/about")}>소개</button>
