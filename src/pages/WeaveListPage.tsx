@@ -41,7 +41,7 @@ export function WeaveListPage() {
       ) : weaves.length === 0 ? (
         <div className="weave-empty">
           <div className="weave-empty-text">문장을 엮어 하나의 흐름으로</div>
-          <div className="weave-empty-sub">기록이 쌓이면 노트로 나만의 흐름을 만들 수 있어요</div>
+          <div className="weave-empty-sub">짧아도 남습니다</div>
           {user && (
             <button className="weave-new-btn" onClick={() => navigate("/notes/new")}>
               새 노트 만들기

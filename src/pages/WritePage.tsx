@@ -153,7 +153,7 @@ export function WritePage() {
     if (result && typeof result === "object" && "error" in result && typeof result.error === "string") {
       toast(result.error);
     } else if (result) {
-      toast("기록이 남았습니다");
+      toast("기록에 남았습니다");
       if (result.id) notifyNewPost(result.id);
       setTimeout(() => navigate("/", { replace: true }), 300);
     } else {
@@ -169,7 +169,7 @@ export function WritePage() {
     if (result && "error" in result) {
       toast(result.error);
     } else {
-      toast("임시로 남겨두었습니다");
+      toast("서재에 남겨두었습니다");
       setTimeout(() => navigate("/shelf", { replace: true }), 300);
     }
   };

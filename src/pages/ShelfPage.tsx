@@ -139,7 +139,13 @@ export function ShelfPage() {
         />
       </div>
 
-      {/* ─── 임시 보관함 ─── */}
+      {/* ─── 축적 요약 ─── */}
+      {userLines.length > 0 && (
+        <div className="shelf-accumulation">
+          이번 달 {shelf.length}권의 책에서 {userLines.length}개의 문장
+        </div>
+      )}
+
       {/* ─── 1. 읽고 있는 책 ─── */}
       {shelf.length > 0 && (
         <div className="shelf-section">

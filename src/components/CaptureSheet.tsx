@@ -71,7 +71,7 @@ export function CaptureSheet({ onClose, toast }: CaptureSheetProps) {
       toast(result.error);
     } else if (result) {
       setSubmitSuccess(true);
-      toast("기록이 남았습니다");
+      toast("기록에 남았습니다");
       playSoundIf(playLineSaved);
       setTimeout(() => onClose(result.id ?? undefined), 200);
     } else {

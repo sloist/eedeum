@@ -130,7 +130,7 @@ export function UserPage() {
       <div className="uposts">
         {posts.length > 0
           ? posts.map((p) => <PostCard key={p.id} post={p} onDetail={onDetail} />)
-          : <div className="empty-inline">아직 기록이 없습니다</div>
+          : <div className="empty-inline">아직 남긴 문장이 없습니다</div>
         }
       </div>
     </div>

@@ -180,10 +180,9 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
     <div>
       {posts.length === 0 ? (
         <div className="empty-cta">
-          <div className="empty-cta-quote">멈춘 문장이 머무는 곳</div>
-          <div className="empty-cta-text">아직 기록된 문장이 없습니다</div>
+          <div className="empty-cta-quote">멈춘 문장을 내 것으로</div>
           {user ? (
-            <div className="empty-cta-sub">기록 탭에서 첫 문장을 남겨보세요</div>
+            <div className="empty-cta-sub">남기면 쌓입니다</div>
           ) : (
             <>
               <div className="empty-cta-sub">책을 ��다 밑줄 친 문장, 오래 남는 한 줄을 여기에 남겨두세요</div>
