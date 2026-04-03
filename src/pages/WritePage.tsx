@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
 import { useModal } from "../lib/ModalContext";
 import { Toast } from "../components/Toast";
+import { Icons } from "../components/Icons";
 import { findOrCreateBook, createLine, fetchBooks } from "../lib/api";
 import { searchBooks } from "../lib/bookSearch";
 import { createWorker } from "tesseract.js";
@@ -254,7 +255,10 @@ export function WritePage() {
           value={title}
           onChange={e => setTitle(e.target.value)}
           maxLength={50}
+          autoFocus={!imageUrl}
         />
+
+        <div className="write-divider" />
 
         <textarea
           className="write-quote"
@@ -262,8 +266,32 @@ export function WritePage() {
           value={quote}
           onChange={e => { if (e.target.value.split("\n").length <= 15) setQuote(e.target.value); }}
           rows={6}
-          autoFocus={!imageUrl}
         />
+
+        {/* 카메라/갤러리 */}
+        <div className="write-attach-row">
+          <label className="write-attach-btn">
+            <Icons.Camera />
+            <span>사진에서 문장 가져오기</span>
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                  navigate("/write", { state: { imageUrl: reader.result as string }, replace: true });
+                };
+                reader.readAsDataURL(file);
+              }}
+            />
+          </label>
+        </div>
+
+        <div className="write-divider" />
 
         <div className="write-feeling-wrap">
           <textarea

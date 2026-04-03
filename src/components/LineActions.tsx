@@ -90,7 +90,7 @@ export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, 
               <>
                 {onHidePerson && (
                   <button onClick={() => { onHidePerson(); setShowMoreActions(false); }}>
-                    이 사람 한줄 안 보기
+                    이 작가 한줄 안 보기
                   </button>
                 )}
                 {onNotInterested && (

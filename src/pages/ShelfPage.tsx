@@ -247,7 +247,7 @@ export function ShelfPage() {
               <div style={{ padding: "0 20px 12px" }}>
                 {hiddenUsers.length > 0 && (
                   <>
-                    <div className="shelf-block-category">숨긴 사람</div>
+                    <div className="shelf-block-category">숨긴 작가</div>
                     {hiddenUsers.map(renderItem)}
                   </>
                 )}

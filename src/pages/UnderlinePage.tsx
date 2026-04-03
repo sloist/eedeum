@@ -223,7 +223,7 @@ export function UnderlinePage() {
   const handleHidePerson = async () => {
     if (!user) { requireAuth(); return; }
     const ok = await blockUser(user.id, data.userId);
-    if (ok) { toast("이 사람의 한줄이 더 이상 표시되지 않습니다"); goBack(); }
+    if (ok) { toast("이 작가의 한줄이 더 이상 표시되지 않습니다"); goBack(); }
     else toast("처리에 실패했습니다");
   };
 

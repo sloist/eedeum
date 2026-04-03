@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { PostCard } from "../components/PostCard";
 import { LoadingBar } from "../components/LoadingBar";
 import type { Post, Book } from "../data";
-import { fetchFeedPosts, fetchLineAsFeedPost, fetchUserBlocks, blockUser, blockBook, blockUnderline, type FeedPost } from "../lib/api";
+import { fetchFeedPosts, fetchLineAsFeedPost, fetchUserBlocks, blockUser, blockBook, blockUnderline, deleteUnderline, type FeedPost } from "../lib/api";
 import { useAuth } from "../lib/AuthContext";
 import { trackEvent } from "../lib/tracking";
 
@@ -116,12 +116,22 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
     navigate(`/line/${postId}`, { state: { from: "feed", backgroundLocation: location } });
   };
 
+  const handleDelete = async (postId: string) => {
+    if (!user) return;
+    if (!window.confirm("이 기록을 삭제할까요?")) return;
+    const ok = await deleteUnderline(postId);
+    if (ok) {
+      setPosts(prev => prev.filter(p => p.id !== postId));
+      toast("삭제되었습니다");
+    }
+  };
+
   const handleHidePerson = async (userId: string) => {
     if (!user) return;
     const ok = await blockUser(user.id, userId);
     if (ok) {
       setPosts(prev => prev.filter(p => p.userId !== userId));
-      toast("이 사람의 한줄이 더 이상 표시되지 않습니다");
+      toast("이 작가의 한줄이 더 이상 표시되지 않습니다");
     }
   };
   const handleHideBook = async (bookId: string) => {
@@ -146,7 +156,7 @@ export function HomePage({ toast, feedKey, newPostId, onNewPostHandled, requireA
     const shownClusterBooks = new Set<string>();
     posts.forEach((p, i) => {
       flow.push(
-        <PostCard key={p.id} post={p} onDetail={onDetail} requireAuth={requireAuth} isLoggedIn={!!user} isMine={user?.id === p.userId} onHidePerson={handleHidePerson} onHideBook={handleHideBook} onNotInterested={handleNotInterested} />
+        <PostCard key={p.id} post={p} onDetail={onDetail} requireAuth={requireAuth} isLoggedIn={!!user} isMine={user?.id === p.userId} onHidePerson={handleHidePerson} onHideBook={handleHideBook} onNotInterested={handleNotInterested} onDelete={handleDelete} />
       );
       const next = posts[i + 1];
       if (next && next.book.title === p.book.title && !shownClusterBooks.has(p.book.title)) {
