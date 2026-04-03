@@ -15,7 +15,7 @@
 
 .sc-body {
   flex: 1; display: flex; align-items: center;
-  padding: 40px 32px;
+  padding: 44px 36px;
 }
 .sc-quote {
   font-family: var(--sf);
@@ -23,23 +23,23 @@
   word-break: keep-all;
 }
 .sc-foot {
-  padding: 0 32px 28px;
+  padding: 0 36px 28px;
   display: flex; gap: 6px;
 }
 
 /* ─── Paper: warm cream, quiet serif ─── */
 .sc-paper {
-  background: #FDFAF5;
-  border: 1px solid #E8E1D5;
+  background: #F9F8F4;
+  border: 1px solid rgba(0,0,0,0.05);
 }
 .sc-paper .sc-quote {
-  font-size: 18px; line-height: 1.85; font-weight: 400;
-  color: #2E2720; letter-spacing: -0.2px;
+  font-size: 18px; line-height: 1.9; font-weight: 400;
+  color: #2A2418; letter-spacing: -0.2px;
 }
 .sc-paper .sc-foot {
-  font-size: 11px; color: #9E9488;
-  border-top: 0.5px solid #E8E1D5;
-  padding-top: 16px; margin: 0 32px;
+  font-size: 11px; color: #A09888;
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+  padding-top: 16px; margin: 0 36px;
   padding-left: 0; padding-right: 0;
 }
 
@@ -111,14 +111,15 @@
   font-size: 11px; color: rgba(255,255,255,0.4);
 }
 
-/* ─── Watermark ─── */
+/* ─── Watermark — 이듬 시그니처 ─── */
 .sc-watermark {
-  position: absolute; bottom: 10px; right: 16px;
-  font-family: var(--sn); font-size: 9px;
-  color: rgba(0,0,0,0.15); letter-spacing: .5px;
+  position: absolute; bottom: 14px; right: 20px;
+  font-family: var(--sf); font-size: 11px;
+  color: rgba(0,0,0,0.18); letter-spacing: .3px;
+  font-weight: 400;
 }
 .sc-watermark-light {
-  color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.25);
 }
 
 /* ─── Share Modal styles ─── */
