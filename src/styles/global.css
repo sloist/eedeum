@@ -1254,7 +1254,19 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 /* Page indicator */
 .wr-page-indicator{font-size:11px;color:var(--t3);letter-spacing:.1px}
 /* Weave reader blocks — flowing text on each page */
+/* 공통 블록 */
 .wr-block{position:relative;max-width:640px;width:100%;margin:auto 0}
+
+/* 문장 페이지 — 가운데 정렬, 문장이 공간을 지배 */
+.wr-block-quote{text-align:center}
+.wr-block-quote .wr-line{margin-bottom:12px}
+.wr-block-quote .wr-line-source{text-align:center}
+
+/* 메모 페이지 — 좌측 정렬, 은은한 왼쪽 선 */
+.wr-block-memo{padding-left:16px;border-left:1.5px solid var(--bdL)}
+
+/* 구분 페이지 — 가운데, 장 전환 느낌 */
+.wr-block-divider{text-align:center}
 .wr-line{
   padding:0;border:none;
   margin-bottom:8px;

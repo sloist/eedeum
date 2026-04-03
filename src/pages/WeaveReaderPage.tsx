@@ -206,29 +206,39 @@ export function WeaveReaderPage() {
     const block = blocks[blockIdx];
     if (!block) return <div className="empty-inline">아직 조각이 없습니다</div>;
 
-    return (
-      <div className="wr-block">
-        {block.type === "underline" && block.underline && (
-          <>
-            <div className="wr-line">
-              <div className="wr-line-quote">{block.underline.quote}</div>
-            </div>
-            <div className="wr-line-source">
-              — {block.underline.bookTitle}, {block.underline.bookAuthor}
-              {block.underline.page > 0 && ` · p.${block.underline.page}`}
-            </div>
-          </>
-        )}
-        {block.type === "note" && block.content && (
+    if (block.type === "underline" && block.underline) {
+      return (
+        <div className="wr-block wr-block-quote">
+          <div className="wr-line">
+            <div className="wr-line-quote">{block.underline.quote}</div>
+          </div>
+          <div className="wr-line-source">
+            — {block.underline.bookTitle}, {block.underline.bookAuthor}
+            {block.underline.page > 0 && ` · p.${block.underline.page}`}
+          </div>
+        </div>
+      );
+    }
+
+    if (block.type === "note" && block.content) {
+      return (
+        <div className="wr-block wr-block-memo">
           <div className="wr-note">{block.content}</div>
-        )}
-        {block.type === "divider" && (
+        </div>
+      );
+    }
+
+    if (block.type === "divider") {
+      return (
+        <div className="wr-block wr-block-divider">
           <div className="wr-divider">
             {block.content && <span className="wr-divider-text">{block.content}</span>}
           </div>
-        )}
-      </div>
-    );
+        </div>
+      );
+    }
+
+    return <div className="wr-block" />;
   };
 
   if (loading) return <div className="weave-reader"><div className="empty-inline">불러오는 중...</div></div>;
