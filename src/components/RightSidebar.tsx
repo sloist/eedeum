@@ -9,6 +9,7 @@ export function RightSidebar() {
   const location = useLocation();
   const { user } = useAuth();
   const isWeaves = location.pathname.startsWith("/notes") || location.pathname.startsWith("/notes/");
+  const isSearchPage = location.pathname === "/search";
 
   const [searchQ, setSearchQ] = useState("");
   const [rediscovery, setRediscovery] = useState<{ quote: string; bookTitle: string; bookAuthor: string; shortId: string; handle: string; createdAt: string } | null>(null);
@@ -89,7 +90,7 @@ export function RightSidebar() {
 
   return (
     <aside className="right-sidebar">
-      <div className="rs-search" ref={searchRef}>
+      {!isSearchPage && <div className="rs-search" ref={searchRef}>
         <Icons.Search />
         <input
           className="rs-search-input"
@@ -136,7 +137,7 @@ export function RightSidebar() {
             ))}
           </div>
         )}
-      </div>
+      </div>}
 
       {dailyQuote && (
         <div className="rs-daily">
