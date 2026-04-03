@@ -212,10 +212,10 @@ function AppLayout() {
           <Suspense fallback={<LoadingBar />}>
           <Routes location={routeLocation}>
             <Route path="/" element={<HomePage onShare={openShare} toast={toast} feedKey={feedKey} newPostId={newPostId} onNewPostHandled={onNewPostHandled} requireAuth={requireAuth} />} />
-            <Route path="/@:handle/lines/:id" element={<UnderlinePage />} />
-            <Route path="/@:handle/notes/:id" element={<WeaveReaderPage />} />
-            <Route path="/@:handle/notes/:id/edit" element={<WeaveEditorPage />} />
-            <Route path="/@:handle" element={<UserPage />} />
+            <Route path="/:handle/lines/:id" element={<UnderlinePage />} />
+            <Route path="/:handle/notes/:id" element={<WeaveReaderPage />} />
+            <Route path="/:handle/notes/:id/edit" element={<WeaveEditorPage />} />
+            <Route path="/:handle" element={<UserPage />} />
             <Route path="/write" element={<WritePage />} />
             <Route path="/notes" element={<WeaveListPage />} />
             <Route path="/notes/new" element={<WeaveEditorPage />} />
@@ -251,7 +251,7 @@ function AppLayout() {
             <RouteErrorBoundary>
             <Suspense fallback={<LoadingBar />}>
               <Routes>
-                <Route path="/@:handle/lines/:id" element={<UnderlinePage />} />
+                <Route path="/:handle/lines/:id" element={<UnderlinePage />} />
               </Routes>
             </Suspense>
             </RouteErrorBoundary>

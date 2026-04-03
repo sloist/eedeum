@@ -51,7 +51,8 @@ export function UnderlinePage() {
       setData(result);
       if (result) {
         // handle 변경 대응: URL의 handle이 실제 작성자와 다르면 올바른 URL로 리다이렉트
-        if (handle && result.userHandle && handle !== result.userHandle) {
+        const cleanHandle = handle?.replace(/^@/, "");
+        if (cleanHandle && result.userHandle && cleanHandle !== result.userHandle) {
           navigate(`/@${result.userHandle}/lines/${result.shortId}`, { replace: true, state: location.state });
           return;
         }

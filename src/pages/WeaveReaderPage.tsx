@@ -64,7 +64,8 @@ export function WeaveReaderPage() {
       if (!mounted) return;
       if (detail) {
         // handle 변경 대응
-        if (handle && detail.userHandle && handle !== detail.userHandle) {
+        const cleanHandle = handle?.replace(/^@/, "");
+        if (cleanHandle && detail.userHandle && cleanHandle !== detail.userHandle) {
           navigate(`/@${detail.userHandle}/notes/${detail.shortId}`, { replace: true });
           return;
         }
