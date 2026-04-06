@@ -102,4 +102,7 @@ export {
   updateWeaveBlock,
   deleteWeaveBlock,
   fetchUserLinesForWeave,
+  toggleWeaveSave,
+  checkWeaveSaved,
+  fetchSavedWeaves,
 } from "./weave";

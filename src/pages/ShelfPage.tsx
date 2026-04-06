@@ -12,6 +12,7 @@ import {
   fetchUserWeaves,
   fetchUserLines,
   fetchSavedLines,
+  fetchSavedWeaves,
   fetchPrivateMemos,
   fetchUserBlocks,
   fetchUserDbProfile,
@@ -32,6 +33,7 @@ export function ShelfPage() {
   const [userLines, setUserLines] = useState<{ id: string; shortId: string; quote: string; bookTitle: string; bookAuthor: string }[]>([]);
   const [weaves, setWeaves] = useState<{ id: string; shortId: string; title: string; description: string | null; coverColor: string; isPublic: boolean; blockCount: number; userHandle: string; createdAt: string; updatedAt: string; firstQuote?: string | null }[]>([]);
   const [savedItems, setSavedItems] = useState<{ id: string; shortId: string; userHandle: string; quote: string; book: string; author: string; savedAt: string }[]>([]);
+  const [savedWeaves, setSavedWeaves] = useState<{ id: string; shortId: string; title: string; coverColor: string; blockCount: number; userName: string; userHandle: string; firstQuote?: string | null }[]>([]);
   const [privateMemos, setPrivateMemos] = useState<{ lineId: string; lineHandle: string; text: string; date: string }[]>([]);
   const [showMore, setShowMore] = useState(false);
   const [drafts, setDrafts] = useState<{ id: string; shortId: string; quote: string; feeling: string | null; title: string | null; page: number; bookTitle: string; bookAuthor: string; createdAt: string }[]>([]);
@@ -47,7 +49,7 @@ export function ShelfPage() {
     let mounted = true;
 
     async function load() {
-      const [profileData, shelfData, weavesData, lines, saved, memos, userBlocks, dbProfile, draftsData] = await Promise.all([
+      const [profileData, shelfData, weavesData, lines, saved, memos, userBlocks, dbProfile, draftsData, savedWeavesData] = await Promise.all([
         fetchUserProfile(user!.id),
         fetchUserShelf(user!.id),
         fetchUserWeaves(user!.id),
@@ -57,6 +59,7 @@ export function ShelfPage() {
         fetchUserBlocks(user!.id),
         fetchUserDbProfile(user!.id),
         fetchDrafts(user!.id),
+        fetchSavedWeaves(user!.id),
       ]);
       if (!mounted) return;
       setDrafts(draftsData);
@@ -77,6 +80,7 @@ export function ShelfPage() {
       setWeaves(weavesData);
       setUserLines(lines.map((l: any) => ({ id: l.id, shortId: l.shortId, quote: l.quote, bookTitle: l.book?.title ?? "", bookAuthor: l.book?.author ?? "" })));
       setSavedItems(saved);
+      setSavedWeaves(savedWeavesData);
       setPrivateMemos(memos);
       setBlocks(userBlocks);
       if (dbProfile) {
@@ -240,6 +244,28 @@ export function ShelfPage() {
                   }}>삭제</button>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── 3.5 담은 노트 ─── */}
+      {savedWeaves.length > 0 && (
+        <div className="shelf-section">
+          <div className="shelf-section-label">담은 노트</div>
+          <div className="weave-grid" style={{ padding: "0 20px 8px" }}>
+            {savedWeaves.map(w => (
+              <article key={w.id} className="weave-booklet" onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}>
+                <div className="weave-booklet-excerpt">
+                  {w.firstQuote && <p className="weave-booklet-excerpt-text">{w.firstQuote}</p>}
+                </div>
+                <div className="weave-booklet-cover" style={{ background: w.coverColor }}>
+                  <h3 className="weave-booklet-title">{w.title}</h3>
+                </div>
+                <div className="weave-booklet-footer">
+                  <span className="weave-booklet-author">{w.userName}</span>
+                </div>
+              </article>
             ))}
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
-import { fetchWeaveDetail, fetchWeaveBlocks, deleteWeave, fetchUserWeaves } from "../lib/api";
+import { fetchWeaveDetail, fetchWeaveBlocks, deleteWeave, fetchUserWeaves, toggleWeaveSave, checkWeaveSaved } from "../lib/api";
 import { Icons } from "../components/Icons";
 import { trackEvent } from "../lib/tracking";
 
@@ -43,6 +43,7 @@ export function WeaveReaderPage() {
   const [blocks, setBlocks] = useState<WeaveBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
+  const [weaveSaved, setWeaveSaved] = useState(false);
   const isFromEditor = !!(location.state as any)?.fromEditor;
   const [showUI, setShowUI] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
@@ -119,6 +120,10 @@ export function WeaveReaderPage() {
           eventType: "weave_view", targetType: "weave", targetId: detail.id,
           source: "weave", metadata: { block_count: blockData.length },
         });
+        // 저장 상태 체크
+        if (user && detail.userId !== user.id) {
+          checkWeaveSaved(user.id, detail.id).then(s => mounted && setWeaveSaved(s));
+        }
       }
       setLoading(false);
     }
@@ -216,6 +221,17 @@ export function WeaveReaderPage() {
         <div className="wr-end">
           <div className="wr-end-title">{weave.title}</div>
           <div className="wr-end-meta">{blocks.length}개의 조각 · {weave.userName}</div>
+          {!isOwner && user && (
+            <button
+              className={`wr-end-save-btn ${weaveSaved ? "on" : ""}`}
+              onClick={async () => {
+                const result = await toggleWeaveSave(user.id, weave.id);
+                setWeaveSaved(result);
+              }}
+            >
+              {weaveSaved ? "담은 노트" : "노트 담기"}
+            </button>
+          )}
           <div className="wr-end-divider" />
           <div className="wr-end-author-card" onClick={() => navigate(`/@${weave.userHandle}`)}>
             <span className="wr-end-author-name">{weave.userName}</span>

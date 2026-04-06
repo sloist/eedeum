@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const STEPS = [
   {
@@ -24,10 +24,21 @@ interface OnboardingProps {
 
 export function Onboarding({ onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0);
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
+  const [slideDir, setSlideDir] = useState<"left" | "right" | null>(null);
+
+  const goTo = (next: number, dir: "left" | "right") => {
+    setSlideDir(dir);
+    setTimeout(() => {
+      setStep(next);
+      setSlideDir(null);
+    }, 150);
+  };
 
   const handleNext = () => {
     if (step < STEPS.length - 1) {
-      setStep(step + 1);
+      goTo(step + 1, "left");
     } else {
       localStorage.setItem("eedeum_onboarded", "1");
       onComplete();
@@ -39,18 +50,41 @@ export function Onboarding({ onComplete }: OnboardingProps) {
     onComplete();
   };
 
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  };
+  const onTouchEnd = () => {
+    if (touchDeltaX.current < -50 && step < STEPS.length - 1) {
+      goTo(step + 1, "left");
+    } else if (touchDeltaX.current > 50 && step > 0) {
+      goTo(step - 1, "right");
+    }
+  };
+
   const s = STEPS[step];
 
   return (
     <div className="ob-backdrop">
-      <div className="ob-card">
+      <div
+        className={`ob-card ${slideDir === "left" ? "ob-slide-left" : slideDir === "right" ? "ob-slide-right" : ""}`}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         <div className="ob-icon">{s.icon}</div>
         <div className="ob-title">{s.title}</div>
         <div className="ob-desc">{s.desc}</div>
 
         <div className="ob-dots">
           {STEPS.map((_, i) => (
-            <div key={i} className={`ob-dot ${i === step ? "on" : ""}`} />
+            <div key={i} className={`ob-dot ${i === step ? "on" : ""}`} onClick={() => {
+              if (i > step) goTo(i, "left");
+              else if (i < step) goTo(i, "right");
+            }} />
           ))}
         </div>
 

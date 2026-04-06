@@ -196,3 +196,67 @@ export async function fetchUserLinesForWeave(userId: string) {
     bookAuthor: (u.books as any)?.author ?? "?",
   }));
 }
+
+/* ─── 노트 저장/해제 ─── */
+
+export async function toggleWeaveSave(userId: string, weaveId: string): Promise<boolean> {
+  const { data: existing } = await supabase
+    .from("weave_saves")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("weave_id", weaveId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase.from("weave_saves").delete().eq("id", existing.id);
+    return false; // unsaved
+  } else {
+    await supabase.from("weave_saves").insert({ user_id: userId, weave_id: weaveId });
+    return true; // saved
+  }
+}
+
+export async function checkWeaveSaved(userId: string, weaveId: string): Promise<boolean> {
+  const { count } = await supabase
+    .from("weave_saves")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("weave_id", weaveId);
+  return (count ?? 0) > 0;
+}
+
+export async function fetchSavedWeaves(userId: string) {
+  const { data } = await supabase
+    .from("weave_saves")
+    .select("weave_id, weaves(*, weave_blocks(id, block_type, content, position, underlines(quote)), users!weaves_user_id_fkey(name, handle))")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (!data) return [];
+
+  return data
+    .filter((s: any) => s.weaves)
+    .map((s: any) => {
+      const w = s.weaves;
+      const blocks = (w.weave_blocks as any[]) ?? [];
+      const sorted = [...blocks].sort((a: any, b: any) => a.position - b.position);
+      let firstQuote: string | null = null;
+      const ulBlock = sorted.find((b: any) => b.block_type === "underline" && b.underlines);
+      if (ulBlock?.underlines?.quote) firstQuote = ulBlock.underlines.quote;
+      if (!firstQuote) {
+        const noteBlock = sorted.find((b: any) => b.block_type === "note" && b.content);
+        if (noteBlock) firstQuote = noteBlock.content;
+      }
+
+      return {
+        id: w.id as string,
+        shortId: w.short_id as string,
+        title: w.title as string,
+        coverColor: w.cover_color as string,
+        blockCount: blocks.length,
+        userName: (w.users as any)?.name ?? "",
+        userHandle: (w.users as any)?.handle ?? "",
+        firstQuote,
+      };
+    });
+}

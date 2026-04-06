@@ -115,16 +115,20 @@ export function UserPage() {
       {weaves.length > 0 && (
         <>
           <div className="sh"><span className="sl">{profile.name}의 노트</span></div>
-          <div className="user-weaves">
-            {weaves.slice(0, showAllWeaves ? weaves.length : 3).map(w => (
-              <div key={w.id} className="user-weave-item" onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}>
-                <div className="user-weave-spine" style={{ background: w.coverColor }} />
-                <div className="user-weave-title">{w.title}</div>
-                <div className="user-weave-count">{w.blockCount}개 조각</div>
-              </div>
+          <div className="weave-grid" style={{ padding: "0 20px 8px" }}>
+            {weaves.slice(0, showAllWeaves ? weaves.length : 4).map(w => (
+              <article key={w.id} className="weave-booklet" onClick={() => navigate(`/@${w.userHandle}/notes/${w.shortId}`)}>
+                <div className="weave-booklet-excerpt" />
+                <div className="weave-booklet-cover" style={{ background: w.coverColor }}>
+                  <h3 className="weave-booklet-title">{w.title}</h3>
+                </div>
+                <div className="weave-booklet-footer">
+                  <span className="weave-booklet-meta">{w.blockCount}개의 조각</span>
+                </div>
+              </article>
             ))}
           </div>
-          {weaves.length > 3 && !showAllWeaves && (
+          {weaves.length > 4 && !showAllWeaves && (
             <button className="shelf-show-more" onClick={() => setShowAllWeaves(true)} style={{ margin: "0 20px 12px" }}>
               전체 보기 ({weaves.length}개)
             </button>

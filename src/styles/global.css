@@ -1986,7 +1986,10 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
   padding:40px 28px 28px;text-align:center;
   box-shadow:0 16px 48px rgba(31,26,21,0.2);
   animation:rise .3s ease forwards;
+  transition:transform .15s ease,opacity .15s ease;
 }
+.ob-slide-left{transform:translateX(-30px);opacity:0}
+.ob-slide-right{transform:translateX(30px);opacity:0}
 .ob-icon{font-size:36px;margin-bottom:20px}
 .ob-title{
   font-family:var(--sf);font-size:18px;font-weight:600;
@@ -2213,6 +2216,14 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 }
 .wr-end-title{font-family:var(--sf);font-size:18px;font-weight:300;color:var(--tq);letter-spacing:-.2px;margin-bottom:8px}
 .wr-end-meta{font-size:11px;color:var(--t3);opacity:.5;margin-bottom:0}
+.wr-end-save-btn{
+  margin:20px auto 0;padding:10px 24px;
+  border:1px solid var(--bd);border-radius:20px;
+  background:none;color:var(--t2);font-size:13px;font-family:var(--sn);
+  cursor:pointer;transition:all .2s;letter-spacing:-.2px;
+}
+.wr-end-save-btn:hover{border-color:var(--t3);color:var(--t1)}
+.wr-end-save-btn.on{background:var(--t1);color:var(--bg);border-color:var(--t1)}
 .wr-end-divider{width:24px;height:1px;background:var(--bdL);margin:28px auto}
 .wr-end-author-card{
   display:inline-flex;align-items:baseline;gap:0;
