@@ -20,7 +20,6 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
   const [popPos, setPopPos] = useState({ bottom: 0, left: 0 });
 
   const isNoteDetail = /^\/@[^/]+\/notes\//.test(path);
-  const isLineDetail = /^\/@[^/]+\/lines\//.test(path);
   const isActive = (p: string) => {
     if (p === "/") return path === "/" || (path.startsWith("/@") && !isNoteDetail) || path.startsWith("/book/");
     if (p === "/notes") return path.startsWith("/notes") || isNoteDetail;
