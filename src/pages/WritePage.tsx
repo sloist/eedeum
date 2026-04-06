@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
 import { useModal } from "../lib/ModalContext";
@@ -15,6 +15,15 @@ export function WritePage() {
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
   const { requireAuth, notifyNewPost } = useModal();
+
+  const quoteRef = useRef<HTMLTextAreaElement>(null);
+
+  // 진입 시 자동 포커스 (모바일 네비 탭 → 바로 키보드)
+  useEffect(() => {
+    if (!isEditMode && !imageUrl) {
+      setTimeout(() => quoteRef.current?.focus(), 300);
+    }
+  }, []);
 
   // Image from camera/gallery
   const imageUrl = (location.state as any)?.imageUrl as string | undefined;
@@ -322,30 +331,50 @@ export function WritePage() {
         {/* 주인공: 문장 */}
         <div className="write-stage">
           <textarea
+            ref={quoteRef}
             className="write-quote"
             placeholder="멈춘 문장을 남겨주세요"
             value={quote}
             onChange={e => { if (e.target.value.split("\n").length <= 15) setQuote(e.target.value); }}
             rows={6}
           />
-          <label className="write-camera-icon">
-            <Icons.Camera />
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => {
-                  navigate("/write", { state: { imageUrl: reader.result as string }, replace: true });
-                };
-                reader.readAsDataURL(file);
-              }}
-            />
-          </label>
+          <div className="write-media-btns">
+            <label className="write-camera-icon" title="카메라">
+              <Icons.Camera />
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    navigate("/write", { state: { imageUrl: reader.result as string }, replace: true });
+                  };
+                  reader.readAsDataURL(file);
+                }}
+              />
+            </label>
+            <label className="write-camera-icon" title="갤러리">
+              <Icons.Gallery />
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    navigate("/write", { state: { imageUrl: reader.result as string }, replace: true });
+                  };
+                  reader.readAsDataURL(file);
+                }}
+              />
+            </label>
+          </div>
         </div>
 
         {/* 나의 감상 — 다른 온도 */}

@@ -17,6 +17,10 @@ export function BottomNav() {
   const path = location.pathname;
 
   const isNoteDetail = /^\/@[^/]+\/notes\//.test(path);
+
+  // 노트 읽기 중에는 하단 네비 숨기기
+  if (isNoteDetail) return null;
+
   const isActive = (p: string) => {
     if (p === "/") return !isNoteDetail && (path === "/" || path.startsWith("/@") || path.startsWith("/book/"));
     if (p === "/notes") return path.startsWith("/notes") || isNoteDetail;
