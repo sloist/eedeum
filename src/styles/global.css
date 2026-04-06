@@ -3,7 +3,7 @@
 
 :root{
   --bg:#FBFBF9;--bgW:#F6F5F2;--bgC:#FBFBF9;--bgD:#F6F5F2;
-  --t1:#1F1A15;--t2:#6B6259;--t3:#A09888;--tq:#2A2418;
+  --t1:#1A1510;--t2:#5A5248;--t3:#8A8070;--tq:#2A2418;
   --ac:#7B6548;--acS:#B8A68E;
   --bd:#E8E6E2;--bdL:#F0EEEA;
   --sf:'Noto Serif KR',Georgia,serif;--sn:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue','Segoe UI','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol',sans-serif;
@@ -919,7 +919,7 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 }
 
 /* ─── Shelf top (profile + icons) ─── */
-.shelf-top{display:flex;justify-content:flex-end;padding:max(8px,env(safe-area-inset-top)) 20px 0}
+.shelf-top{display:flex;justify-content:flex-end;padding:0 20px}
 .shelf-top-actions{display:flex;gap:4px}
 
 /* ─── Shelf login ─── */
@@ -989,11 +989,11 @@ body{background:var(--bgD);font-family:var(--sn);color:var(--t1);-webkit-font-sm
 
 /* ─── 상세 오버레이 — fixed, .app 너비에 JS로 맞춤 ─── */
 .line-overlay{
-  position:fixed;top:0;bottom:0;
+  position:fixed;top:0;left:0;right:0;bottom:0;
   background:var(--bg);z-index:10;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overflow-y:scroll;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
-  /* left/right는 JS에서 .app 기준으로 설정 */
+  /* left/width는 JS에서 .app 기준으로 재설정 */
 }
 
 /* ─── Content Fade In ─── */

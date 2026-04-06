@@ -23,6 +23,7 @@ type Props = {
 export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, onDeleteLine, onAuthRequired, onReport, onHidePerson, onHideBook, onNotInterested, onSetPrivate, onEdit, isPrivate, onAddToNote, onRepost }: Props) {
   const [showMoreActions, setShowMoreActions] = useState(false);
   const [showReportReasons, setShowReportReasons] = useState(false);
+  const [showHideReasons, setShowHideReasons] = useState<{ action: () => void } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu on outside click
@@ -104,20 +105,29 @@ export function LineActions({ saved, isLoggedIn, isPostAuthor, onSave, onShare, 
                   분란 · 정치
                 </button>
               </>
+            ) : showHideReasons ? (
+              <>
+                <button className="pacts-more-back" onClick={() => setShowHideReasons(null)}>
+                  ← 이유 선택
+                </button>
+                <button onClick={() => { showHideReasons.action(); setShowMoreActions(false); setShowHideReasons(null); }}>내 취향이 아니에요</button>
+                <button onClick={() => { showHideReasons.action(); setShowMoreActions(false); setShowHideReasons(null); }}>같은 글이 너무 많아요</button>
+                <button onClick={() => { showHideReasons.action(); setShowMoreActions(false); setShowHideReasons(null); }}>기타</button>
+              </>
             ) : (
               <>
                 {onHidePerson && (
-                  <button onClick={() => { onHidePerson(); setShowMoreActions(false); }}>
+                  <button onClick={() => setShowHideReasons({ action: onHidePerson })}>
                     이 작가 한줄 안 보기
                   </button>
                 )}
                 {onNotInterested && (
-                  <button onClick={() => { onNotInterested(); setShowMoreActions(false); }}>
+                  <button onClick={() => setShowHideReasons({ action: onNotInterested })}>
                     관심 없음
                   </button>
                 )}
                 {onHideBook && (
-                  <button onClick={() => { onHideBook(); setShowMoreActions(false); }}>
+                  <button onClick={() => setShowHideReasons({ action: onHideBook })}>
                     이 책 안 보기
                   </button>
                 )}

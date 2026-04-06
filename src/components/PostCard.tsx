@@ -79,7 +79,7 @@ export function PostCard({ post, onDetail, isLoggedIn, isMine, onHidePerson, onH
 
   return (
     <div className="feed-item" data-post-id={post.id} onClick={() => onDetail(post.shortId, post.userHandle ?? "")}>
-      {isMine && !post.repostOf && <span className="feed-mine-badge">내 기록</span>}
+      {isMine && !post.repostOf && <span className="feed-mine-badge">나의 밑줄</span>}
       {post.repostOf && (
         <span className="feed-repost-badge" onClick={(e) => { e.stopPropagation(); navigate(`/@${post.repostOf!.userHandle.replace(/^@/, "")}`); }}>
           ↻ {post.repostOf.userName}님의 한줄

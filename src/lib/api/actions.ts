@@ -75,18 +75,6 @@ export async function addEcho(lineId: string, userId: string, text: string, isSa
   const filter = checkContent(text);
   if (filter.blocked) return { error: filter.reason! };
 
-  // Check: 1 comment per line per user (replies are separate)
-  const { count } = await supabase
-    .from("echoes")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .eq("underline_id", lineId)
-    .is("parent_id", null);
-
-  if ((count ?? 0) >= 1) {
-    return { error: "하나의 한줄에는 댓글 하나만 남길 수 있습니다" };
-  }
-
   const echoInsert: any = { underline_id: lineId, user_id: userId, text, is_same_line: isSameLine };
   if (filter.suspicious) {
     echoInsert.hidden = true;

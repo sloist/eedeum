@@ -16,11 +16,12 @@ export function BottomNav() {
   const location = useLocation();
   const path = location.pathname;
 
+  const isNoteDetail = /^\/@[^/]+\/notes\//.test(path);
   const isActive = (p: string) => {
-    if (p === "/") return path === "/" || path.startsWith("/@") || path.startsWith("/book/");
-    if (p === "/notes") return path.startsWith("/notes");
+    if (p === "/") return !isNoteDetail && (path === "/" || path.startsWith("/@") || path.startsWith("/book/"));
+    if (p === "/notes") return path.startsWith("/notes") || isNoteDetail;
     if (p === "/shelf") return path.startsWith("/shelf") || path === "/notifications" || path.startsWith("/settings");
-    if (p === "/write") return path === "/write" || path === "/write";
+    if (p === "/write") return path === "/write";
     return path.startsWith(p);
   };
 

@@ -85,7 +85,7 @@ export function EchoList({ echoes, isPostAuthor, currentUserId, onDelete, onPin,
               >
                 <span className="edot" />
                 <div className="etxt">
-                  <span className="eusr eusr-author">{r.userName}</span>
+                  <span className="eusr eusr-author" onClick={() => r.userHandle && navigate(`/@${r.userHandle}`)}>{r.userName}</span>
                   <span className="ereply-label">작성자</span>
                   {r.text}
                 </div>

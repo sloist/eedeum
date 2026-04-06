@@ -19,8 +19,13 @@ export function LeftSidebar({ onAuthRequired }: LeftSidebarProps) {
   const popRef = useRef<HTMLDivElement>(null);
   const [popPos, setPopPos] = useState({ bottom: 0, left: 0 });
 
+  const isNoteDetail = /^\/@[^/]+\/notes\//.test(path);
+  const isLineDetail = /^\/@[^/]+\/lines\//.test(path);
   const isActive = (p: string) => {
-    if (p === "/") return path === "/";
+    if (p === "/") return path === "/" || (path.startsWith("/@") && !isNoteDetail) || path.startsWith("/book/");
+    if (p === "/notes") return path.startsWith("/notes") || isNoteDetail;
+    if (p === "/shelf") return path.startsWith("/shelf") || path === "/notifications" || path.startsWith("/settings");
+    if (p === "/write") return path === "/write";
     return path.startsWith(p);
   };
 
